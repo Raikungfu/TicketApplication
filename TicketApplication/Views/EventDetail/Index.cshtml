@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "JSOL Fan Meeting 2024";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <div class="relative h-[50vh] bg-gray-900">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30">
+            <img src="~/images/placeholder.jpg" alt="JSOL Fan Meeting 2024" class="w-full h-full object-cover mix-blend-overlay">
+        </div>
+        <div class="relative event-container h-full flex items-center">
+            <div class="text-white">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">JSOL Fan Meeting 2024</h1>
+                <p class="text-xl md:text-2xl opacity-90">Gặp gỡ và giao lưu cùng JSOL</p>
+            </div>
+        </div>
+    </div>
+    <!-- Event Details -->
+    <div class="event-container py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h2 class="section-title">Thông tin sự kiện</h2>
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-calendar w-6 h-6 text-gray-600"></i>
+                        <div>
+                            <p class="font-semibold">Ngày diễn ra</p>
+                            <p class="text-gray-600">20.01.2024</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-clock w-6 h-6 text-gray-600"></i>
+                        <div>
+                            <p class="font-semibold">Thời gian</p>
+                            <p class="text-gray-600">19:30 - 21:30</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-map-marker-alt w-6 h-6 text-gray-600"></i>
+                        <div>
+                            <p class="font-semibold">Địa điểm</p>
+                            <p class="text-gray-600">Nhà Văn Hóa Thanh Niên TPHCM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-users w-6 h-6 text-gray-600"></i>
+                        <div>
+                            <p class="font-semibold">Số lượng</p>
+                            <p class="text-gray-600">Giới hạn 500 người</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Ticket Categories -->
+            <div>
+                <h2 class="section-title">Loại vé</h2>
+                <div class="space-y-4">
+                    <div class="ticket-card">
+                        <h3 class="text-xl font-bold mb-2">Vé VIP</h3>
+                        <p class="text-gray-600 mb-4">
+                            - Ghế ngồi hàng đầu<br>
+                            - Ưu tiên check-in<br>
+                            - Quà tặng đặc biệt<br>
+                            - Chụp ảnh riêng với nghệ sĩ
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-primary">1,500,000₫</span>
+                            <a href="@Url.Action("BookTicket", "Ticket", new { type = "vip" })" class="btn-primary">Đặt vé</a>
+                        </div>
+                    </div>
+                    <div class="ticket-card">
+                        <h3 class="text-xl font-bold mb-2">Vé Thường</h3>
+                        <p class="text-gray-600 mb-4">
+                            - Ghế ngồi thường<br>
+                            - Quà tặng tiêu chuẩn<br>
+                            - Chụp ảnh chung
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-primary">800,000₫</span>
+                            <a href="@Url.Action("BookTicket", "Ticket", new { type = "regular" })" class="btn-primary">Đặt vé</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Event Description -->
+        <div class="mt-12">
+            <h2 class="section-title">Mô tả sự kiện</h2>
+            <div class="prose max-w-none">
+                <p class="text-gray-600">
+                    JSOL Fan Meeting 2024 là sự kiện gặp gỡ và giao lưu đặc biệt giữa nghệ sĩ JSOL và người hâm mộ.
+                    Chương trình sẽ mang đến những khoảnh khắc đáng nhớ với các tiết mục biểu diễn độc đáo,
+                    giao lưu trực tiếp và nhiều hoạt động thú vị khác.
+                </p>
+            </div>
+        </div>
+        <!-- Event Rules -->
+        <div class="mt-12">
+            <h2 class="section-title">Quy định chung</h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                <li>Vé không được đổi hoặc trả lại sau khi mua</li>
+                <li>Vui lòng đến trước giờ diễn 30 phút để check-in</li>
+                <li>Không sử dụng thiết bị ghi hình chuyên nghiệp</li>
+                <li>Tuân thủ hướng dẫn của ban tổ chức trong suốt chương trình</li>
+            </ul>
+        </div>
+    </div>
+</div>
