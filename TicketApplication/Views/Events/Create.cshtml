@@ -1,0 +1,73 @@
+﻿@model TicketApplication.Models.Event
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Event</h4>
+<hr />
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mt-2">
+                <label asp-for="Title" class="control-label fw-bold"></label>
+                <textarea asp-for="Title" class="form-control" rows="1"></textarea>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Description" class="control-label fw-bold"></label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Location" class="control-label fw-bold"></label>
+                <textarea asp-for="Location" class="form-control" rows="1"></textarea>
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Date" class="control-label fw-bold"></label>
+                <textarea asp-for="Date" class="form-control" rows="1"></textarea>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <label asp-for="Image" class="control-label fw-bold"></label>
+                <input type="text" id="ImageUrl" asp-for="Image" class="form-control" placeholder="Enter image URL" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+                <img id="ImagePreview" src="#" alt="Image Preview" style="display:none; width: 50%; margin-top: 10px;" class="img-thumbnail" />
+            </div>
+
+            <div class="form-group mt-2">
+                <input type="submit" value="Create" class="btn btn-primary fw-bold" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+<div class="">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('ImageUrl').addEventListener('input', function (event) {
+            const imagePreview = document.getElementById('ImagePreview');
+            const url = event.target.value;
+
+            if (url) {
+                imagePreview.src = url;
+                imagePreview.style.display = 'block'; // Show the preview
+            } else {
+                imagePreview.src = '#';
+                imagePreview.style.display = 'none'; // Hide the preview
+            }
+        });
+    </script>
+}

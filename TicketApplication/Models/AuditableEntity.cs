@@ -10,7 +10,7 @@ namespace TicketApplication.Models
         [Key]
         public string Id { get; set; } = GenerateShortId();
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; }
 
         public string? CreatedBy { get; set; } 
 

@@ -1,4 +1,4 @@
-
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
@@ -17,18 +17,13 @@ namespace TicketApplication.Models
 
         [Required]
         public string Date { get; set; }
-     
-        [Required]
-        public string Price { get; set; }
 
-        
-        public int NumberOfTickets { get; set; } 
-
+        public string? Status { get; set; } = "Visible";
 
         public string? Image { get; set; }
+        
 
-
-       public virtual ICollection<Ticket>? Tickets { get; set; }
+        public virtual ICollection<Zone>? Zones { get; set; }
 
     }
 }
