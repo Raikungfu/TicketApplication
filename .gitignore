@@ -1,0 +1,68 @@
+# Ignore Visual Studio temporary files, build results, and
+# common project files
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+# Ignore build results
+bin/
+obj/
+Debug/
+Release/
+
+# Ignore NuGet packages
+packages/
+*.nupkg
+# Uncomment if you have NuGet packages that are not stored in source control
+# **/packages/*
+
+# Ignore build logs
+*.log
+
+# Ignore .NET Core tooling
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Ignore Roslyn generated files
+Generated_Code/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code settings
+.vscode/
+*.code-workspace
+
+# DotNet user-specific and temp files
+*.vspscc
+*.vssscc
+TestResults/
+*.TestResults
+
+# Rider settings
+.idea/
+*.idea/
+
+# MacOS generated files
+.DS_Store
+
+# Ignore secrets files
+appsettings.*.json
+appsettings.Development.json
+
+# Ignore coverage files
+coverage/
+
+# Ignore Resharper files
+_ReSharper*
+.vs/
