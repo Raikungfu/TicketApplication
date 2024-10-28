@@ -12,7 +12,7 @@ namespace TicketApplication.Models
         public int Quantity { get; set; }
         public string? Zone { get; set; }
         public string? Image { get; set; }
-        public Event? Event { get; set; }
+        public virtual Event? Events { get; set; }
 
         public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
         public virtual ICollection<Cart>? Carts { get; set; }
