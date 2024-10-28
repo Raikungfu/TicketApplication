@@ -22,7 +22,6 @@ namespace TicketApplication.Models
         public string? Image { get; set; }
 
 
-        public virtual ICollection<Zone>? Zones { get; set; }
         public virtual ICollection<Ticket>? Tickets { get; set; }
 
     }

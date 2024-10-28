@@ -526,9 +526,6 @@ namespace TicketApplication.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EventId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -543,8 +540,6 @@ namespace TicketApplication.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EventId");
 
                     b.ToTable("Zones");
                 });
@@ -679,18 +674,9 @@ namespace TicketApplication.Data.Migrations
                     b.Navigation("Zone");
                 });
 
-            modelBuilder.Entity("TicketApplication.Models.Zone", b =>
-                {
-                    b.HasOne("TicketApplication.Models.Event", null)
-                        .WithMany("Zones")
-                        .HasForeignKey("EventId");
-                });
-
             modelBuilder.Entity("TicketApplication.Models.Event", b =>
                 {
                     b.Navigation("Tickets");
-
-                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>
