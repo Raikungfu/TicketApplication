@@ -16,7 +16,7 @@ namespace TicketApplication.Models
         public string Location { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
      
 
         public string? Image { get; set; }
