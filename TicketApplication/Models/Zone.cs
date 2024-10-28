@@ -14,8 +14,10 @@ namespace TicketApplication.Models
 
         [Required]
         public int AvailableTickets { get; set; }
-        public int EventId { get; set; }
+        public string EventId { get; set; }
         public virtual Event Event { get; set; }
+
+        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 
 }
