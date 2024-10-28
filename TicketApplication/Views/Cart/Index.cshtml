@@ -1,4 +1,4 @@
-﻿@model List<CartItem>
+﻿@model List<Cart>
 
 <div class="container mt-5 mh-100">
     <h2>Giỏ hàng của bạn</h2>
@@ -13,23 +13,27 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @if(Model != null && Model.Count > 0)
             {
-                <tr>
-                    <td>
-                        <img src="@item.ImageUrl" alt="Product Image" style="width: 50px; height: 50px;">
-                        <span>@item.Name</span>
-                    </td>
-                    <td>@item.Price.ToString("N0") đ</td>
-                    <td>
-                        <input type="number" value="@item.Quantity" min="1" class="form-control" style="width: 70px;">
-                    </td>
-                    <td>@item.Total.ToString("N0") đ</td>
-                    <td>
-                        <button class="btn btn-danger">Xóa</button>
-                    </td>
-                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.Ticket.Image" alt="Product Image" style="width: 50px; height: 50px;">
+                            <span>@item.</span>
+                        </td>
+                        <td>@item.Ticket.Price.ToString("N0") đ</td>
+                        <td>
+                            <input type="number" value="@item.Quantity" min="1" class="form-control" style="width: 70px;">
+                        </td>
+                        <td>@item.TotalPrice.ToString("N0") đ</td>
+                        <td>
+                            <button class="btn btn-danger">Xóa</button>
+                        </td>
+                    </tr>
+                }
             }
+            
         </tbody>
     </table>
 
@@ -37,7 +41,7 @@
         <div class="col-md-4 offset-md-8">
             <h4 class="d-flex justify-content-between">
                 <span>Tổng:</span>
-                <strong>@Model.Sum(i => i.Total).ToString("N0") đ</strong>
+                <strong>@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
             </h4>
             <button class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
         </div>

@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using TicketApplication.Data;
 using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
@@ -6,16 +9,23 @@ namespace TicketApplication.Controllers
     public class CartController : Controller
     {
 
-        public CartController()
+        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
+
+        public CartController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
+            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var cart = new List<CartItem>
-            {
-                new CartItem { Name = "JSOL Fan Meeting 2024 – FM CHÁY SON", Price = 888000, Quantity = 1, ImageUrl = "/path/to/image.jpg" }
-            };
+            var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (claimId == null) {
+                return Unauthorized("Người dùng chưa đăng nhập"); 
+            }
+
+            var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(x => x.Ticket).ToListAsync();
 
             return View(cart);
         }

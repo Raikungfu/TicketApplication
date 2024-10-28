@@ -2,8 +2,8 @@
 {
     public class ShoppingCart
     {
-        public List<CartItem> Items { get; set; } = new List<CartItem>();
-        public decimal Total => Items.Sum(item => item.Price * item.Quantity);
+        public List<Cart> Items { get; set; } = new List<Cart>();
+        public decimal Total => Items.Sum(item => item.Ticket.Price * item.Quantity);
     }
 
 }

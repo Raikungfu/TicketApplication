@@ -10,5 +10,7 @@
 
         public virtual Ticket? Ticket { get; set; }
         public virtual User? User { get; set; }
+
+        public decimal TotalPrice => Ticket.Price * Quantity;
     }
 }

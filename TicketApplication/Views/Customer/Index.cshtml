@@ -1,128 +1,80 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    ViewData["Title"] = "My Account - VieShop Ticket";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-            margin: 0;
-        }
-
-        /* Left navigation panel */
-        .nav-panel {
-            width: 30%;
-            background-color: #f8f8f8;
-            padding: 20px;
-            border-right: 1px solid #ccc;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-            .nav-panel a {
-                display: block;
-                padding: 10px;
-                text-decoration: none;
-                color: #333;
-                font-size: 16px;
-                cursor: pointer;
-            }
-
-                .nav-panel a:hover, .nav-panel a.active {
-                    background-color: #e0e0e0;
-                    color: #000;
-                }
-
-        /* Right content panel */
-        .content-panel {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .content-section {
-            display: none;
-        }
-
-            .content-section.active {
-                display: block;
-            }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://s01.appfast.me/vieshop/2024/09/icon-100x100.png" sizes="32x32" />
+    <title>@ViewData["Title"]</title>
 </head>
 <body>
+    <header class="bg-light p-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="https://ticket.vieshop.vn/" class="navbar-brand">
+                    <img src="https://s01.appfast.me/vieshop/2024/09/logo-2.png" alt="VieShop Ticket" width="150" height="53">
+                </a>
+                <nav>
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/cart">Your Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/my-account">My Account</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
 
-    <div class="nav-panel">
-        <a onclick="showContent('account')">Trang tài khoản</a>
-        <a onclick="showContent('orders')">Đơn hàng</a>
-        <a onclick="showContent('downloads')">Tải xuống</a>
-        <a onclick="showContent('address')">Địa chỉ</a>
-        <a onclick="showContent('profile')" class="active">Tài khoản</a>
-        <a onclick="showContent('logout')">Đăng xuất</a>
-    </div>
+    <main class="container mt-4">
+        <h1 class="mb-4">My Account</h1>
+        <div class="woocommerce">
+            <nav class="woocommerce-MyAccount-navigation" aria-label="Account Navigation">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/my-account">Account Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-account/orders">Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-account/downloads">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-account/edit-address">Addresses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-account/edit-account">Account Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-account/customer-logout">Logout</a>
+                    </li>
+                </ul>
+            </nav>
 
-    <div class="content-panel">
-        <div id="account" class="content-section">
-            <h2>Trang tài khoản</h2>
-            <p>Nội dung của trang tài khoản.</p>
-        </div>
-        <div id="orders" class="content-section">
-            <h2>Đơn hàng</h2>
-            <p>Nội dung của đơn hàng.</p>
-        </div>
-        <div id="downloads" class="content-section">
-            <h2>Tải xuống</h2>
-            <p>Nội dung của mục tải xuống.</p>
-        </div>
-        <div id="address" class="content-section">
-            <h2>Địa chỉ</h2>
-            <p>Nội dung của địa chỉ.</p>
-        </div>
-        <div id="profile" class="content-section active">
-            <h2>Tài khoản</h2>
-            <form action="" method="post">
+            <div class="woocommerce-MyAccount-content mt-4">
+                <div class="woocommerce-notices-wrapper"></div>
                 <p>
-                    <label for="account_first_name">Tên:</label>
-                    <input type="text" id="account_first_name" name="account_first_name" value="">
+                    Hello <strong>@User .Identity.Name</strong>! (Not your account? <a href="/my-account/customer-logout">Logout</a> and log in with your account)
                 </p>
                 <p>
-                    <label for="account_last_name">Họ:</label>
-                    <input type="text" id="account_last_name" name="account_last_name" value="">
+                    From your account dashboard, you can view your <a href="/my-account/orders">recent orders</a>, manage your <a href="/my-account/edit-address">shipping and billing addresses</a>, and <a href="/my-account/edit-account">edit your password and account details</a>.
                 </p>
-                <p>
-                    <label for="account_display_name">Tên hiển thị:</label>
-                    <input type="text" id="account_display_name" name="account_display_name" value="raikungfu@gmail.com">
-                </p>
-                <p>
-                    <label for="account_email">Địa chỉ email:</label>
-                    <input type="email" id="account_email" name="account_email" value="raikungfu@gmail.com">
-                </p>
-                <fieldset>
-                    <legend>Thay đổi mật khẩu</legend>
-                    <p>
-                        <label for="password_current">Mật khẩu hiện tại:</label>
-                        <input type="password" id="password_current" name="password_current">
-                    </p>
-                    <p>
-                        <label for="password_new">Mật khẩu mới:</label>
-                        <input type="password" id="password_new" name="password_new">
-                    </p>
-                    <p>
-                        <label for="password_confirm">Xác nhận mật khẩu mới:</label>
-                        <input type="password" id="password_confirm" name="password_confirm">
-                    </p>
-                </fieldset>
-                <button type="submit">Lưu thay đổi</button>
-            </form>
+            </div>
         </div>
-        <div id="logout" class="content-section">
-            <h2>Đăng xuất</h2>
-            <p>Bạn có chắc chắn muốn đăng xuất?</p>
+    </main>
+
+    <footer class="bg-light text-center p-3 mt-4">
+        <div class="container">
+            <p>© 2024 - All rights reserved by <strong>VieSHOP</strong></p>
+            <p>Business registration certificate number 0316124114 issued by the Department of Planning and Investment of Ho Chi Minh City on January 20, 2020</p>
         </div>
-    </div>
+    </footer>
 
     <script>
         function showContent(sectionId) {
@@ -141,6 +93,5 @@
             event.target.classList.add('active');
         }
     </script>
-
 </body>
 </html>
