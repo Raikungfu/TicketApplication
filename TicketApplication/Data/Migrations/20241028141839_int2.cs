@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TicketApplication.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class int1 : Migration
+    public partial class int2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,6 +34,26 @@ namespace TicketApplication.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Events",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Events", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -55,17 +75,14 @@ namespace TicketApplication.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkShops",
+                name: "Zones",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NumberOfTickets = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AvailableTickets = table.Column<int>(type: "int", nullable: false),
+                    EventId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -73,7 +90,12 @@ namespace TicketApplication.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkShops", x => x.Id);
+                    table.PrimaryKey("PK_Zones", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Zones_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -109,10 +131,7 @@ namespace TicketApplication.Data.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EventId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Zone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ZoneId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -122,9 +141,15 @@ namespace TicketApplication.Data.Migrations
                 {
                     table.PrimaryKey("PK_Tickets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_WorkShops_EventId",
+                        name: "FK_Tickets_Events_EventId",
                         column: x => x.EventId,
-                        principalTable: "WorkShops",
+                        principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tickets_Zones_ZoneId",
+                        column: x => x.ZoneId,
+                        principalTable: "Zones",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -230,6 +255,16 @@ namespace TicketApplication.Data.Migrations
                 name: "IX_Tickets_EventId",
                 table: "Tickets",
                 column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_ZoneId",
+                table: "Tickets",
+                column: "ZoneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Zones_EventId",
+                table: "Zones",
+                column: "EventId");
         }
 
         /// <inheritdoc />
@@ -254,10 +289,13 @@ namespace TicketApplication.Data.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "WorkShops");
+                name: "Zones");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Events");
         }
     }
 }

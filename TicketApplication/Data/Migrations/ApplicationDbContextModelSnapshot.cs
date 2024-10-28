@@ -17,7 +17,7 @@ namespace TicketApplication.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -318,20 +318,13 @@ namespace TicketApplication.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NumberOfTickets")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("WorkShops");
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>
@@ -449,20 +442,11 @@ namespace TicketApplication.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -471,12 +455,15 @@ namespace TicketApplication.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Zone")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ZoneId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("Tickets");
                 });
@@ -523,6 +510,43 @@ namespace TicketApplication.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TicketApplication.Models.Zone", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AvailableTickets")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Zones");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -644,12 +668,29 @@ namespace TicketApplication.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TicketApplication.Models.Zone", "Zone")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Event");
+
+                    b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("TicketApplication.Models.Zone", b =>
+                {
+                    b.HasOne("TicketApplication.Models.Event", null)
+                        .WithMany("Zones")
+                        .HasForeignKey("EventId");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Event", b =>
                 {
                     b.Navigation("Tickets");
+
+                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>
@@ -671,6 +712,11 @@ namespace TicketApplication.Data.Migrations
                     b.Navigation("Carts");
 
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("TicketApplication.Models.Zone", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

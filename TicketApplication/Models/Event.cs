@@ -1,4 +1,4 @@
-
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
@@ -23,6 +23,7 @@ namespace TicketApplication.Models
 
 
         public virtual ICollection<Zone>? Zones { get; set; }
+        public virtual ICollection<Ticket>? Tickets { get; set; }
 
     }
 }
