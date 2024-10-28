@@ -303,3 +303,9 @@ D:\Jobs\Ticket\TicketApplication\obj\Debug\net8.0\refint\TicketApplication.dll
 D:\Jobs\Ticket\TicketApplication\obj\Debug\net8.0\TicketApplication.pdb
 D:\Jobs\Ticket\TicketApplication\obj\Debug\net8.0\TicketApplication.genruntimeconfig.cache
 D:\Jobs\Ticket\TicketApplication\obj\Debug\net8.0\ref\TicketApplication.dll
+C:\Users\Raiku\source\repos\TicketApplication\TicketApplication\bin\Debug\net8.0\Microsoft.Extensions.Caching.Memory.dll
+C:\Users\Raiku\source\repos\TicketApplication\TicketApplication\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\Raiku\source\repos\TicketApplication\TicketApplication\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Raiku\source\repos\TicketApplication\TicketApplication\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
+C:\Users\Raiku\source\repos\TicketApplication\TicketApplication\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Raiku\source\repos\TicketApplication\TicketApplication\obj\Debug\net8.0\TicketApplication.sourcelink.json

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Jobs\\Ticket\\TicketApplication\\TicketApplication.csproj": {}
+    "C:\\Users\\Raiku\\source\\repos\\TicketApplication\\TicketApplication\\TicketApplication.csproj": {}
   },
   "projects": {
-    "D:\\Jobs\\Ticket\\TicketApplication\\TicketApplication.csproj": {
+    "C:\\Users\\Raiku\\source\\repos\\TicketApplication\\TicketApplication\\TicketApplication.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Jobs\\Ticket\\TicketApplication\\TicketApplication.csproj",
+        "projectUniqueName": "C:\\Users\\Raiku\\source\\repos\\TicketApplication\\TicketApplication\\TicketApplication.csproj",
         "projectName": "TicketApplication",
-        "projectPath": "D:\\Jobs\\Ticket\\TicketApplication\\TicketApplication.csproj",
-        "packagesPath": "C:\\Users\\truon\\.nuget\\packages\\",
-        "outputPath": "D:\\Jobs\\Ticket\\TicketApplication\\obj\\",
+        "projectPath": "C:\\Users\\Raiku\\source\\repos\\TicketApplication\\TicketApplication\\TicketApplication.csproj",
+        "packagesPath": "C:\\Users\\Raiku\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Raiku\\source\\repos\\TicketApplication\\TicketApplication\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\truon\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Raiku\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -71,8 +71,10 @@
               "version": "[8.0.7, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.7, )"
+              "version": "[8.0.10, )"
             }
           },
           "imports": [
@@ -94,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
