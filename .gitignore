@@ -360,43 +360,43 @@ MigrationBackup/
 FodyWeavers.xsd
 
 .vs/
-ClothesStoreMobileApplication/bin/
-ClothesStoreMobileApplication/obj/
-ClothesStoreMobileApplication/*.user
-ClothesStoreMobileApplication/*.suo
-ClothesStoreMobileApplication/*.ncb
-ClothesStoreMobileApplication/*.sdf
-ClothesStoreMobileApplication/*.vssscc
-ClothesStoreMobileApplication/.vscode/
-ClothesStoreMobileApplication/*.csproj.user
-ClothesStoreMobileApplication/*.csproj.suo
-ClothesStoreMobileApplication/*.csproj.*
-ClothesStoreMobileApplication/*.sln.docstates
-ClothesStoreMobileApplication/*.dbmdl
-ClothesStoreMobileApplication/*.bak
-ClothesStoreMobileApplication/*.log
-ClothesStoreMobileApplication/*.tmp
-ClothesStoreMobileApplication/*.swp
-ClothesStoreMobileApplication/*.json
+TicketApplication/bin/
+TicketApplication/obj/
+TicketApplication/*.user
+TicketApplication/*.suo
+TicketApplication/*.ncb
+TicketApplication/*.sdf
+TicketApplication/*.vssscc
+TicketApplication/.vscode/
+TicketApplication/*.csproj.user
+TicketApplication/*.csproj.suo
+TicketApplication/*.csproj.*
+TicketApplication/*.sln.docstates
+TicketApplication/*.dbmdl
+TicketApplication/*.bak
+TicketApplication/*.log
+TicketApplication/*.tmp
+TicketApplication/*.swp
+TicketApplication/*.json
 
 # Bỏ qua các tệp nhị phân của dự án và build trong thư mục ClothesStoreMobileApplication
-ClothesStoreMobileApplication/*.dll
-ClothesStoreMobileApplication/*.exe
-ClothesStoreMobileApplication/*.pdb
-ClothesStoreMobileApplication/*.cache
-ClothesStoreMobileApplication/*.aspnetcompiler
-ClothesStoreMobileApplication/*.jfm
-ClothesStoreMobileApplication/*.js
-ClothesStoreMobileApplication/*.css
-ClothesStoreMobileApplication/*.map
+TicketApplication/*.dll
+TicketApplication/*.exe
+TicketApplication/*.pdb
+TicketApplication/*.cache
+TicketApplication/*.aspnetcompiler
+TicketApplication/*.jfm
+TicketApplication/*.js
+TicketApplication/*.css
+TicketApplication/*.map
 
 # Bỏ qua các tệp của ASP.NET trong thư mục ClothesStoreMobileApplication
-ClothesStoreMobileApplication/project.lock.json
-ClothesStoreMobileApplication/project.fragment.lock.json
-ClothesStoreMobileApplication/artifacts/
+TicketApplication/project.lock.json
+TicketApplication/project.fragment.lock.json
+TicketApplication/artifacts/
 
 # Bỏ qua các tệp của Visual Studio Code trong thư mục ClothesStoreMobileApplication
-ClothesStoreMobileApplication/.vscode/
+TicketApplication/.vscode/
 
 # Bỏ qua các thư mục và tệp hệ thống
 *.DS_Store
