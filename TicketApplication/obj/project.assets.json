@@ -5889,19 +5889,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\truon\\.nuget\\packages\\": {}
+    "C:\\Users\\DELL\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Jobs\\Ticket\\TicketApplication\\TicketApplication.csproj",
+      "projectUniqueName": "E:\\FPT\\EXE-Workshopticket\\TicketApplication\\TicketApplication\\TicketApplication.csproj",
       "projectName": "TicketApplication",
-      "projectPath": "D:\\Jobs\\Ticket\\TicketApplication\\TicketApplication.csproj",
-      "packagesPath": "C:\\Users\\truon\\.nuget\\packages\\",
-      "outputPath": "D:\\Jobs\\Ticket\\TicketApplication\\obj\\",
+      "projectPath": "E:\\FPT\\EXE-Workshopticket\\TicketApplication\\TicketApplication\\TicketApplication.csproj",
+      "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+      "outputPath": "E:\\FPT\\EXE-Workshopticket\\TicketApplication\\TicketApplication\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\truon\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5981,7 +5981,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

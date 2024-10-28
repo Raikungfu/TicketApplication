@@ -16,19 +16,13 @@ namespace TicketApplication.Models
         public string Location { get; set; }
 
         [Required]
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
      
-        [Required]
-        public string Price { get; set; }
-
-        
-        public int NumberOfTickets { get; set; } 
-
 
         public string? Image { get; set; }
 
 
-       public virtual ICollection<Ticket>? Tickets { get; set; }
+       public virtual ICollection<Zone>? Zones { get; set; }
 
     }
 }
