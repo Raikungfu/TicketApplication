@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TicketApplication.Data;
@@ -6,6 +7,7 @@ using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
 {
+    [AllowAnonymous]
     public class CartController : Controller
     {
 
@@ -18,6 +20,7 @@ namespace TicketApplication.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Index()
         {
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
