@@ -4,9 +4,7 @@ namespace TicketApplication.Models
 {
     public class Zone : AuditableEntity
     {
-        [Key]
-        public int ZoneId { get; set; }
-
+      
         [Required]
         public string Name { get; set; }
 
