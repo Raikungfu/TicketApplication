@@ -18,11 +18,12 @@ namespace TicketApplication.Models
         [Required]
         public string Date { get; set; }
 
+        public string? Status { get; set; } = "Visible";
 
         public string? Image { get; set; }
+        
 
-
-        public virtual ICollection<Ticket>? Tickets { get; set; }
+        public virtual ICollection<Zone>? Zones { get; set; }
 
     }
 }

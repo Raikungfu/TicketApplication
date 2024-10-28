@@ -22,7 +22,7 @@ namespace TicketApplication.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Events.Include(x => x.Tickets).ToListAsync());
+            return View(await _context.Events.Include(e => e.Zones).ToListAsync());
         }
 
         // GET: Events/Details/5
@@ -33,7 +33,7 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events
+            var @event = await _context.Events.Include(e => e.Zones)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@event == null)
             {

@@ -28,7 +28,13 @@
                 <input asp-for="AvailableTickets" class="form-control" />
                 <span asp-validation-for="AvailableTickets" class="text-danger"></span>
             </div>
-         
+            <div class="form-group">
+                <label for="EventId" class="control-label">Event</label>
+                <select asp-for="EventId" class="form-control" asp-items="ViewBag.EventId" required>
+                    <option value="">Select an Event</option>
+                </select>
+                <span asp-validation-for="EventId" class="text-danger"></span>
+            </div>
             <div class="form-group mt-2">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

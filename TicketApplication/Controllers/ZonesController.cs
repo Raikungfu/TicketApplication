@@ -22,7 +22,7 @@ namespace TicketApplication.Controllers
         // GET: Zones
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Zones.ToListAsync());
+            return View(await _context.Zones.Include(z => z.Event).AsNoTracking().ToListAsync());
         }
 
         // GET: Zones/Details/5
@@ -33,7 +33,7 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var zone = await _context.Zones
+            var zone = await _context.Zones.Include(z => z.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (zone == null)
             {
@@ -46,6 +46,8 @@ namespace TicketApplication.Controllers
         // GET: Zones/Create
         public IActionResult Create()
         {
+            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
+
             return View();
         }
 
@@ -54,7 +56,7 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,AvailableTickets")] Zone zone)
+        public async Task<IActionResult> Create([Bind("Name,Price,AvailableTickets,EventId")] Zone zone)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +75,7 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
             var zone = await _context.Zones.FindAsync(id);
             if (zone == null)
             {
@@ -87,7 +89,7 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,AvailableTickets,Id")] Zone zone)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,AvailableTickets,EventId,Id")] Zone zone)
         {
             if (id != zone.Id)
             {
@@ -102,6 +104,7 @@ namespace TicketApplication.Controllers
                     zoneToEdit.Name = zone.Name;
                     zoneToEdit.Price = zone.Price;
                     zoneToEdit.AvailableTickets = zone.AvailableTickets;
+                    zoneToEdit.EventId = zone.EventId;
 
                     _context.Entry(zoneToEdit).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
