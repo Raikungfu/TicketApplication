@@ -22,7 +22,7 @@ namespace TicketApplication.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Tickets.Include(t => t.Event).Include(t => t.Zone);
+            var applicationDbContext = _context.Tickets.Include(t => t.Zone);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -35,7 +35,8 @@ namespace TicketApplication.Controllers
             }
 
             var ticket = await _context.Tickets
-                .Include(t => t.Event)
+                
+
                 .Include(t => t.Zone)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
@@ -75,7 +76,7 @@ namespace TicketApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
+            //ViewData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
             ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Id", ticket.ZoneId);
             
             return View(ticket);
@@ -89,12 +90,12 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(t => t.Event).Include(t => t.Zone).FirstOrDefaultAsync(m => m.Id == id);
+            var ticket = await _context.Tickets.Include(t => t.Zone).FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
                 return NotFound();
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", ticket.Event.Title);
+            //ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", ticket.Event.Title);
             ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Name", ticket.Zone.Name);
             var statuses = new List<SelectListItem>
     {
@@ -124,7 +125,7 @@ namespace TicketApplication.Controllers
                     var ticketToEdit = _context.Tickets.Find(id);
                     ticketToEdit.Title = ticket.Title;
                     ticketToEdit.Description = ticket.Description;
-                    ticketToEdit.EventId = ticket.EventId;
+                    //ticketToEdit.EventId = ticket.EventId;
                     ticketToEdit.Status = ticket.Status;
                     ticketToEdit.ZoneId = ticket.ZoneId;
 
@@ -144,7 +145,7 @@ namespace TicketApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
+            //ViewData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
             ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Id", ticket.ZoneId);
             return View(ticket);
         }
@@ -158,7 +159,6 @@ namespace TicketApplication.Controllers
             }
 
             var ticket = await _context.Tickets
-                .Include(t => t.Event)
                 .Include(t => t.Zone)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)

@@ -239,7 +239,7 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Discount", b =>
@@ -283,7 +283,7 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Event", b =>
@@ -318,13 +318,16 @@ namespace TicketApplication.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>
@@ -358,7 +361,7 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.OrderDetail", b =>
@@ -382,7 +385,7 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Payment", b =>
@@ -421,7 +424,7 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Ticket", b =>
@@ -437,10 +440,6 @@ namespace TicketApplication.Data.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EventId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -461,11 +460,9 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
-
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.User", b =>
@@ -509,7 +506,7 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Zone", b =>
@@ -526,6 +523,10 @@ namespace TicketApplication.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EventId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -541,7 +542,9 @@ namespace TicketApplication.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Zones");
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Zones", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -657,26 +660,29 @@ namespace TicketApplication.Data.Migrations
 
             modelBuilder.Entity("TicketApplication.Models.Ticket", b =>
                 {
-                    b.HasOne("TicketApplication.Models.Event", "Event")
-                        .WithMany("Tickets")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TicketApplication.Models.Zone", "Zone")
                         .WithMany("Tickets")
                         .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
-
                     b.Navigation("Zone");
+                });
+
+            modelBuilder.Entity("TicketApplication.Models.Zone", b =>
+                {
+                    b.HasOne("TicketApplication.Models.Event", "Event")
+                        .WithMany("Zones")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Event", b =>
                 {
-                    b.Navigation("Tickets");
+                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>

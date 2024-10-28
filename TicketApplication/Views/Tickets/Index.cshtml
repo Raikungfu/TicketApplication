@@ -28,9 +28,9 @@
             <th>
                 Available Tickets
             </th>
-            <th>
+          @*   <th>
                 @Html.DisplayNameFor(model => model.First().Event)
-            </th>
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.First().CreatedAt)
             </th>
@@ -56,9 +56,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Zone.AvailableTickets)
                 </td>
-                <td>
+               @*  <td>
                     @Html.DisplayFor(modelItem => item.Event.Title)
-                </td>
+                </td> *@
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedAt)
                 </td>
