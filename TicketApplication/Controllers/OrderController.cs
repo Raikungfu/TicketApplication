@@ -7,7 +7,7 @@ using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -28,13 +28,13 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.OrderDetails).ThenInclude(y => y.Zone).ToListAsync();
+            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ToListAsync();
 
             return View(orders);
         }
 
-        [Authorize(Roles = "Customer")]
-        public IActionResult Checkout(List<int> quantities)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> IndexAdmin()
         {
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (claimId == null)
@@ -42,34 +42,66 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var cartItems = _context.Carts.ToList();
+            var orders = await _context.Orders.Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ToListAsync();
+
+            return View(orders);
+        }
+
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> Checkout(List<int> quantities)
+        {
+            var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (claimId == null)
+            {
+                return Unauthorized("Người dùng chưa đăng nhập");
+            }
+
+            var cartItems = await _context.Carts
+                .Where(c => c.UserId == claimId)
+                .Include(c => c.Zone)
+                .ThenInclude(z => z.Event)
+                .ToListAsync();
+
+            if (!cartItems.Any())
+            {
+                return BadRequest("Giỏ hàng trống");
+            }
+
             var order = new Order
             {
                 UserId = claimId,
                 Status = "Pending",
-                TotalAmount = 0
+                TotalAmount = 0,
+                OrderDetails = new List<OrderDetail>()
             };
-            
+
             foreach (var item in cartItems)
             {
+                var ticket = new Ticket
+                {
+                    Title = item.Zone.Event.Title,
+                    Description = item.Zone.Name,
+                    ZoneId = item.ZoneId,
+                    Status = "Available",
+                };
+                await _context.Tickets.AddAsync(ticket);
+
                 var orderDetail = new OrderDetail
                 {
-                    OrderId = order.Id,
-                    ZoneId = item.Zone.Id,
+                    TicketId = ticket.Id,
                     Quantity = item.Quantity,
                     UnitPrice = item.Zone.Price,
                     TotalPrice = item.Zone.Price * item.Quantity
                 };
-
                 order.TotalAmount += orderDetail.TotalPrice;
                 order.OrderDetails.Add(orderDetail);
             }
 
-            _context.Orders.Add(order);
-            _context.SaveChanges();
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
 
             _context.Carts.RemoveRange(cartItems);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Success");
         }
