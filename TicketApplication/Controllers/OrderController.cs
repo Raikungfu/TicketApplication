@@ -57,8 +57,8 @@ namespace TicketApplication.Controllers
                     OrderId = order.Id,
                     TicketId = item.Ticket.Id,
                     Quantity = item.Quantity,
-                    UnitPrice = item.Ticket.Price,
-                    TotalPrice = item.Ticket.Price * item.Quantity
+                    UnitPrice = item.Ticket.Zone.Price,
+                    TotalPrice = item.Ticket.Zone.Price * item.Quantity
                 };
 
                 order.TotalAmount += orderDetail.TotalPrice;
