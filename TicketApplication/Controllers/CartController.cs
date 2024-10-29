@@ -44,7 +44,7 @@ namespace TicketApplication.Controllers
                 _context.Carts.Remove(cartItem);
                 _context.SaveChanges();
 
-                return Ok();
+                return Ok(new { success = true, message = "Remove success" });
             }
 
             return NotFound();
@@ -59,7 +59,7 @@ namespace TicketApplication.Controllers
             {
                 cartItem.Quantity = model.Quantity;
                 _context.SaveChanges();
-                return Ok();
+                return Ok(new { success = true, message = "Update quantity success" });
             }
 
             return NotFound();
