@@ -14,7 +14,7 @@
             <hr />
             <div class="row justify-content-center">
                 <div class="col-md-10">
-                    <form asp-action="Create">
+                    <form asp-action="Create" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-3">
@@ -42,9 +42,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Image" class="form-label fw-bold"></label>
-                            <input type="text" id="ImageUrl" asp-for="Image" class="form-control" placeholder="Enter image URL" />
-                            <span asp-validation-for="Image" class="text-danger"></span>
+                            <label asp-for="ImageFile" class="form-label fw-bold"></label>
+                            <input id="ImageUrl" asp-for="ImageFile" type="file" name="ImageFile" accept="image/*" required />
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
                             <div class="mt-3 text-center">
                                 <img id="ImagePreview" src="#" alt="Image Preview" class="img-thumbnail" style="display:none; max-width: 100%; height: auto;" />
                             </div>
