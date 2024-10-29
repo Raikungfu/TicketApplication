@@ -191,12 +191,12 @@
             });
 
             const result = await response.json();
-            alert(result.message); // Hiển thị thông báo
-
-            if (result.success) window.location.href = "/";
+            alert(result.message);
+            if (!result.success) {
+                showNotification(result.message, "danger");
+            }
         });
 
-        // Gửi yêu cầu đăng ký
         registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const formData = new FormData(registerForm);
@@ -206,8 +206,13 @@
             });
 
             const result = await response.json();
-            alert(result.message); // Hiển thị thông báo
-            if (result.success) window.location.href = "/";
+            if (!result.success) {
+                showNotification(result.message, "danger");
+            } else {
+                showNotification(result.message, "success");
+                registerPopup.classList.add("d-none");
+                openPopup(loginPopup);
+            }
         });
     });
 </script>
