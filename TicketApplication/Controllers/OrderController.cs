@@ -59,7 +59,7 @@ namespace TicketApplication.Controllers
         }
 
         [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> Checkout(List<int> quantities)
+        public async Task<IActionResult> Checkout(string paymentMethod)
         {
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (claimId == null)
