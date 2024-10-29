@@ -22,7 +22,6 @@ namespace TicketApplication.Models
         public string? Status { get; set; } = "Visible";
 
         public string? Image { get; set; }
-
         [NotMapped]
         public IFormFile ImageFile { get; set; }
 
@@ -30,7 +29,7 @@ namespace TicketApplication.Models
         public decimal MaxTicketPrice => Tickets?.Any() == true ? Zones.Max(zone => zone.Price) : 0;
 
         [NotMapped]
-        public decimal MinTicketPrice => Tickets?.Any() == true ? Zones.Min(zone => zone.Price) : 0;
+        public decimal MinTicketPrice => Zones?.Any() == true ? Zones.Min(zone => zone.Price) : 0;
 
         public virtual ICollection<Ticket>? Tickets { get; set; }
 
