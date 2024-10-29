@@ -28,7 +28,7 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập"); 
             }
 
-            var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(x => x.Zone).ToListAsync();
+            var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(x => x.Zone).ThenInclude(y => y.Event).ToListAsync();
 
             return View(cart);
         }
@@ -94,7 +94,6 @@ namespace TicketApplication.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-
 
     }
 

@@ -41,6 +41,14 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
+            if (DateTime.TryParse(eventDetail.Date, out var parsedDate))
+            {
+                ViewBag.FormattedDate = parsedDate.ToString("dddd, HH:mm - dd/MM/yyyy");
+            }
+            else
+            {
+                ViewBag.FormattedDate = eventDetail.Date; 
+            }
 
             return View("EventDetail", eventDetail);
         }
