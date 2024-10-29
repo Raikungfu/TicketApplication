@@ -27,10 +27,10 @@ namespace TicketApplication.Models
         public IFormFile ImageFile { get; set; }
 
         [NotMapped]
-        public decimal MaxTicketPrice => Tickets?.Any() == true ? Zones.Max(zone => zone.Price) : 0;
+        public decimal MaxTicketPrice => Zones?.Any() == true ? Zones.Max(zone => zone.Price) : 0;
 
         [NotMapped]
-        public decimal MinTicketPrice => Tickets?.Any() == true ? Zones.Min(zone => zone.Price) : 0;
+        public decimal MinTicketPrice => Zones?.Any() == true ? Zones.Min(zone => zone.Price) : 0;
 
         public virtual ICollection<Ticket>? Tickets { get; set; }
 

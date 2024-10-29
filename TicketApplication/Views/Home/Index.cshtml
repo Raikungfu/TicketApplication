@@ -16,7 +16,7 @@
                         <h5 class="card-title">@ev.Title</h5>
                         <p class="card-text">
                             <span>Giá từ:</span>
-                            <span class="text-primary">@ev.MinTicketPrice</span> - <span class="text-primary">@ev.MaxTicketPrice</span>
+                            <span class="text-primary">@ev.MinTicketPrice.ToString("N0")</span> - <span class="text-primary">@ev.MaxTicketPrice.ToString("N0")</span>
                         </p>
                         <a href="@Url.Action("EventDetail", "Home", new { id = ev.Id })" class="btn btn-outline-primary rounded-pill btn-lg" role="button" aria-label="Lựa chọn cho @ev.Title">Select Ticket Zone</a>
                     </div>
