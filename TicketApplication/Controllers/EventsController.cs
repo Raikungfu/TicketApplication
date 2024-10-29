@@ -118,21 +118,24 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
-            var eventToUpdate = await _context.Events.FindAsync(id);
-            eventToUpdate.Title = @event.Title;
-            eventToUpdate.Description = @event.Description;
-            eventToUpdate.Location = @event.Location;
-            eventToUpdate.Date = @event.Date;
 
-            if (@event.ImageFile != null)
-            {
-                eventToUpdate.Image = _uploadFileService.uploadImage(@event.ImageFile, "Images");
-            }
+           
+            ModelState.Remove("ImageFile");
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var eventToUpdate = await _context.Events.FindAsync(id);
+                    eventToUpdate.Title = @event.Title;
+                    eventToUpdate.Description = @event.Description;
+                    eventToUpdate.Location = @event.Location;
+                    eventToUpdate.Date = @event.Date;
+                    eventToUpdate.ImageFile =  @event.ImageFile;
+                    if (@event.ImageFile != null)
+                    {
+                        eventToUpdate.Image = _uploadFileService.uploadImage(@event.ImageFile, "Images");
+                    }
 
                     _context.Entry(eventToUpdate).State = EntityState.Modified;
                     await _context.SaveChangesAsync();

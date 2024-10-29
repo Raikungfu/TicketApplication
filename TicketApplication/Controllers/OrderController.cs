@@ -42,10 +42,27 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ToListAsync();
+            var orders = await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ThenInclude(s => s.Zone).ToListAsync();
 
             return View(orders);
         }
+
+
+        public async Task<IActionResult> Edit(string orderId, string newStatus)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            order.Status = newStatus;
+            _context.Entry(order).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(IndexAdmin)); 
+        }
+
 
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Checkout(List<int> quantities)
