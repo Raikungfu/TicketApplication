@@ -7,7 +7,7 @@ using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class CartController : Controller
     {
 

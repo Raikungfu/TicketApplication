@@ -28,8 +28,6 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
@@ -38,19 +36,6 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.None;
-})
-.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = "RaiYugi",
-        ValidAudience = "Saint",
-        IssuerSigningKey = new RsaSecurityKey(KeyHelper.GetPrivateKey())
-    };
 });
 
 
@@ -80,7 +65,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseMiddleware<JwtMiddleware>();
+app.UseSession();
+
 
 app.UseAuthentication();
 
