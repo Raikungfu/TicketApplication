@@ -50,14 +50,14 @@ namespace TicketApplication.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title");
-            ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Name");
+            TempData["EventId"] = new SelectList(_context.Events, "Id", "Title");
+            TempData["ZoneId"] = new SelectList(_context.Zones, "Id", "Name");
             var statuses = new List<SelectListItem>
     {
         new SelectListItem { Value = "Available", Text = "Available" },
         new SelectListItem { Value = "Unavailable", Text = "Unavailable" }
             };
-            ViewData["Status"] = statuses; // Pass statuses to the view
+            TempData["Status"] = statuses; // Pass statuses to the view
             return View();
         }
 
@@ -76,8 +76,8 @@ namespace TicketApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
-            ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Id", ticket.ZoneId);
+            //TempData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
+            TempData["ZoneId"] = new SelectList(_context.Zones, "Id", "Id", ticket.ZoneId);
             
             return View(ticket);
         }
@@ -95,14 +95,14 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
-            //ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", ticket.Event.Title);
-            ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Name", ticket.Zone.Name);
+            //TempData["EventId"] = new SelectList(_context.Events, "Id", "Title", ticket.Event.Title);
+            TempData["ZoneId"] = new SelectList(_context.Zones, "Id", "Name", ticket.Zone.Name);
             var statuses = new List<SelectListItem>
     {
         new SelectListItem { Value = "Available", Text = "Available" },
         new SelectListItem { Value = "Unavailable", Text = "Unavailable" }
             };
-            ViewData["Status"] = statuses;
+            TempData["Status"] = statuses;
             return View(ticket);
         }
 
@@ -145,8 +145,8 @@ namespace TicketApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
-            ViewData["ZoneId"] = new SelectList(_context.Zones, "Id", "Id", ticket.ZoneId);
+            //TempData["EventId"] = new SelectList(_context.Events, "Id", "Id", ticket.EventId);
+            TempData["ZoneId"] = new SelectList(_context.Zones, "Id", "Id", ticket.ZoneId);
             return View(ticket);
         }
 

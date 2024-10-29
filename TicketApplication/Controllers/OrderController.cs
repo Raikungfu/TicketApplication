@@ -1,9 +1,9 @@
-﻿using ClothesStoreMobileApplication.Library;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TicketApplication.Data;
+using TicketApplication.Library;
 using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
@@ -31,20 +31,9 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Where(x => x.UserId == claimId).ToListAsync();
+            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ThenInclude(s => s.Zone).ToListAsync();
 
             return View(orders);
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Customer")]
-        public IActionResult GetOrderDetails(string orderId)
-        {
-            var orderDetails = _context.OrderDetails
-                .Where(od => od.OrderId == orderId).Include(x => x.Ticket).ThenInclude(y => y.Zone)
-                .ToList();
-
-            return PartialView("_OrderDetailsPartial", orderDetails);
         }
 
         [Authorize(Roles = "Admin")]
@@ -74,7 +63,7 @@ namespace TicketApplication.Controllers
             _context.Entry(order).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(IndexAdmin)); 
+            return RedirectToAction(nameof(IndexAdmin));
         }
 
 
@@ -95,7 +84,8 @@ namespace TicketApplication.Controllers
 
             if (!cartItems.Any())
             {
-                return BadRequest("Giỏ hàng trống");
+                TempData["ErrorMessage"] = "Giỏ Hàng Trống";
+                return RedirectToAction("Index", "Cart");
             }
 
             var order = new Order
@@ -150,7 +140,7 @@ namespace TicketApplication.Controllers
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");
             vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
-            vnpay.AddRequestData("vnp_Amount", (TotalPrice * 100).ToString());
+            vnpay.AddRequestData("vnp_Amount", ((int)Math.Floor(TotalPrice) * 100).ToString());
 
             if (paymentMethod == "DomesticCard")
             {
@@ -165,7 +155,7 @@ namespace TicketApplication.Controllers
             vnpay.AddRequestData("vnp_CurrCode", "VND");
             vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(HttpContext));
             vnpay.AddRequestData("vnp_Locale", "vn");
-            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + orderId);
+            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang: " + orderId);
             vnpay.AddRequestData("vnp_OrderType", "other");
             vnpay.AddRequestData("vnp_ReturnUrl", vnp_ReturnUrl);
             vnpay.AddRequestData("vnp_TxnRef", orderId);
@@ -187,15 +177,28 @@ namespace TicketApplication.Controllers
 
             Dictionary<string, string> queryDictionary = queryParams.ToDictionary(q => q.Key, q => q.Value.ToString());
 
-            /*
+            string vnp_TxnRef = queryDictionary["vnp_TxnRef"];
+            string vnp_ResponseCode = queryDictionary["vnp_ResponseCode"];
+            string vnp_SecureHash = queryDictionary["vnp_SecureHash"];
+            decimal amount = (decimal)Convert.ToDouble(queryDictionary["vnp_Amount"]);
+            string paymentMethod = queryDictionary["vnp_BankCode"];
+
             var order = await _context.Orders
                 .Include(o => o.Payments)
-                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
+                .FirstOrDefaultAsync(o => o.Id == vnp_TxnRef && o.UserId == claimId);
 
             if (order == null)
             {
+                TempData["ErrorMessage"] = "Đơn hàng không tồn tại.";
                 return NotFound("Đơn hàng không tồn tại.");
             }
+
+            if (vnp_ResponseCode != "00")
+            {
+                TempData["ErrorMessage"] = "Thanh toán không thành công";
+                return RedirectToAction("Index", "Order");
+            }
+
             var payment = order.Payments ?? new Payment
             {
                 OrderId = order.Id,
@@ -215,14 +218,12 @@ namespace TicketApplication.Controllers
             }
             order.Status = "Paid";
             _context.Orders.Update(order);
-            
-            
-            */
+
             await _context.SaveChangesAsync();
 
-            return Ok("Thanh toán thành công và đơn hàng đã được cập nhật.");
+            TempData["SuccessMessage"] = "Thanh toán thành công và đơn hàng đã được cập nhật.";
+            return RedirectToAction("Index", "Order");
         }
     }
 
 }
-

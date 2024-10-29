@@ -2,6 +2,12 @@
 
 <div class="container mt-5 mh-100">
     <h2>Giỏ hàng của bạn</h2>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
     <form method="post" action="/Order/Checkout">
         <table class="table table-bordered">
             <thead class="thead-light">
