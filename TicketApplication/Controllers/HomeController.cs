@@ -21,7 +21,8 @@ namespace TicketApplication.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var events = await _context.Events.Include(x => x.Zones).ToListAsync();
+            var events = await _context.Events.Include(e => e.Zones).AsNoTracking().ToListAsync();
+
 
             return View(events);
         }
@@ -39,6 +40,14 @@ namespace TicketApplication.Controllers
             if (eventDetail == null)
             {
                 return NotFound();
+            }
+            if (DateTime.TryParse(eventDetail.Date, out var parsedDate))
+            {
+                ViewBag.FormattedDate = parsedDate.ToString("dddd, HH:mm - dd/MM/yyyy");
+            }
+            else
+            {
+                ViewBag.FormattedDate = eventDetail.Date; 
             }
 
             return View("EventDetail", eventDetail);

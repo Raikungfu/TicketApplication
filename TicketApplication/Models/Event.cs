@@ -22,7 +22,6 @@ namespace TicketApplication.Models
         public string? Status { get; set; } = "Visible";
 
         public string? Image { get; set; }
-
         [NotMapped]
         public IFormFile ImageFile { get; set; }
 
