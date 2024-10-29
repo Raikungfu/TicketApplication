@@ -106,5 +106,51 @@ namespace TicketApplication.Controllers
             return RedirectToAction("Success");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ConfirmPayment(string orderId, decimal amount, string paymentMethod)
+        {
+            var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (claimId == null)
+            {
+                return Unauthorized("Người dùng chưa đăng nhập");
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.Payments)
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
+
+            if (order == null)
+            {
+                return NotFound("Đơn hàng không tồn tại.");
+            }
+
+            var payment = order.Payments ?? new Payment
+            {
+                OrderId = order.Id,
+                Amount = amount,
+                PaymentMethod = paymentMethod,
+                Status = "Completed"
+            };
+
+            if (order.Payments == null)
+            {
+                await _context.Payments.AddAsync(payment);
+            }
+            else
+            {
+                payment.Amount = amount;
+                payment.PaymentMethod = paymentMethod;
+                payment.Status = "Completed";
+            }
+
+            order.Status = "Paid";
+            _context.Orders.Update(order);
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Thanh toán thành công và đơn hàng đã được cập nhật.");
+        }
     }
+
+}
 }
