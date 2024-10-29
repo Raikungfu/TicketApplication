@@ -27,7 +27,14 @@
                     {
                         <tr id="item-row-@item.Zone.Id">
                             <td>
-                                <img src="@item.Zone.Event.Image" alt="Product Image" style="width: 50px; height: 50px;">
+                                @if (!string.IsNullOrEmpty(@item.Zone.Event.Image))
+                                {
+                                    <img src="@Url.Content("~/Images/" + @item.Zone.Event.Image)" alt="Product Image" style="width: 50px; height: 50px;" />
+                                }
+                                else
+                                {
+                                    <span>No Image</span>
+                                }
 
                             </td>
                             <td>@item.Zone.Name</td>
