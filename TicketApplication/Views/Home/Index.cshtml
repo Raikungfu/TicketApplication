@@ -11,7 +11,14 @@
             <div class="col-md-6 mb-4">
                 <div class="card text-center">
                     <!-- Thêm class text-center -->
-                    <img src="@ev.Image" class="card-img-top" alt="@ev.Title" style="object-fit: cover; max-height: 200px;">
+                    @if (!string.IsNullOrEmpty(ev.Image))
+                    {
+                        <img src="@Url.Content("~/Images/" + ev.Image)"  class="card-img-top" alt="@ev.Title" style="object-fit: cover; max-height: 200px;" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
                     <div class="card-body">
                         <h5 class="card-title">@ev.Title</h5>
                         <p class="card-text">

@@ -90,12 +90,12 @@
                     if (response.ok) {
                         location.reload();
                     } else {
-                        alert("Xóa sản phẩm không thành công!");
+                        showNotification('Xóa sản phẩm không thành công!', 'danger');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi xóa sản phẩm.");
+                    showNotification('Có lỗi xảy ra khi xóa sản phẩm.', 'danger');
                 });
         }
     }
@@ -114,15 +114,15 @@
                     if (response.ok) {
                         location.reload();
                     } else {
-                        alert("Cập nhật số lượng không thành công!");
+                        showNotification('Cập nhật số lượng không thành công!', 'danger');
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi cập nhật số lượng.");
+                    console.error('Error:', error); 
+                    showNotification('Có lỗi xảy ra khi cập nhật số lượng.', 'danger');
                 });
-        } else {    
-            alert("Số lượng phải lớn hơn 0.");
+        } else {
+            showNotification('Số lượng phải lớn hơn 0.', 'danger');
         }
     }
 </script>

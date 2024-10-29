@@ -43,7 +43,7 @@
                         detailsDiv.show();
                     },
                     error: function () {
-                        alert('Lỗi khi lấy chi tiết đơn hàng.');
+                        showNotification('Lỗi khi lấy chi tiết đơn hàng.', 'danger');
                     }
                 });
             } else {

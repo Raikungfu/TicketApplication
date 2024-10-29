@@ -195,9 +195,10 @@
             const result = await response.json();
             if (result.success) {
                 showNotification(result.message, 'success');
+                loginPopup.classList.add("d-none");
                 setTimeout(() => {
                     window.location.href = '/';
-                }, 5000);
+                }, 2000);
             } else {
                 showNotification(result.message, 'danger');
             }
