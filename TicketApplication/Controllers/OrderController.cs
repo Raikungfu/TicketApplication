@@ -170,6 +170,7 @@ namespace TicketApplication.Controllers
 
             Dictionary<string, string> queryDictionary = queryParams.ToDictionary(q => q.Key, q => q.Value.ToString());
 
+            /*
             var order = await _context.Orders
                 .Include(o => o.Payments)
                 .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
@@ -178,7 +179,6 @@ namespace TicketApplication.Controllers
             {
                 return NotFound("Đơn hàng không tồn tại.");
             }
-            /*
             var payment = order.Payments ?? new Payment
             {
                 OrderId = order.Id,
@@ -196,11 +196,11 @@ namespace TicketApplication.Controllers
                 payment.PaymentMethod = paymentMethod;
                 payment.Status = "Completed";
             }
-            
-            */
             order.Status = "Paid";
             _context.Orders.Update(order);
-
+            
+            
+            */
             await _context.SaveChangesAsync();
 
             return Ok("Thanh toán thành công và đơn hàng đã được cập nhật.");
