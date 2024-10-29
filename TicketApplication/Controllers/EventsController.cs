@@ -58,12 +58,13 @@ namespace TicketApplication.Controllers
         {
             if (ModelState.IsValid)
             {
+
                 @event.CreatedAt = DateTime.Now;
                 _context.Add(@event);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(@event);
+            return View(@event);    
         }
 
         // GET: Events/Edit/5
@@ -78,6 +79,15 @@ namespace TicketApplication.Controllers
             if (@event == null)
             {
                 return NotFound();
+            }
+            if (!string.IsNullOrEmpty(@event.Date))
+            {
+                // Assuming the original date is in "MM/dd/yyyy HH:mm" format or adjust as needed
+                DateTime parsedDate;
+                if (DateTime.TryParse(@event.Date, out parsedDate))
+                {
+                    @event.Date = parsedDate.ToString("yyyy-MM-ddTHH:mm"); // Format for datetime-local
+                }
             }
             return View(@event);
         }
