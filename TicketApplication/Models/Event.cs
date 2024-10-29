@@ -23,7 +23,7 @@ namespace TicketApplication.Models
 
         public string? Image { get; set; }
         [NotMapped]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [NotMapped]
         public decimal MaxTicketPrice => Zones?.Any() == true ? Zones.Max(zone => zone.Price) : 0;

@@ -1,0 +1,110 @@
+﻿@model TicketApplication.Helper.PaginatedList<TicketApplication.Models.OrderDetail>
+
+@{
+    ViewData["Title"] = "Ticket Manager";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Ticket Manager - Order Details</h1>
+
+    <!-- Search input -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search orders..." onkeyup="searchTable()">
+    </div>
+
+    <table class="table table-bordered table-hover" id="orderTable">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Order.User.Email)</th>
+                <th>Order ID</th>
+                <th>Ticket ID</th>
+                <th>Zone</th>
+                <th>Event</th>
+                <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Quantity)</th>
+                <th>@Html.DisplayNameFor(model => model.FirstOrDefault().UnitPrice)</th>
+                <th>@Html.DisplayNameFor(model => model.FirstOrDefault().TotalPrice)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Order.User.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Order.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Ticket.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Ticket.Zone.Name)</td>
+                    <td class=" text-truncate">@Html.DisplayFor(modelItem => item.Ticket.Zone.Event.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UnitPrice) đ</td>
+                    <td>@Html.DisplayFor(modelItem => item.TotalPrice) đ</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = ViewBag.CurrentPage - 1, searchTemp = ViewBag.SearchTemp })">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, searchTemp = ViewBag.SearchTemp })">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = ViewBag.CurrentPage + 1, searchTemp = ViewBag.SearchTemp })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+
+   
+    .text-truncate {
+        overflow: hidden; /* Hides overflow text */
+        white-space: nowrap; /* Prevents wrapping */
+        text-overflow: ellipsis; /* Displays ellipsis (...) when text overflows */
+        max-width: 150px; /* Set a max width for the cells */
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function searchTable() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('orderTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                let row = rows[i];
+                let textContent = row.textContent.toLowerCase();
+                row.style.display = textContent.includes(searchInput) ? '' : 'none';
+            }
+        }
+    </script>
+}
