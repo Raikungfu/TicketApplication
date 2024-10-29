@@ -178,6 +178,22 @@ namespace TicketApplication.Controllers
 
             var queryParams = Request.Query;
 
+            var requiredParams = new[] { "vnp_TxnRef", "vnp_ResponseCode", "vnp_SecureHash", "vnp_Amount", "vnp_BankCode" };
+
+            foreach (var param in requiredParams)
+            {
+                if (!queryParams.ContainsKey(param))
+                {
+                    return BadRequest($"Thiếu tham số: {param}");
+                }
+            }
+
+            var referer = Request.Headers["Referer"].ToString();
+            if (!referer.StartsWith("https://sandbox.vnpayment.vn") && !referer.StartsWith("https://www.vnpayment.vn"))
+            {
+                return BadRequest("Yêu cầu không hợp lệ.");
+            }
+
             Dictionary<string, string> queryDictionary = queryParams.ToDictionary(q => q.Key, q => q.Value.ToString());
 
             string vnp_TxnRef = queryDictionary["vnp_TxnRef"];
@@ -185,6 +201,11 @@ namespace TicketApplication.Controllers
             string vnp_SecureHash = queryDictionary["vnp_SecureHash"];
             decimal amount = (decimal)Convert.ToDouble(queryDictionary["vnp_Amount"]);
             string paymentMethod = queryDictionary["vnp_BankCode"];
+
+            if (!VerifySecureHash(vnp_SecureHash))
+            {
+                return BadRequest("Secure hash không hợp lệ.");
+            }
 
             var order = await _context.Orders
                 .Include(o => o.Payments)
@@ -219,6 +240,17 @@ namespace TicketApplication.Controllers
                 payment.PaymentMethod = paymentMethod;
                 payment.Status = "Completed";
             }
+
+            foreach (var orderDetail in order.OrderDetails)
+            {
+                var zone = await _context.Zones.FindAsync(orderDetail.TicketId);
+                if (zone != null)
+                {
+                    zone.AvailableTickets -= orderDetail.Quantity;
+                    _context.Zones.Update(zone);
+                }
+            }
+
             order.Status = "Paid";
             _context.Orders.Update(order);
 
@@ -229,6 +261,14 @@ namespace TicketApplication.Controllers
             _emailService.SendTicketOrderConfirmationMail(user.Email, user.Name, order);
             TempData["SuccessMessage"] = "Thanh toán thành công, Ticket đã được gửi đến email của bạn.";
             return RedirectToAction("Index", "Order");
+        }
+
+        private bool VerifySecureHash(string secureHash)
+        {
+            string vnp_HashSecret = _configuration["VnPay:HashSecret"];
+            VnPayLibrary vnpay = new VnPayLibrary();
+            vnpay.ValidateSignature(secureHash, vnp_HashSecret);
+            return true;
         }
     }
 }
