@@ -40,6 +40,9 @@
         @if (User.IsInRole("Customer"))
         {
             <li class="nav-item">
+                <a class="nav-link text-dark btn btn-sm" asp-controller="Order" asp-action="Index" title="Manage">Order</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-dark btn btn-sm" asp-controller="Cart" asp-action="Index" title="Manage">Cart</a>
             </li>
         }

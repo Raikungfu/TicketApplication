@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Common\" />
+    <Folder Include="Lib\" />
   </ItemGroup>
 
   <ItemGroup>
