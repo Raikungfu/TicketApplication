@@ -19,6 +19,7 @@ namespace TicketApplication.Models
         public int AvailableTickets { get; set; }
 
         public string EventId { get; set; }
+
         [ForeignKey("EventId")]
         public virtual Event? Event { get; set; }
 

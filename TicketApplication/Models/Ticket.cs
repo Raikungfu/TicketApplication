@@ -12,7 +12,7 @@ namespace TicketApplication.Models
 
         public string? Image { get; set; }
 
-        public int ZoneId { get; set; }
+        public string ZoneId { get; set; }
 
         [ForeignKey("ZoneId")]
         public virtual Zone? Zone { get; set; }
