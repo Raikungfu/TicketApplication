@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-namespace ClothesStoreMobileApplication.Library
+namespace TicketApplication.Library
 {
     public class VnPayLibrary
     {
