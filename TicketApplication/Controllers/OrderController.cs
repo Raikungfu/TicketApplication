@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Sockets;
 using System.Security.Claims;
 using TicketApplication.Data;
 using TicketApplication.Library;
@@ -34,7 +35,7 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ThenInclude(s => s.Zone).ToListAsync();
+            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(y => y.Tickets).ThenInclude(s => s.Zone).ToListAsync();
 
             return View(orders);
         }
@@ -48,7 +49,7 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ThenInclude(s => s.Zone).ToListAsync();
+            var orders = await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(y => y.Tickets).ThenInclude(s => s.Zone).ToListAsync();
 
             return View(orders);
         }
@@ -101,22 +102,32 @@ namespace TicketApplication.Controllers
 
             foreach (var item in cartItems)
             {
-                var ticket = new Ticket
-                {
-                    Title = item.Zone.Event.Title,
-                    Description = item.Zone.Name,
-                    ZoneId = item.ZoneId,
-                    Status = "Available",
-                };
-                await _context.Tickets.AddAsync(ticket);
+
 
                 var orderDetail = new OrderDetail
                 {
-                    TicketId = ticket.Id,
                     Quantity = item.Quantity,
                     UnitPrice = item.Zone.Price,
-                    TotalPrice = item.Zone.Price * item.Quantity
+                    TotalPrice = item.Zone.Price * item.Quantity,
+                    ZoneId = item.ZoneId,
+                    OrderId = order.Id
                 };
+
+                await _context.OrderDetails.AddAsync(orderDetail);
+
+                for (int i = 0; i < item.Quantity; i++)
+                {
+                    var ticket = new Ticket
+                    {
+                        Title = item.Zone.Event.Title,
+                        Description = item.Zone.Name,
+                        ZoneId = item.ZoneId,
+                        Status = "Available",
+                        OrderDetailId = orderDetail.Id
+                    };
+                    await _context.Tickets.AddAsync(ticket);
+                }
+
                 order.TotalAmount += orderDetail.TotalPrice;
                 order.OrderDetails.Add(orderDetail);
             }
@@ -207,7 +218,7 @@ namespace TicketApplication.Controllers
                 return BadRequest("Secure hash không hợp lệ.");
             }
 
-            var order = await _context.Orders.Include(o => o.Payments).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket.Zone.Event)
+            var order = await _context.Orders.Include(o => o.Payments).Include(x => x.OrderDetails).ThenInclude(y => y.Tickets).ThenInclude(y => y.Zone.Event)
                 .FirstOrDefaultAsync(o => o.Id == vnp_TxnRef && o.UserId == claimId);
 
             if (order == null)
@@ -242,7 +253,7 @@ namespace TicketApplication.Controllers
 
             foreach (var orderDetail in order.OrderDetails)
             {
-                var zone = await _context.Zones.FindAsync(orderDetail.TicketId);
+                var zone = await _context.Zones.FindAsync(orderDetail.ZoneId);
                 if (zone != null)
                 {
                     zone.AvailableTickets -= orderDetail.Quantity;

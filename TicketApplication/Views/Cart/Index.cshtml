@@ -103,9 +103,9 @@
                 .then(data => {
                     if (data.success) {
                         document.querySelector(`#item-row-${itemId}`).remove();
-
-                        const newGrandTotal = data.newGrandTotal;
-                        document.querySelector('#grand-total').textContent = newGrandTotal.toLocaleString('vi-VN') + ' đ';
+                        var total = document.querySelector('#grand-total');
+                        const newGrandTotal = Number(total.textContent.replace(/[^\d]/g, '')) - Number(data.priceRemove);
+                        total.textContent = newGrandTotal + ' đ';
 
                         showNotification('Xóa sản phẩm thành công!', 'success');
                     } else {
@@ -135,20 +135,20 @@
                     if (data.success === true) {
                         const itemTotal = data.updatedTotalPrice;
                         if (itemTotal !== undefined) {
-                            document.querySelector(`#item-total-${itemId}`).textContent = itemTotal.toLocaleString('vi-VN') + ' đ';
+                            document.querySelector(`#item-total-${itemId}`).textContent = itemTotal + ' đ';
                         } else {
                             console.error('updatedTotalPrice is undefined', data);
                         }
 
                         const newGrandTotal = data.newGrandTotal;
                         if (newGrandTotal !== undefined) {
-                            document.querySelector('#grand-total').textContent = newGrandTotal.toLocaleString('vi-VN') + ' đ';
+                            document.querySelector('#grand-total').textContent = newGrandTotal + ' đ';
                         } else {
                             console.error('newGrandTotal is undefined', data);
                         }
                         showNotification('Cập nhật số lượng thành công!', 'success');
                     } else {
-                        showNotification('Cập nhật số lượng không thành công!', 'danger');
+                        showNotification('Cập nhật số lượng không thành công!' + data.message, 'danger');
                     }
                 })
                 .catch(error => {

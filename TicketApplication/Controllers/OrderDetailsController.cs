@@ -28,16 +28,16 @@ namespace TicketApplication.Controllers
         {
             IQueryable<OrderDetail> applicationDbContext = _context.OrderDetails
                 .Include(o => o.Order).ThenInclude(u => u.User)
-                .Include(o => o.Ticket).ThenInclude(s => s.Zone).ThenInclude(t => t.Event);
+                .Include(o => o.Tickets).ThenInclude(s => s.Zone).ThenInclude(t => t.Event);
 
             // Apply search filter if provided
             if (!string.IsNullOrEmpty(searchTemp))
             {
                 applicationDbContext = applicationDbContext.Where(s =>
-                    s.TicketId.ToString().Contains(searchTemp) ||
+                    s.Tickets.Any(x => x.Id.Contains(searchTemp)) ||
                     s.OrderId.ToString().Contains(searchTemp) ||
                     s.Order.User.Email.Contains(searchTemp) ||
-                    s.Ticket.Zone.Event.Title.Contains(searchTemp));
+                    s.Zone.Event.Title.Contains(searchTemp));
             }
 
          
@@ -64,7 +64,7 @@ namespace TicketApplication.Controllers
 
             var orderDetail = await _context.OrderDetails
                 .Include(o => o.Order)
-                .Include(o => o.Ticket)
+                .Include(o => o.Tickets)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (orderDetail == null)
             {
@@ -96,7 +96,6 @@ namespace TicketApplication.Controllers
                 return RedirectToAction(nameof(Index));
             }
             TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
             return View(orderDetail);
         }
 
@@ -114,7 +113,6 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
             TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
             return View(orderDetail);
         }
 
@@ -151,7 +149,6 @@ namespace TicketApplication.Controllers
                 return RedirectToAction(nameof(Index));
             }
             TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
             return View(orderDetail);
         }
 
@@ -165,7 +162,7 @@ namespace TicketApplication.Controllers
 
             var orderDetail = await _context.OrderDetails
                 .Include(o => o.Order)
-                .Include(o => o.Ticket)
+                .Include(o => o.Tickets)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (orderDetail == null)
             {

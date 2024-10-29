@@ -231,12 +231,7 @@ namespace TicketApplication.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("TicketId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId", "ZoneId");
-
-                    b.HasIndex("TicketId");
 
                     b.HasIndex("ZoneId");
 
@@ -367,10 +362,23 @@ namespace TicketApplication.Migrations
 
             modelBuilder.Entity("TicketApplication.Models.OrderDetail", b =>
                 {
-                    b.Property<string>("OrderId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TicketId")
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
@@ -382,9 +390,15 @@ namespace TicketApplication.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.HasKey("OrderId", "TicketId");
+                    b.Property<string>("ZoneId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("TicketId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("OrderDetails");
                 });
@@ -455,6 +469,10 @@ namespace TicketApplication.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OrderDetailId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -469,6 +487,8 @@ namespace TicketApplication.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("OrderDetailId");
 
                     b.HasIndex("ZoneId");
 
@@ -613,10 +633,6 @@ namespace TicketApplication.Migrations
 
             modelBuilder.Entity("TicketApplication.Models.Cart", b =>
                 {
-                    b.HasOne("TicketApplication.Models.Ticket", null)
-                        .WithMany("Carts")
-                        .HasForeignKey("TicketId");
-
                     b.HasOne("TicketApplication.Models.User", "User")
                         .WithMany("Carts")
                         .HasForeignKey("UserId")
@@ -653,15 +669,15 @@ namespace TicketApplication.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketApplication.Models.Ticket", "Ticket")
-                        .WithMany("OrderDetails")
-                        .HasForeignKey("TicketId")
+                    b.HasOne("TicketApplication.Models.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("Ticket");
+                    b.Navigation("Zone");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Payment", b =>
@@ -681,11 +697,19 @@ namespace TicketApplication.Migrations
                         .WithMany("Tickets")
                         .HasForeignKey("EventId");
 
+                    b.HasOne("TicketApplication.Models.OrderDetail", "OrderDetail")
+                        .WithMany("Tickets")
+                        .HasForeignKey("OrderDetailId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("TicketApplication.Models.Zone", "Zone")
                         .WithMany("Tickets")
                         .HasForeignKey("ZoneId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("OrderDetail");
 
                     b.Navigation("Zone");
                 });
@@ -716,11 +740,9 @@ namespace TicketApplication.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TicketApplication.Models.Ticket", b =>
+            modelBuilder.Entity("TicketApplication.Models.OrderDetail", b =>
                 {
-                    b.Navigation("Carts");
-
-                    b.Navigation("OrderDetails");
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.User", b =>

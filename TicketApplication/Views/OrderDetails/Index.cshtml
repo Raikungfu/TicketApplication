@@ -28,16 +28,20 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => item.Order.User.Email)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Order.Id)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Ticket.Id)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Ticket.Zone.Name)</td>
-                    <td class=" text-truncate">@Html.DisplayFor(modelItem => item.Ticket.Zone.Event.Title)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
-                    <td>@Html.DisplayFor(modelItem => item.UnitPrice) đ</td>
-                    <td>@Html.DisplayFor(modelItem => item.TotalPrice) đ</td>
-                </tr>
+                for(int i = 0; i < item.Quantity; i++)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Order.User.Email)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Order.Id)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Tickets.ElementAt(i).Id)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Tickets.ElementAt(i).Zone.Name)</td>
+                        <td class=" text-truncate">@Html.DisplayFor(modelItem => item.Tickets.ElementAt(i).Zone.Event.Title)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UnitPrice) đ</td>
+                        <td>@Html.DisplayFor(modelItem => item.TotalPrice) đ</td>
+                    </tr>
+                }
+                
             }
         </tbody>
     </table>

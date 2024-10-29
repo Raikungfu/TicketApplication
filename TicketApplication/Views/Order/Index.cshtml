@@ -37,12 +37,18 @@
                         <td>@order.TotalAmount đ</td>
                         <td>
                             <!-- Button to trigger the detail modal -->
-                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#orderDetailModal"
-                                    data-order-id="@order.Id" data-user-email="@order.User.Email"
+                            <button class="btn btn-info"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#orderDetailModal"
+                                    data-order-id="@order.Id"
+                                    data-user-email="@order.User.Email"
                                     data-total-amount="@order.TotalAmount đ"
-                                    data-order-details="@Html.Raw(string.Join(";", order.OrderDetails.Select(d => $"Ticket: {d.Ticket?.Id} ,Zone: {d.Ticket?.Zone?.Name}, Quantity: {d.Quantity}")))">
+                                    data-order-details="@Html.Raw(string.Join(";",
+            order.OrderDetails.SelectMany(d =>
+                d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Quantity: {d.Quantity}"))))">
                                 View Details
                             </button>
+
                         </td>
                     </tr>
                 }

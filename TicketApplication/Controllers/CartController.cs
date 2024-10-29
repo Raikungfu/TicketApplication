@@ -35,16 +35,18 @@ namespace TicketApplication.Controllers
         }
 
         [HttpDelete]
-        public IActionResult RemoveItem(string id)
+        public IActionResult RemoveItem(string itemId)
         {
-            var cartItem = _context.Carts.FirstOrDefault(c => c.Zone.Id == id);
+            var cartItem = _context.Carts.Include(x => x.Zone).FirstOrDefault(c => c.Zone.Id == itemId);
+
+            decimal priceRemove = cartItem.TotalPrice;
 
             if (cartItem != null)
             {
                 _context.Carts.Remove(cartItem);
                 _context.SaveChanges();
 
-                return Ok(new { success = true, message = "Remove success" });
+                return Ok(new { success = true, message = "Remove success", priceRemove });
             }
 
             return NotFound();
@@ -53,7 +55,14 @@ namespace TicketApplication.Controllers
         [HttpPut]
         public IActionResult UpdateQuantity(string itemId, [FromBody] UpdateQuantityModel model)
         {
+
             var cartItem = _context.Carts.Include(c => c.Zone).FirstOrDefault(c => c.Zone.Id == itemId);
+
+
+            if (model.Quantity > cartItem.Zone.AvailableTickets)
+            {
+                return BadRequest(new { success = false, message = "Không đủ số lượng! Chỉ còn " +cartItem.Zone.AvailableTickets + " vé"  });
+            }
 
             if (cartItem != null)
             {

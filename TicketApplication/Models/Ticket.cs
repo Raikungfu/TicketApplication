@@ -17,8 +17,10 @@ namespace TicketApplication.Models
         [ForeignKey("ZoneId")]
         public virtual Zone? Zone { get; set; }
 
-        public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
-        public virtual ICollection<Cart>? Carts { get; set; }
+        public string OrderDetailId { get; set; }
+
+        [ForeignKey("OrderDetailId")]
+        public virtual OrderDetail? OrderDetail { get; set; }
     }
 }
 

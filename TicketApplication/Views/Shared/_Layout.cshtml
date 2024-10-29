@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@TempData["Title"] - TicketApplication</title>
+    <title>worQshop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TicketApplication.styles.css" asp-append-version="true" />
@@ -42,11 +42,54 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer text-muted">
         <div class="container">
-            &copy; 2024 - worQshop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+
+                <!-- Contact Information -->
+                <div class="col-md-4">
+                    <h5>Liên hệ với chúng tôi</h5>
+                    <p>Địa chỉ: Trường đại học FPT Quy Nhơn</p>
+                    <p>Điện thoại: 1900-xxxx</p>
+                    <p>Email: <a href="mailto:worqshop2003@gmail.com">worqshop2003@gmail.com</a></p>
+                </div>
+
+                <!-- Social Media Links -->
+                <div class="col-md-4">
+                    <h5>Theo dõi chúng tôi</h5>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/share/g/FCye4WbCQXAvmQ2K/" target="_blank" class="text-decoration-none">
+                            <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
+                        </a>
+                        <a href="https://www.instagram.com/" target="_blank" class="text-decoration-none">
+                            <i class="bi bi-instagram" style="font-size: 1.5rem;"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/" target="_blank" class="text-decoration-none">
+                            <i class="bi bi-tiktok" style="font-size: 1.5rem;"></i>
+                        </a>
+                    </div>
+                    <h5 class="mt-3">Chính sách</h5>
+                    <a href="#">Chính sách bảo mật</a> | <a href="#">Điều khoản dịch vụ</a>
+                </div>
+
+                <!-- Subscription Section -->
+                <div class="col-md-4">
+                    <h5>Đăng ký nhận tin</h5>
+                    <p>Đăng ký để nhận thông tin mới nhất về các workshop và sự kiện sắp tới.</p>
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="email" placeholder="Email của bạn" class="form-control" required />
+                            <button class="btn btn-primary" type="submit">Đăng ký</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                Bản quyền &copy;2024 - worQshop - Bảo lưu mọi quyền.
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

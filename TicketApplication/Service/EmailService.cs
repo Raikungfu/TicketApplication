@@ -51,19 +51,25 @@ namespace TicketApplication.Service
 
             foreach (var detail in order.OrderDetails)
             {
-                var eventTitle = detail.Ticket.Zone.Event.Title;
-                var zoneName = detail.Ticket.Zone.Name;
-                var price = detail.Ticket.Zone.Price;
-                var eventDate = detail.Ticket.Zone.Event.Date;
+                var eventTitle = detail.Zone.Event.Title;
+                var zoneName = detail.Zone.Name;
+                var price = detail.Zone.Price;
+                var eventDate = detail.Zone.Event.Date;
+                for(int i= 0; i < detail.Quantity; i++)
+                {
 
-                ticketDetails.AppendFormat(@"
+                    var ticketId = detail.Tickets.ElementAt(i).Id;
+                    ticketDetails.AppendFormat(@"
             <div style='border: 2px solid #333; padding: 10px; margin: 10px 0;'>
                 <h3>{0}</h3>
-                <p><strong>Zone:</strong> {1}</p>
-                <p><strong>Price:</strong> {2:C}</p>
-                <p><strong>Date:</strong> {3}</p>
-            </div>", eventTitle, zoneName, price, eventDate);
+                <p><strong>Ticket:</strong> {1}</p>
+                <p><strong>Zone:</strong> {2}</p>
+                <p><strong>Price:</strong> {3} đ</p>
+                <p><strong>Date:</strong> {4}</p>
+            </div>", eventTitle, ticketId, zoneName, price, eventDate);
+                }
             }
+                
 
             string message = string.Format(@"
         <!DOCTYPE html>
@@ -79,17 +85,17 @@ namespace TicketApplication.Service
             <div>
                 {1}
             </div>
-            <p>Total Amount: <strong>{2:C}</strong></p>
+            <p>Total Amount: <strong>{2} đ</strong></p>
             <p>We look forward to seeing you at the event!</p>
             <p>Best Regards,</p>
-            <p><strong>TicketApp Team</strong></p>
+            <p><strong>worQshop Team</strong></p>
         </body>
         </html>", customerName, ticketDetails.ToString(), order.TotalAmount);
 
             try
             {
                 CheckEmailValid(recip);
-                SendMail("Order Confirmation - TicketApp", recip, message);
+                SendMail("Order Confirmation - worQshop", recip, message);
             }
             catch (Exception ex)
             {

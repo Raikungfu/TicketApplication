@@ -27,7 +27,6 @@ namespace TicketApplication.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Cart>().HasKey(c => new { c.UserId, c.ZoneId });
-            builder.Entity<OrderDetail>().HasKey(od => new { od.OrderId, od.TicketId });
 
             // Configure Discount entity
             builder.Entity<Discount>(entity =>
@@ -68,6 +67,18 @@ namespace TicketApplication.Data
                       .HasColumnType("decimal(18, 2)");
             });
 
+
+            builder.Entity<Ticket>()
+            .HasOne(t => t.Zone)
+            .WithMany(z => z.Tickets)
+            .HasForeignKey(t => t.ZoneId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.OrderDetail)
+                .WithMany(od => od.Tickets)
+                .HasForeignKey(t => t.OrderDetailId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
 

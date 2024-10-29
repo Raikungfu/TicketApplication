@@ -10,7 +10,10 @@ namespace TicketApplication.Models
 
         public int Quantity { get; set; }
 
+        [ForeignKey("ZoneId")]
         public virtual Zone? Zone { get; set; }
+
+        [ForeignKey("UserId")]
         public virtual User? User { get; set; }
 
         [NotMapped]

@@ -34,10 +34,7 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
-                
-
-                .Include(t => t.Zone)
+            var ticket = await _context.Tickets.Include(t => t.Zone)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {

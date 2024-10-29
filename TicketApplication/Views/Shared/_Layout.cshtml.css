@@ -40,9 +40,54 @@ button.accept-policy {
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+    background-color: #f8f9fa; /* Màu nền cho footer */
+    padding: 40px 0; /* Khoảng cách trên và dưới */
+    margin-top: 20px; /* Khoảng cách trên để ngăn cách với nội dung chính */
+    border-top: 1px solid #e5e5e5; /* Đường viền trên */
+}
+
+    .footer h5 {
+        font-weight: bold; /* Đậm tiêu đề */
+        margin-bottom: 15px; /* Khoảng cách dưới tiêu đề */
+    }
+
+    .footer p {
+        margin-bottom: 10px; /* Khoảng cách giữa các đoạn */
+    }
+
+.social-links a {
+    margin: 0 10px; /* Khoảng cách giữa các liên kết xã hội */
+    color: #0077cc; /* Màu của liên kết */
+    transition: color 0.3s; /* Hiệu ứng chuyển màu */
+}
+
+    .social-links a:hover {
+        color: #0056b3; /* Màu khi hover */
+    }
+
+.input-group {
+    width: 100%; /* Chiều rộng của nhóm input */
+}
+
+.form-control {
+    border: 1px solid #ced4da; /* Đường viền của input */
+    border-radius: 5px 0 0 5px; /* Bo góc bên trái */
+}
+
+.btn-primary {
+    border-radius: 0 5px 5px 0; /* Bo góc bên phải */
+}
+
+.text-center {
+    text-align: center; /* Canh giữa nội dung */
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 20px 0; /* Giảm padding trên các màn hình nhỏ */
+    }
+
+        .footer h5 {
+            font-size: 1.2rem; /* Giảm kích thước tiêu đề trên các màn hình nhỏ */
+        }
 }
