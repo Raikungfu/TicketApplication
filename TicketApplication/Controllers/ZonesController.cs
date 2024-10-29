@@ -56,7 +56,7 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,AvailableTickets,EventId")] Zone zone)
+        public async Task<IActionResult> Create([Bind("Name,Price,AvailableTickets,description,EventId")] Zone zone)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,AvailableTickets,EventId,Id")] Zone zone)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,AvailableTickets,description,EventId,Id")] Zone zone)
         {
             if (id != zone.Id)
             {
@@ -104,6 +104,7 @@ namespace TicketApplication.Controllers
                     zoneToEdit.Name = zone.Name;
                     zoneToEdit.Price = zone.Price;
                     zoneToEdit.AvailableTickets = zone.AvailableTickets;
+                    zoneToEdit.description = zone.description;
                     zoneToEdit.EventId = zone.EventId;
 
                     _context.Entry(zoneToEdit).State = EntityState.Modified;

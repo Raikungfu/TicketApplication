@@ -1,52 +1,69 @@
 ﻿@model TicketApplication.Models.Zone
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Zone";
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2>Edit Zone</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="text-secondary">Zone Details</h4>
+            <hr />
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-<h4>Zone</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AvailableTickets" class="control-label"></label>
-                <input asp-for="AvailableTickets" class="form-control" />
-                <span asp-validation-for="AvailableTickets" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="EventId" class="control-label">Event</label>
-                <select asp-for="EventId" class="form-control" asp-items="ViewBag.EventId" required>
-                    <option value="">Select an Event</option>
-                </select>
-                <span asp-validation-for="EventId" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="Id" />
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter zone name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
 
-            <div class="form-group mt-2">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label"></label>
+                            <input asp-for="Price" class="form-control" placeholder="Enter price" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="description" class="form-label"></label>
+                            <textarea asp-for="description" class="form-control" rows="3" placeholder="Provide a description"></textarea>
+                            <span asp-validation-for="description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AvailableTickets" class="form-label"></label>
+                            <input asp-for="AvailableTickets" class="form-control" placeholder="Number of available tickets" />
+                            <span asp-validation-for="AvailableTickets" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="EventId" class="form-label">Event</label>
+                            <select asp-for="EventId" class="form-control" asp-items="ViewBag.EventId" required>
+                                <option value="">Select an Event</option>
+                            </select>
+                            <span asp-validation-for="EventId" class="text-danger"></span>
+                        </div>
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <a asp-action="Index" class="btn btn-secondary me-2">Back to List</a>
+                            <input type="submit" value="Save" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
