@@ -2,48 +2,104 @@
 
 <div class="container mt-5 mh-100">
     <h2>Giỏ hàng của bạn</h2>
-    <table class="table table-bordered">
-        <thead class="thead-light">
-            <tr>
-                <th>Sản phẩm</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Tạm tính</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(Model != null && Model.Count > 0)
-            {
-                @foreach (var item in Model)
+    <form method="post" action="/Order/Checkout">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Tạm tính</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
                 {
-                    <tr>
-                        <td>
-                            <img src="@item.Ticket.Image" alt="Product Image" style="width: 50px; height: 50px;">
-                            <span>@item.</span>
-                        </td>
-                        <td>@item.Ticket.Price.ToString("N0") đ</td>
-                        <td>
-                            <input type="number" value="@item.Quantity" min="1" class="form-control" style="width: 70px;">
-                        </td>
-                        <td>@item.TotalPrice.ToString("N0") đ</td>
-                        <td>
-                            <button class="btn btn-danger">Xóa</button>
-                        </td>
-                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.Ticket.Image" alt="Product Image" style="width: 50px; height: 50px;">
+                                <span>@item.Ticket.Title</span>
+                            </td>
+                            <td>@item.Ticket.Price.ToString("N0") đ</td>
+                            <td>
+                                <input type="number"
+                                       name="quantities[@item.Ticket.Id]"
+                                       value="@item.Quantity"
+                                       min="1"
+                                       class="form-control"
+                                       style="width: 70px;"
+                                       id="quantity-@item.Ticket.Id"
+                                       onchange="updateQuantity(@item.Ticket.Id)">
+                            </td>
+                            <td>@item.TotalPrice.ToString("N0") đ</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeItem(@item.Ticket.Id)">Xóa</button>
+                            </td>
+                        </tr>
+                    }
                 }
-            }
-            
-        </tbody>
-    </table>
 
-    <div class="row">
-        <div class="col-md-4 offset-md-8">
-            <h4 class="d-flex justify-content-between">
-                <span>Tổng:</span>
-                <strong>@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
-            </h4>
-            <button class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-md-4 offset-md-8">
+                <h4 class="d-flex justify-content-between">
+                    <span>Tổng:</span>
+                    <strong>@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
+                </h4>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
+
+<script>
+    function removeItem(itemId) {
+        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+            fetch(`/Cart/RemoveItem/${itemId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert("Xóa sản phẩm không thành công!");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi xóa sản phẩm.");
+                });
+        }
+    }
+
+    function updateQuantity(itemId) {
+        const quantity = document.getElementById(`quantity-${itemId}`).value;
+        if (quantity > 0) {
+            fetch(`/Cart/UpdateQuantity/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity: quantity })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert("Cập nhật số lượng không thành công!");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi cập nhật số lượng.");
+                });
+        } else {
+            alert("Số lượng phải lớn hơn 0.");
+        }
+    }
+</script>

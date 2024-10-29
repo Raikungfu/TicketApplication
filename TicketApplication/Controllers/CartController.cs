@@ -32,5 +32,43 @@ namespace TicketApplication.Controllers
 
             return View(cart);
         }
+
+        [HttpDelete]
+        public IActionResult RemoveItem(string id)
+        {
+            var cartItem = _context.Carts.FirstOrDefault(c => c.Ticket.Id == id);
+
+            if (cartItem != null)
+            {
+                _context.Carts.Remove(cartItem);
+                _context.SaveChanges();
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
+        [HttpPut]
+        public IActionResult UpdateQuantity(string itemId, [FromBody] UpdateQuantityModel model)
+        {
+            var cartItem = _context.Carts.FirstOrDefault(c => c.Ticket.Id == itemId);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity = model.Quantity;
+                _context.SaveChanges();
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
     }
+
+    public class UpdateQuantityModel
+    {
+        public int Quantity { get; set; }
+    }
+
 }
