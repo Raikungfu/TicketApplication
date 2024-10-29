@@ -12,7 +12,7 @@ using TicketApplication.Data;
 namespace TicketApplication.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241029021326_duong")]
+    [Migration("20241029040233_duong")]
     partial class duong
     {
         /// <inheritdoc />
@@ -373,14 +373,11 @@ namespace TicketApplication.Migrations
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ZoneId")
+                    b.Property<string>("TicketId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
-
-                    b.Property<string>("TicketId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18, 2)");
@@ -388,11 +385,9 @@ namespace TicketApplication.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.HasKey("OrderId", "ZoneId");
+                    b.HasKey("OrderId", "TicketId");
 
                     b.HasIndex("TicketId");
-
-                    b.HasIndex("ZoneId");
 
                     b.ToTable("OrderDetails");
                 });
@@ -431,7 +426,8 @@ namespace TicketApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -538,6 +534,9 @@ namespace TicketApplication.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventId")
@@ -657,26 +656,22 @@ namespace TicketApplication.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketApplication.Models.Ticket", null)
+                    b.HasOne("TicketApplication.Models.Ticket", "Ticket")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("TicketId");
-
-                    b.HasOne("TicketApplication.Models.Zone", "Zone")
-                        .WithMany()
-                        .HasForeignKey("ZoneId")
+                        .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("Zone");
+                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Payment", b =>
                 {
                     b.HasOne("TicketApplication.Models.Order", "Order")
-                        .WithMany("Payments")
-                        .HasForeignKey("OrderId")
+                        .WithOne("Payments")
+                        .HasForeignKey("TicketApplication.Models.Payment", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -720,7 +715,8 @@ namespace TicketApplication.Migrations
                 {
                     b.Navigation("OrderDetails");
 
-                    b.Navigation("Payments");
+                    b.Navigation("Payments")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Ticket", b =>
