@@ -1,4 +1,18 @@
 ﻿@model List<Order>
+@if (ViewData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @ViewData["SuccessMessage"]
+    </div>
+}
+
+<!-- Display error message if it exists -->
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @ViewData["ErrorMessage"]
+    </div>
+}
 
 <div class="order-history">
     <h2>Order History</h2>
