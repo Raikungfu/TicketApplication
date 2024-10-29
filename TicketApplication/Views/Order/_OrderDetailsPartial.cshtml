@@ -1,0 +1,25 @@
+﻿@model List<OrderDetail>
+
+<div class="order-detail">
+    <h4>Order Details</h4>
+    <ul>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var detail in Model)
+            {
+                <li>
+                    <strong>Event:</strong> @detail.Ticket.Title <br>
+                    <strong>Description:</strong> @detail.Ticket.Description <br>
+                    <strong>Zone:</strong> @detail.Ticket.Zone.Name <br>
+                    <strong>Benefit:</strong> @detail.Ticket.Zone.Description <br>
+                    <strong>Quantity:</strong> @detail.Quantity <br>
+                    <strong>Price:</strong> @detail.Ticket.Zone.Price.ToString("C") <br>
+                </li>
+            }
+        }
+        else
+        {
+            <li>No details available for this order.</li>
+        }
+    </ul>
+</div>

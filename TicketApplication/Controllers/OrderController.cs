@@ -28,9 +28,20 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ToListAsync();
+            var orders = await _context.Orders.Where(x => x.UserId == claimId).ToListAsync();
 
             return View(orders);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Customer")]
+        public IActionResult GetOrderDetails(string orderId)
+        {
+            var orderDetails = _context.OrderDetails
+                .Where(od => od.OrderId == orderId).Include(x => x.Ticket).ThenInclude(y => y.Zone)
+                .ToList();
+
+            return PartialView("_OrderDetailsPartial", orderDetails);
         }
 
         [Authorize(Roles = "Admin")]
