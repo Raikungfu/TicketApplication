@@ -207,8 +207,7 @@ namespace TicketApplication.Controllers
                 return BadRequest("Secure hash không hợp lệ.");
             }
 
-            var order = await _context.Orders
-                .Include(o => o.Payments)
+            var order = await _context.Orders.Include(o => o.Payments).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket.Zone.Event)
                 .FirstOrDefaultAsync(o => o.Id == vnp_TxnRef && o.UserId == claimId);
 
             if (order == null)
