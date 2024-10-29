@@ -1,16 +1,32 @@
 ﻿@model List<Order>
 
-<div class="order-history">
-    <h2>Order History</h2>
-    @foreach (var order in Model)
-    {
-        <div class="order-item" onclick="getOrderDetails(@order.Id)">
-            <strong>Order ID:</strong> @order.Id <br>
-            <strong>Date:</strong> @order.CreatedAt <br>
-            <strong>Status:</strong> @order.Status
-            <div id="details-@order.Id" class="order-details" style="display: none;"></div>
-        </div>
-    }
+<div class="container mt-5">
+    <h2>Lịch sử đơn hàng</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Đơn hàng</th>
+                @* <th>Ngày</th> *@
+                <th>Trạng thái</th>
+                @* <th>Tổng</th> *@
+                <th>Các thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td><a href="@Url.Action("OrderDetail", "Home", new { id = order.Id })" class="text-primary">#@order.Id</a></td>
+                    @*<td>@order.Date.ToString("dd/MM/yyyy")</td> *@
+                    <td>@order.Status</td>
+                    @* <td>@String.Format("{0:N0} ₫ cho {1} mục", order.TotalAmount, order.ItemCount)</td> *@
+                    <td>
+                        <a href="@Url.Action("OrderDetail", "Home", new { id = order.Id })" class="btn btn-primary">Xem</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 @section Scripts {
@@ -27,7 +43,7 @@
                         detailsDiv.show();
                     },
                     error: function () {
-                        alert('Error retrieving order details.');
+                        alert('Lỗi khi lấy chi tiết đơn hàng.');
                     }
                 });
             } else {
