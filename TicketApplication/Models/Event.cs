@@ -24,10 +24,10 @@ namespace TicketApplication.Models
         public string? Image { get; set; }
 
         [NotMapped]
-        public decimal MaxTicketPrice => Tickets?.Any() == true ? Tickets.Max(ticket => ticket.Zone.Price) : 0;
+        public decimal MaxTicketPrice => Tickets?.Any() == true ? Zones.Max(zone => zone.Price) : 0;
 
         [NotMapped]
-        public decimal MinTicketPrice => Tickets?.Any() == true ? Tickets.Min(ticket => ticket.Zone.Price) : 0;
+        public decimal MinTicketPrice => Tickets?.Any() == true ? Zones.Min(zone => zone.Price) : 0;
 
         public virtual ICollection<Ticket>? Tickets { get; set; }
 
