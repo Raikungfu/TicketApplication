@@ -95,7 +95,8 @@ namespace TicketApplication.Controllers
 
             if (!cartItems.Any())
             {
-                return BadRequest("Giỏ hàng trống");
+                TempData["ErrorMessage"] = "Giỏ Hàng Trống";
+               return RedirectToAction("Index", "Cart");
             }
 
             var order = new Order
@@ -199,13 +200,13 @@ namespace TicketApplication.Controllers
 
             if (order == null)
             {
-                ViewData["ErrorMessage"] = "Đơn hàng không tồn tại.";
+                TempData["ErrorMessage"] = "Đơn hàng không tồn tại.";
                 return NotFound("Đơn hàng không tồn tại.");
             }
 
             if (vnp_ResponseCode != "00")
             {
-                ViewData["ErrorMessage"] = "Thanh toán không thành công";
+                TempData["ErrorMessage"] = "Thanh toán không thành công";
                 return RedirectToAction("Index", "Order");
             }
 
@@ -231,7 +232,7 @@ namespace TicketApplication.Controllers
             
             await _context.SaveChangesAsync();
 
-            ViewData["SuccessMessage"] = "Thanh toán thành công và đơn hàng đã được cập nhật.";
+            TempData["SuccessMessage"] = "Thanh toán thành công và đơn hàng đã được cập nhật.";
             return RedirectToAction("Index", "Order");
         }
     }

@@ -83,7 +83,7 @@ namespace TicketApplication.Controllers
                 new SelectListItem { Value = "Customer", Text = "Customer" },
                 new SelectListItem { Value = "Admin", Text = "Admin" }
             };
-            ViewData["Roles"] = new SelectList(roles, "Value", "Text", user.Role);
+            TempData["Roles"] = new SelectList(roles, "Value", "Text", user.Role);
 
             return View(user);
         }

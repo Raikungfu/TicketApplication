@@ -77,8 +77,8 @@ namespace TicketApplication.Controllers
         // GET: OrderDetails/Create
         public IActionResult Create()
         {
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id");
-            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id");
+            TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id");
+            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id");
             return View();
         }
 
@@ -95,8 +95,8 @@ namespace TicketApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
+            TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
+            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
             return View(orderDetail);
         }
 
@@ -113,8 +113,8 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
+            TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
+            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
             return View(orderDetail);
         }
 
@@ -150,8 +150,8 @@ namespace TicketApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
-            ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
+            TempData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderDetail.OrderId);
+            TempData["TicketId"] = new SelectList(_context.Tickets, "Id", "Id", orderDetail.TicketId);
             return View(orderDetail);
         }
 

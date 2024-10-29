@@ -1,16 +1,16 @@
 ﻿@model List<Order>
-@if (ViewData["SuccessMessage"] != null)
+@if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success">
-        @ViewData["SuccessMessage"]
+        @TempData["SuccessMessage"]
     </div>
 }
 
 <!-- Display error message if it exists -->
-@if (ViewData["ErrorMessage"] != null)
+@if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger">
-        @ViewData["ErrorMessage"]
+        @TempData["ErrorMessage"]
     </div>
 }
 
