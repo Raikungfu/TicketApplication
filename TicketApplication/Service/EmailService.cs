@@ -1,6 +1,8 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Text;
+using TicketApplication.Models;
 
 namespace TicketApplication.Service
 {
@@ -12,6 +14,89 @@ namespace TicketApplication.Service
         {
             _configuration = configuration;
         }
+
+        public void SendRegistrationConfirmationMail(string recip, string customerName)
+        {
+            string message = string.Format(@"
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Registration Confirmation - TicketApp</title>
+        </head>
+        <body>
+            <h2>Welcome to TicketApp, {0}!</h2>
+            <p>Your registration has been successfully completed.</p>
+            <p>Thank you for joining us, and enjoy booking tickets for your favorite events.</p>
+            <p>Best Regards,</p>
+            <p><strong>TicketApp Team</strong></p>
+        </body>
+        </html>", customerName);
+
+            try
+            {
+                CheckEmailValid(recip);
+                SendMail("Registration Confirmation - TicketApp", recip, message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not send registration email. " + ex.Message);
+            }
+        }
+
+        public void SendTicketOrderConfirmationMail(string recip, string customerName, Order order)
+        {
+            var ticketDetails = new StringBuilder();
+
+            foreach (var detail in order.OrderDetails)
+            {
+                var eventTitle = detail.Ticket.Zone.Event.Title;
+                var zoneName = detail.Ticket.Zone.Name;
+                var price = detail.Ticket.Zone.Price;
+                var eventDate = detail.Ticket.Zone.Event.Date;
+
+                ticketDetails.AppendFormat(@"
+            <div style='border: 2px solid #333; padding: 10px; margin: 10px 0;'>
+                <h3>{0}</h3>
+                <p><strong>Zone:</strong> {1}</p>
+                <p><strong>Price:</strong> {2:C}</p>
+                <p><strong>Date:</strong> {3}</p>
+            </div>", eventTitle, zoneName, price, eventDate);
+            }
+
+            string message = string.Format(@"
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Order Confirmation - TicketApp</title>
+        </head>
+        <body>
+            <h2>Your Ticket Order is Confirmed, {0}!</h2>
+            <p>Thank you for your purchase. Here are the details of your order:</p>
+            <div>
+                {1}
+            </div>
+            <p>Total Amount: <strong>{2:C}</strong></p>
+            <p>We look forward to seeing you at the event!</p>
+            <p>Best Regards,</p>
+            <p><strong>TicketApp Team</strong></p>
+        </body>
+        </html>", customerName, ticketDetails.ToString(), order.TotalAmount);
+
+            try
+            {
+                CheckEmailValid(recip);
+                SendMail("Order Confirmation - TicketApp", recip, message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not send order confirmation email. " + ex.Message);
+            }
+        }
+
 
         public void SendTicketConfirmationMail(string recip, string customerName, string eventTitle, string zoneName, decimal price)
         {
