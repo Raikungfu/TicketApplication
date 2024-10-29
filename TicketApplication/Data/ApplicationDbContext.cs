@@ -27,7 +27,7 @@ namespace TicketApplication.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Cart>().HasKey(c => new { c.UserId, c.ZoneId });
-            builder.Entity<OrderDetail>().HasKey(od => new { od.OrderId, od.ZoneId });
+            builder.Entity<OrderDetail>().HasKey(od => new { od.OrderId, od.TicketId });
 
             // Configure Discount entity
             builder.Entity<Discount>(entity =>
