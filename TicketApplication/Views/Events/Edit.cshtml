@@ -41,10 +41,19 @@
 
                 <div class="mb-3">
                     <label asp-for="ImageFile" class="form-label fw-bold"></label>
-                    <input id="ImageUrl" asp-for="ImageFile" type="file" name="ImageFile" accept="image/*" required />
+                    @if (!string.IsNullOrEmpty(Model.Image))
+                    {
+                        <img src="@Url.Content("~/Images/" + Model.Image)" alt="Current Event Image" class="img-thumbnail" style="width: 100px; height: auto;" />
+                    }
+                    else
+                    {
+                        <span>No current image available</span>
+                    }
+                    <br />
+                    <input id="ImageUrl" asp-for="ImageFile" type="file" name="ImageFile" accept="image/*" />
                     <span asp-validation-for="ImageFile" class="text-danger"></span>
                     <div class="mt-3 text-center">
-                        <img id="ImagePreview" src="#" alt="Image Preview" class="img-thumbnail" style="display:none; max-width: 100%; height: auto;" />
+                        <img id="ImagePreview" src="#" alt="Image Preview" class="img-thumbnail" style="display:none; max-width: 50%; height: 100px;" />
                     </div>
                 </div>
 
