@@ -240,7 +240,7 @@ namespace TicketApplication.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Discount", b =>
@@ -284,7 +284,7 @@ namespace TicketApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Event", b =>
@@ -328,7 +328,7 @@ namespace TicketApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>
@@ -362,7 +362,7 @@ namespace TicketApplication.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.OrderDetail", b =>
@@ -391,7 +391,7 @@ namespace TicketApplication.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Payment", b =>
@@ -430,7 +430,7 @@ namespace TicketApplication.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Ticket", b =>
@@ -476,7 +476,7 @@ namespace TicketApplication.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.User", b =>
@@ -520,7 +520,7 @@ namespace TicketApplication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Zone", b =>
@@ -558,7 +558,7 @@ namespace TicketApplication.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Zones");
+                    b.ToTable("Zones", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

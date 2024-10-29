@@ -22,6 +22,7 @@
             <th>@Html.DisplayNameFor(model => model.First().Name)</th>
             <th>@Html.DisplayNameFor(model => model.First().Price)</th>
             <th>Event Title</th>
+            <th>Description</th>
             <th>@Html.DisplayNameFor(model => model.First().AvailableTickets)</th>
             <th>@Html.DisplayNameFor(model => model.First().CreatedAt)</th>
             <th>Actions</th>
@@ -35,6 +36,7 @@
                 <td class="accept-policy">@Html.DisplayFor(modelItem => item.Name)</td>
                 <td>@Html.DisplayFor(modelItem => item.Price, "{0:C}")</td>
                 <td class="text-truncate">@Html.DisplayFor(modelItem => item.Event.Title)</td>
+                <td class="text-truncate" title="@item.Description">@Html.DisplayFor(modelItem => item.Description)</td>
                 <td>@Html.DisplayFor(modelItem => item.AvailableTickets)</td>
                 <td>@Html.DisplayFor(modelItem => item.CreatedAt, "{0:yyyy-MM-dd HH:mm:ss}")</td>
                 <td>
@@ -42,10 +44,10 @@
                         Edit
                     </a>
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm" title="Details">
-                       Details
+                        Details
                     </a>
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Delete">
-                      Delete
+                        Delete
                     </a>
                 </td>
             </tr>
