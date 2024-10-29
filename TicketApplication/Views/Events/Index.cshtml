@@ -54,7 +54,7 @@
                     <td>
                         @if (!string.IsNullOrEmpty(item.Image))
                         {
-                            <img src="@item.Image" alt="Event Image" class="img-thumbnail" style="width: 100px; height: auto;" />
+                            <img src="@Url.Content("~/Images/" + item.Image)" alt="Event Image" class="img-thumbnail" style="width: 100px; height: auto;" />
                         }
                         else
                         {

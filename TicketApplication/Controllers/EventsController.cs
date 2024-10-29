@@ -61,6 +61,15 @@ namespace TicketApplication.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Define the directory path
+                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
+
+                // Check if the directory exists, if not, create it
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
                 if (@event.ImageFile != null)
                 {
                     @event.Image = _uploadFileService.uploadImage(@event.ImageFile, "Images");
