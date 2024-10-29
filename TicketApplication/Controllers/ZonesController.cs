@@ -104,7 +104,7 @@ namespace TicketApplication.Controllers
                     zoneToEdit.Name = zone.Name;
                     zoneToEdit.Price = zone.Price;
                     zoneToEdit.AvailableTickets = zone.AvailableTickets;
-                    zoneToEdit.description = zone.description;
+                    zoneToEdit.Description = zone.Description;
                     zoneToEdit.EventId = zone.EventId;
 
                     _context.Entry(zoneToEdit).State = EntityState.Modified;
