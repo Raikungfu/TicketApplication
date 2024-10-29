@@ -1,0 +1,19 @@
+﻿@model TicketApplication.Models.Order
+
+<h2>Chọn Phương Thức Thanh Toán</h2>
+
+<form asp-action="Checkout" method="post">
+    <input type="hidden" name="orderId" value="@Model.Id" />
+
+    <label for="paymentMethod">Chọn phương thức thanh toán VNPAY:</label>
+    <select name="paymentMethod" id="paymentMethod" required>
+        <option value="">Thanh toán QR</option>
+        <option value="">Thẻ nội địa và tài khoản ngân hàng</option>
+        <option value="">Thẻ thanh toán quốc tế</option>
+    </select>
+
+    <label for="amount">Số tiền:</label>
+    <input type="text" name="amount" id="amount" value="@Model.TotalAmount" readonly />
+
+    <button type="submit">Xác Nhận Thanh Toán</button>
+</form>

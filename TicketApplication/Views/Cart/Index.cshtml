@@ -50,6 +50,27 @@
         <div class="row">
             <div class="col-md-4 offset-md-8">
                 <h4 class="d-flex justify-content-between">
+                    <span>Chọn phương thức thanh toán:</span>
+                </h4>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodQR" value="QR" required>
+                    <label class="form-check-label" for="paymentMethodQR">
+                        Thanh toán QR
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodDomestic" value="DomesticCard" required>
+                    <label class="form-check-label" for="paymentMethodDomestic">
+                        Thẻ nội địa và tài khoản ngân hàng
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodInternational" value="InternationalCard" required>
+                    <label class="form-check-label" for="paymentMethodInternational">
+                        Thẻ thanh toán quốc tế
+                    </label>
+                </div>
+                <h4 class="d-flex justify-content-between mt-3">
                     <span>Tổng:</span>
                     <strong>@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
                 </h4>
