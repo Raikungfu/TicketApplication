@@ -25,7 +25,24 @@ namespace TicketApplication.Controllers
 
             return View(events);
         }
+        public async Task<IActionResult> EventDetail(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
 
+            var eventDetail = await _context.Events
+                .Include(e => e.Zones)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (eventDetail == null)
+            {
+                return NotFound();
+            }
+
+            return View("EventDetail", eventDetail);
+        }
         public IActionResult Privacy()
         {
             return View();
