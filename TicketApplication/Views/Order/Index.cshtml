@@ -1,38 +1,108 @@
-﻿@model List<Order>
+﻿@model IEnumerable<TicketApplication.Models.Order>
 
-<div class="order-history">
-    <h2>Order History</h2>
-    @foreach (var order in Model)
+@{
+    TempData["Title"] = "Orders History";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Orders History</h2>
+
+    @if (!Model.Any())
     {
-        <div class="order-item" onclick="getOrderDetails(@order.Id)">
-            <strong>Order ID:</strong> @order.Id <br>
-            <strong>Date:</strong> @order.CreatedAt <br>
-            <strong>Status:</strong> @order.Status
-            <div id="details-@order.Id" class="order-details" style="display: none;"></div>
+        <div class="alert alert-warning" role="alert">
+            No orders available.
         </div>
     }
+    else
+    {
+        <table class="table  table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Order ID</th>
+                    <th>User ID</th>
+                    <th>User Email</th>
+                    <th>Status</th>
+                    <th>Total Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.Id</td>
+                        <td>@order.UserId</td>
+                        <td>@order.User.Email</td>
+                        <td>@order.Status</td>
+                        <td>@order.TotalAmount đ</td>
+                        <td>
+                            <!-- Button to trigger the detail modal -->
+                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#orderDetailModal"
+                                    data-order-id="@order.Id" data-user-email="@order.User.Email"
+                                    data-total-amount="@order.TotalAmount đ"
+                                    data-order-details="@Html.Raw(string.Join(";", order.OrderDetails.Select(d => $"Ticket: {d.Ticket?.Id} ,Zone: {d.Ticket?.Zone?.Name}, Quantity: {d.Quantity}")))">
+                                View Details
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalLabel">Order Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Order ID: <span id="modalOrderId"></span></h6>
+                <h6>User Email: <span id="modalUserEmail"></span></h6>
+                <h6>Total Amount: <span id="modalTotalAmount"></span></h6>
+                <h6>Order Details:</h6>
+                <ul id="modalOrderDetails"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        function getOrderDetails(orderId) {
-            const detailsDiv = $('#details-' + orderId);
-            if (detailsDiv.is(':empty')) {
-                $.ajax({
-                    url: '/Order/GetOrderDetails',
-                    type: 'GET',
-                    data: { orderId: orderId },
-                    success: function (result) {
-                        detailsDiv.html(result);
-                        detailsDiv.show();
-                    },
-                    error: function () {
-                        alert('Error retrieving order details.');
-                    }
-                });
-            } else {
-                detailsDiv.toggle();
-            }
-        }
+        // Script to handle modal population for order details
+        const orderDetailModal = document.getElementById('orderDetailModal');
+        orderDetailModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget; // Button that triggered the modal
+
+            const orderId = button.getAttribute('data-order-id');
+            const userEmail = button.getAttribute('data-user-email');
+            const totalAmount = button.getAttribute('data-total-amount');
+            const orderDetails = button.getAttribute('data-order-details');
+
+            // Update the modal's content.
+            document.getElementById('modalOrderId').textContent = orderId;
+            document.getElementById('modalUserEmail').textContent = userEmail;
+            document.getElementById('modalTotalAmount').textContent = totalAmount;
+
+            // Split details by ';' and create list items
+            const detailsArray = orderDetails.split(';');
+            const modalOrderDetailsList = document.getElementById('modalOrderDetails');
+            modalOrderDetailsList.innerHTML = ""; // Clear previous details
+
+            detailsArray.forEach(detail => {
+                if (detail.trim()) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = detail.trim(); // Trim whitespace
+                    modalOrderDetailsList.appendChild(listItem);
+                }
+            });
+        });
+
     </script>
 }

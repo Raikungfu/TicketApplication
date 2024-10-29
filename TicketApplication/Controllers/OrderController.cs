@@ -5,6 +5,7 @@ using System.Security.Claims;
 using TicketApplication.Data;
 using TicketApplication.Library;
 using TicketApplication.Models;
+using TicketApplication.Service;
 
 namespace TicketApplication.Controllers
 {
@@ -14,12 +15,14 @@ namespace TicketApplication.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly EmailService _emailService;
 
-        public OrderController(ILogger<HomeController> logger, ApplicationDbContext context, IConfiguration configuration)
+        public OrderController(ILogger<HomeController> logger, ApplicationDbContext context, IConfiguration configuration, EmailService emailService)
         {
             _logger = logger;
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         [Authorize(Roles = "Customer")]
@@ -221,9 +224,11 @@ namespace TicketApplication.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Thanh toán thành công và đơn hàng đã được cập nhật.";
+            var user = await _context.Users.FindAsync(claimId);
+
+            _emailService.SendTicketOrderConfirmationMail(user.Email, user.Name, order);
+            TempData["SuccessMessage"] = "Thanh toán thành công, Ticket đã được gửi đến email của bạn.";
             return RedirectToAction("Index", "Order");
         }
     }
-
 }

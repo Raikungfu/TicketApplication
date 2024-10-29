@@ -2,6 +2,12 @@
 
 <div class="container mt-5 mh-100">
     <h2>Giỏ hàng của bạn</h2>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
     <form method="post" action="/Order/Checkout">
         <table class="table table-bordered">
             <thead class="thead-light">
@@ -19,7 +25,7 @@
                 {
                     @foreach (var item in Model)
                     {
-                        <tr>
+                        <tr id="item-row-@item.Zone.Id">
                             <td>
                                 <img src="@item.Zone.Event.Image" alt="Product Image" style="width: 50px; height: 50px;">
                                 
@@ -36,7 +42,7 @@
                                        id="quantity-@item.Zone.Id"
                                        onchange="updateQuantity(@item.Zone.Id)">
                             </td>
-                            <td>@item.TotalPrice.ToString("N0") đ</td>
+                            <td id="item-total-@item.Zone.Id">@item.TotalPrice.ToString("N0") đ</td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeItem(@item.Zone.Id)">Xóa</button>
                             </td>
@@ -72,7 +78,7 @@
                 </div>
                 <h4 class="d-flex justify-content-between mt-3">
                     <span>Tổng:</span>
-                    <strong>@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
+                    <strong id="grand-total">@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
                 </h4>
                 <button type="submit" class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
             </div>
@@ -87,15 +93,21 @@
                 method: 'DELETE',
             })
                 .then(response => {
-                    if (response.ok) {
-                        location.reload();
+                    if (data.success) {
+                        document.querySelector(`#item-row-${itemId}`).remove();
+
+                        const newGrandTotal = data.newGrandTotal;
+                        document.querySelector('#grand-total').textContent = newGrandTotal.toLocaleString('vi-VN') + ' đ';
+
+                        showNotification('Xóa sản phẩm thành công!', 'success');
                     } else {
-                        alert("Xóa sản phẩm không thành công!");
+                        showNotification('Xóa sản phẩm không thành công!', 'danger');
                     }
+
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi xóa sản phẩm.");
+                    showNotification('Có lỗi xảy ra khi xóa sản phẩm.', 'danger');
                 });
         }
     }
@@ -112,17 +124,21 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        location.reload();
+                        const itemTotal = data.updatedTotalPrice;
+                        document.querySelector(`#item-total-${itemId}`).textContent = itemTotal.toLocaleString('vi-VN') + ' đ';
+
+                        const newGrandTotal = data.newGrandTotal;
+                        document.querySelector('#grand-total').textContent = newGrandTotal.toLocaleString('vi-VN') + ' đ';
                     } else {
-                        alert("Cập nhật số lượng không thành công!");
+                        showNotification('Cập nhật số lượng không thành công!', 'danger');
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi cập nhật số lượng.");
+                    console.error('Error:', error); 
+                    showNotification('Có lỗi xảy ra khi cập nhật số lượng.', 'danger');
                 });
-        } else {    
-            alert("Số lượng phải lớn hơn 0.");
+        } else {
+            showNotification('Số lượng phải lớn hơn 0.', 'danger');
         }
     }
 </script>

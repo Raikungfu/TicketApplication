@@ -86,9 +86,7 @@ namespace TicketApplication.Controllers
                 _applicationDbContext.Users.Add(user);
                 await _applicationDbContext.SaveChangesAsync();
 
-                var subject = "Xác nhận đăng ký thành công";
-                var body = $"Xin chào {user.Name},<br><br>Cảm ơn bạn đã đăng ký. Bạn đã đăng ký thành công.";
-                _emailService.SendMail(subject, user.Email, body);
+                _emailService.SendRegistrationConfirmationMail(user.Email, user.Name);
 
                 return Json(new { success = true, message = "Registration successful. Email sent!" });
             }

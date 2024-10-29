@@ -1,6 +1,6 @@
 ﻿@model Event
 @{
-    ViewData["Title"] = Model.Title;
+    TempData["Title"] = Model.Title;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,34 +8,39 @@
     <!-- Hero Section -->
     <div class="position-relative" style="height: 60vh; background-color: #343a40;">
         <div class="position-absolute top-0 start-0 w-100 h-100">
-            <img src="@Model.Image"
-                 alt="@Model.Title"
-                 class="img-fluid w-100 h-100" style="opacity: 0.6; object-fit: cover;">
+            @if (!string.IsNullOrEmpty(Model.Image))
+            {
+                <img src="@Url.Content("~/Images/" + Model.Image)" alt="@Model.Title"
+                     class="img-fluid w-100 h-100" style="opacity: 0.6; object-fit: cover;" />
+            }
+            else
+            {
+                <span>No Image</span>
+            }
         </div>
         <div class="position-relative d-flex align-items-center h-100">
-            
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="container py-5 mb-4">
         <div class="row">
-            
+
             <!-- Left Column - Event Details -->
             <div class="col-lg-8 ">
-            <div class="container">
-                <h1 class="display-4">@Model.Title</h1>
-                <div class="d-flex align-items-center mb-4">
+                <div class="container">
+                    <h1 class="display-4">@Model.Title</h1>
+                    <div class="d-flex align-items-center mb-4">
                         <i class="bi bi-calendar-event me-2"></i>
                         <span>@ViewBag.FormattedDate</span>
-                </div>
-                <div class="d-flex align-items-center">
+                    </div>
+                    <div class="d-flex align-items-center">
                         <i class="bi bi-geo-alt-fill me-2"></i>
-                    <span>@Model.Location</span>
+                        <span>@Model.Location</span>
+                    </div>
                 </div>
             </div>
-            </div>
-            
+
 
             <!-- Right Column - Ticket Categories -->
             <div class="col-lg-4">
@@ -69,7 +74,7 @@
                             <div class="mb-3 d-flex align-items-center">
                                 <label for="quantityInput" class="form-label me-3">Số lượng:</label>
                                 <input type="number" id="quantityInput" class="form-control form-control-sm" min="1" value="1" onchange="updateQuantity()" style="width: 80px;">
-                                @if(Model.Zones.First().AvailableTickets > 0)
+                                @if (Model.Zones.First().AvailableTickets > 0)
                                 {
                                     <button id="bookTicketBtn" class="btn btn-primary ms-5 " onclick="addToCart()">
                                         Đặt vé
@@ -87,14 +92,14 @@
                 </div>
             </div>
             <div class="col-lg-12 mt-5">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h2 class="h4">Thông tin sự kiện</h2>
-                            <div class="prose text-gray-600">
-                                @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
-                            </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h4">Thông tin sự kiện</h2>
+                        <div class="prose text-gray-600">
+                            @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
                         </div>
                     </div>
+                </div>
             </div>
         </div>
     </div>
@@ -136,15 +141,15 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        alert("Đã thêm vào giỏ hàng!");
+                        showNotification('Đã thêm vào giỏ hàng!', 'success');
                     } else {
-                        alert("Có lỗi xảy ra khi thêm vào giỏ hàng.");
+                        showNotification('Có lỗi xảy ra khi thêm vào giỏ hàng.', 'danger');
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("Không thể thêm vào giỏ hàng.");
+                    showNotification('Không thể thêm vào giỏ hàng.', 'danger');
                 });
-                }
+        }
     </script>
 }

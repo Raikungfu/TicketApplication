@@ -24,8 +24,9 @@ namespace TicketApplication.Controllers
         public async Task<IActionResult> Index()
         {
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (claimId == null) {
-                return Unauthorized("Người dùng chưa đăng nhập"); 
+            if (claimId == null)
+            {
+                return Unauthorized("Người dùng chưa đăng nhập");
             }
 
             var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(x => x.Zone).ThenInclude(y => y.Event).ToListAsync();
