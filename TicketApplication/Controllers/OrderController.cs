@@ -28,7 +28,7 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket).ToListAsync();
+            var orders = await _context.Orders.Where(x => x.UserId == claimId).Include(x => x.OrderDetails).ThenInclude(y => y.Zone).ToListAsync();
 
             return View(orders);
         }
@@ -55,10 +55,10 @@ namespace TicketApplication.Controllers
                 var orderDetail = new OrderDetail
                 {
                     OrderId = order.Id,
-                    TicketId = item.Ticket.Id,
+                    ZoneId = item.Zone.Id,
                     Quantity = item.Quantity,
-                    UnitPrice = item.Ticket.Zone.Price,
-                    TotalPrice = item.Ticket.Zone.Price * item.Quantity
+                    UnitPrice = item.Zone.Price,
+                    TotalPrice = item.Zone.Price * item.Quantity
                 };
 
                 order.TotalAmount += orderDetail.TotalPrice;

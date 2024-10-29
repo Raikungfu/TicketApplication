@@ -26,8 +26,8 @@ namespace TicketApplication.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Cart>().HasKey(c => new { c.UserId, c.TicketId });
-            builder.Entity<OrderDetail>().HasKey(od => new { od.OrderId, od.TicketId });
+            builder.Entity<Cart>().HasKey(c => new { c.UserId, c.ZoneId });
+            builder.Entity<OrderDetail>().HasKey(od => new { od.OrderId, od.ZoneId });
 
             // Configure Discount entity
             builder.Entity<Discount>(entity =>

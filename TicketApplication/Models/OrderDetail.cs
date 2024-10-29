@@ -7,8 +7,8 @@ namespace TicketApplication.Models
         public string OrderId { get; set; }
         public virtual Order? Order { get; set; }
 
-        public string TicketId { get; set; }
-        public virtual Ticket? Ticket { get; set; }
+        public string ZoneId { get; set; }
+        public virtual Zone? Zone { get; set; }
 
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
