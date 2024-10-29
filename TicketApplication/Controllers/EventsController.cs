@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TicketApplication.Data;
 using TicketApplication.Models;
+using TicketApplication.Service;
 
 namespace TicketApplication.Controllers
 {
     public class EventsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UploadFileService _uploadFileService;
 
-        public EventsController(ApplicationDbContext context)
+        public EventsController(ApplicationDbContext context, UploadFileService uploadFileService)
         {
             _context = context;
+            _uploadFileService = uploadFileService;
         }
 
         // GET: Events
@@ -54,11 +57,14 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Location,Date,Image")] Event @event)
+        public async Task<IActionResult> Create([Bind("Title,Description,Location,Date,ImageFile")] Event @event)
         {
             if (ModelState.IsValid)
             {
-
+                if (@event.ImageFile != null)
+                {
+                    @event.Image = _uploadFileService.uploadImage(@event.ImageFile, "Images");
+                }
                 @event.CreatedAt = DateTime.Now;
                 _context.Add(@event);
                 await _context.SaveChangesAsync();
@@ -97,7 +103,7 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Title,Description,Location,Date,Image,Id")] Event @event)
+        public async Task<IActionResult> Edit(string id, [Bind("Title,Description,Location,Date,ImageFile,Id")] Event @event)
         {
             if (id != @event.Id)
             {
@@ -108,7 +114,11 @@ namespace TicketApplication.Controllers
             eventToUpdate.Description = @event.Description;
             eventToUpdate.Location = @event.Location;
             eventToUpdate.Date = @event.Date;
-            eventToUpdate.Image = @event.Image;
+
+            if (@event.ImageFile != null)
+            {
+                eventToUpdate.Image = _uploadFileService.uploadImage(@event.ImageFile, "Images");
+            }
 
             if (ModelState.IsValid)
             {

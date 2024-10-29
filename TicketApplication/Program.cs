@@ -46,6 +46,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<UploadFileService>();
 
 var app = builder.Build();
 
