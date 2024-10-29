@@ -225,15 +225,20 @@ namespace TicketApplication.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TicketId")
+                    b.Property<string>("ZoneId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "TicketId");
+                    b.Property<string>("TicketId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "ZoneId");
 
                     b.HasIndex("TicketId");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("Carts");
                 });
@@ -365,11 +370,14 @@ namespace TicketApplication.Migrations
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TicketId")
+                    b.Property<string>("ZoneId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("TicketId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18, 2)");
@@ -377,9 +385,11 @@ namespace TicketApplication.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.HasKey("OrderId", "TicketId");
+                    b.HasKey("OrderId", "ZoneId");
 
                     b.HasIndex("TicketId");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("OrderDetails");
                 });
@@ -604,11 +614,9 @@ namespace TicketApplication.Migrations
 
             modelBuilder.Entity("TicketApplication.Models.Cart", b =>
                 {
-                    b.HasOne("TicketApplication.Models.Ticket", "Ticket")
+                    b.HasOne("TicketApplication.Models.Ticket", null)
                         .WithMany("Carts")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TicketId");
 
                     b.HasOne("TicketApplication.Models.User", "User")
                         .WithMany("Carts")
@@ -616,9 +624,15 @@ namespace TicketApplication.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Ticket");
+                    b.HasOne("TicketApplication.Models.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
+
+                    b.Navigation("Zone");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Order", b =>
@@ -640,15 +654,19 @@ namespace TicketApplication.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketApplication.Models.Ticket", "Ticket")
+                    b.HasOne("TicketApplication.Models.Ticket", null)
                         .WithMany("OrderDetails")
-                        .HasForeignKey("TicketId")
+                        .HasForeignKey("TicketId");
+
+                    b.HasOne("TicketApplication.Models.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("Ticket");
+                    b.Navigation("Zone");
                 });
 
             modelBuilder.Entity("TicketApplication.Models.Payment", b =>
