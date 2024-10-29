@@ -132,7 +132,6 @@
     </div>
 </div>
 
-
 <!-- JavaScript -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -191,9 +190,13 @@
             });
 
             const result = await response.json();
-            alert(result.message);
-            if (!result.success) {
-                showNotification(result.message, "danger");
+            if (result.success) {
+                showNotification(result.message, 'success');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 5000);
+            } else {
+                showNotification(result.message, 'danger');
             }
         });
 

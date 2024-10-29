@@ -53,10 +53,7 @@ namespace TicketApplication.Controllers
                         new ClaimsPrincipal(claimsIdentity)
                     );
 
-                    ViewData["NotificationMessage"] = "Login successful!";
-                    ViewData["NotificationType"] = "success";
-
-                    return RedirectToAction("Index", "Home");
+                    return Json(new { success = true, message = "Login successful!" });
                 }
                 else
                 {
