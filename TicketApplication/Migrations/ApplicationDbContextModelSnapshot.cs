@@ -533,6 +533,9 @@ namespace TicketApplication.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EventId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -549,9 +552,6 @@ namespace TicketApplication.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
