@@ -1,4 +1,4 @@
-﻿@model TicketApplication.Models.Event
+﻿@model Event
 @{
     ViewData["Title"] = Model.Title;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,18 +12,19 @@
                  alt="@Model.Title"
                  class="img-fluid w-100 h-100" style="opacity: 0.6; object-fit: cover;">
         </div>
-        
-            <
+        <div class="position-relative d-flex align-items-center h-100">
+            
+        </div>
     </div>
 
     <!-- Main Content -->
     <div class="container py-5">
         <div class="row">
+            
             <!-- Left Column - Event Details -->
-            <div class="col-lg-8 mb-4">
-                div class="container">
-                <h1 class="display-4 ">@Model.Title</h1>
-                <div class="d-flex align-items-center  mb-4">
+            <div class="container">
+                <h1 class="display-4">@Model.Title</h1>
+                <div class="d-flex align-items-center mb-4">
                     <i class="fas fa-calendar me-2"></i>
                     <span>@Model.Date</span>
                 </div>
@@ -32,8 +33,7 @@
                     <span>@Model.Location</span>
                 </div>
             </div>
-                
-            </div>
+            
 
             <!-- Right Column - Ticket Categories -->
             <div class="col-lg-4">
@@ -62,10 +62,12 @@
                                     Còn @Model.Zones.First().AvailableTickets vé
                                 </span>
                             </div>
-                            <div class="mb-3 d-flex align-items-center space-beetween-2">
+
+                            <!-- Book Ticket Button -->
+                            <div class="mb-3 d-flex align-items-center">
                                 <label for="quantityInput" class="form-label me-3">Số lượng:</label>
-                                <input type="number" id="quantityInput" class="form-control form-control-sm" min="1" value="1" onchange="updateQuantity()">
-                                <button id="bookTicketBtn" class="btn btn-primary w-100 ms-5">
+                                <input type="number" id="quantityInput" class="form-control form-control-sm" min="1" value="1" onchange="updateQuantity()" style="width: 80px;">
+                                <button id="bookTicketBtn" class="btn btn-primary ms-5">
                                     Đặt vé
                                 </button>
                             </div>
@@ -74,14 +76,16 @@
                 </div>
             </div>
             <div class="col-lg-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h2 class="h4">Thông tin sự kiện</h2>
-                    <div class="prose text-gray-600">
-                        @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h2 class="h4">Thông tin sự kiện</h2>
+                            <div class="prose text-gray-600">
+                                @Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
@@ -100,7 +104,6 @@
             document.getElementById("zoneAvailability").textContent = "Còn " + availability + " vé";
 
             const bookButton = document.getElementById("bookTicketBtn");
-            const quantityInput = document.getElementById("quantityInput");
             if (availability == "0") {
                 bookButton.classList.add("opacity-50", "disabled");
                 bookButton.disabled = true;
