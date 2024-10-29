@@ -10,22 +10,22 @@ using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
 {
-    public class ZonesController : Controller
+    public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ZonesController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Zones
+        // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Zones.Include(z => z.Event).AsNoTracking().ToListAsync());
+            return View(await _context.Users.ToListAsync());
         }
 
-        // GET: Zones/Details/5
+        // GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -33,65 +33,69 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var zone = await _context.Zones.Include(z => z.Event)
+            var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (zone == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(zone);
+            return View(user);
         }
 
-        // GET: Zones/Create
+        // GET: Users/Create
         public IActionResult Create()
         {
-            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
-
             return View();
         }
 
-        // POST: Zones/Create
+        // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Price,AvailableTickets,Description,EventId")] Zone zone)
+        public async Task<IActionResult> Create([Bind("Name,Email,Password,PhoneNumber,Address,Role,Id,CreatedAt,CreatedBy,LastModified,LastModifiedBy")] User user)
         {
             if (ModelState.IsValid)
             {
-                zone.CreatedAt = DateTime.Now;
-                _context.Add(zone);
+                _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(zone);
+            return View(user);
         }
 
-        // GET: Zones/Edit/5
+        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
-            var zone = await _context.Zones.FindAsync(id);
-            if (zone == null)
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
-            return View(zone);
+            var roles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Customer", Text = "Customer" },
+                new SelectListItem { Value = "Admin", Text = "Admin" }
+            };
+            ViewData["Roles"] = new SelectList(roles, "Value", "Text", user.Role);
+
+            return View(user);
         }
 
-        // POST: Zones/Edit/5
+        // POST: Users/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Price,AvailableTickets,Description,EventId,Id")] Zone zone)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Email,Password,PhoneNumber,Address,Role,Id,CreatedAt,CreatedBy,LastModified,LastModifiedBy")] User user)
         {
-            if (id != zone.Id)
+            if (id != user.Id)
             {
                 return NotFound();
             }
@@ -100,19 +104,12 @@ namespace TicketApplication.Controllers
             {
                 try
                 {
-                    var zoneToEdit = _context.Zones.Find(id);
-                    zoneToEdit.Name = zone.Name;
-                    zoneToEdit.Price = zone.Price;
-                    zoneToEdit.AvailableTickets = zone.AvailableTickets;
-                    zoneToEdit.Description = zone.Description;
-                    zoneToEdit.EventId = zone.EventId;
-
-                    _context.Entry(zoneToEdit).State = EntityState.Modified;
+                    _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ZoneExists(zone.Id))
+                    if (!UserExists(user.Id))
                     {
                         return NotFound();
                     }
@@ -123,10 +120,10 @@ namespace TicketApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(zone);
+            return View(user);
         }
 
-        // GET: Zones/Delete/5
+        // GET: Users/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -134,34 +131,34 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var zone = await _context.Zones
+            var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (zone == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(zone);
+            return View(user);
         }
 
-        // POST: Zones/Delete/5
+        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var zone = await _context.Zones.FindAsync(id);
-            if (zone != null)
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
             {
-                _context.Zones.Remove(zone);
+                _context.Users.Remove(user);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ZoneExists(string id)
+        private bool UserExists(string id)
         {
-            return _context.Zones.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
