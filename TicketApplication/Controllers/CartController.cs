@@ -28,7 +28,7 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập"); 
             }
 
-            var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(x => x.Ticket).ToListAsync();
+            var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(x => x.Zone).ToListAsync();
 
             return View(cart);
         }
@@ -36,7 +36,7 @@ namespace TicketApplication.Controllers
         [HttpDelete]
         public IActionResult RemoveItem(string id)
         {
-            var cartItem = _context.Carts.FirstOrDefault(c => c.Ticket.Id == id);
+            var cartItem = _context.Carts.FirstOrDefault(c => c.Zone.Id == id);
 
             if (cartItem != null)
             {
@@ -52,7 +52,7 @@ namespace TicketApplication.Controllers
         [HttpPut]
         public IActionResult UpdateQuantity(string itemId, [FromBody] UpdateQuantityModel model)
         {
-            var cartItem = _context.Carts.FirstOrDefault(c => c.Ticket.Id == itemId);
+            var cartItem = _context.Carts.FirstOrDefault(c => c.Zone.Id == itemId);
 
             if (cartItem != null)
             {
@@ -64,11 +64,49 @@ namespace TicketApplication.Controllers
             return NotFound();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToCart(string itemId, [FromBody] AddToCartModel model)
+        {
+            var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (claimId == null)
+            {
+                return Unauthorized("Người dùng chưa đăng nhập");
+            }
+
+            var existingCartItem = await _context.Carts
+                .FirstOrDefaultAsync(c => c.UserId == claimId && c.Zone.Id == itemId);
+
+            if (existingCartItem != null)
+            {
+                existingCartItem.Quantity += model.Quantity;
+            }
+            else
+            {
+                var newCartItem = new Cart
+                {
+                    UserId = claimId,
+                    ZoneId = itemId,
+                    Quantity = model.Quantity
+                };
+                await _context.Carts.AddAsync(newCartItem);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+
     }
 
     public class UpdateQuantityModel
     {
         public int Quantity { get; set; }
     }
+
+    public class AddToCartModel
+    {
+        public int Quantity { get; set; }
+    }
+
 
 }

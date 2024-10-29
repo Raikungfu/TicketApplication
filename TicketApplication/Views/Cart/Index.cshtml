@@ -20,23 +20,23 @@
                     {
                         <tr>
                             <td>
-                                <img src="@item.Ticket.Zone.Event.Image" alt="Product Image" style="width: 50px; height: 50px;">
-                                <span>@item.Ticket.Title</span>
+                                <img src="@item.Zone.Event.Image" alt="Product Image" style="width: 50px; height: 50px;">
+                                <span>@item.Zone.Name</span>
                             </td>
-                            <td>@item.Ticket.Zone.Price.ToString("N0") đ</td>
+                            <td>@item.Zone.Price.ToString("N0") đ</td>
                             <td>
                                 <input type="number"
-                                       name="quantities[@item.Ticket.Id]"
+                                       name="quantities[@item.Zone.Id]"
                                        value="@item.Quantity"
                                        min="1"
                                        class="form-control"
                                        style="width: 70px;"
-                                       id="quantity-@item.Ticket.Id"
-                                       onchange="updateQuantity(@item.Ticket.Id)">
+                                       id="quantity-@item.Zone.Id"
+                                       onchange="updateQuantity(@item.Zone.Id)">
                             </td>
                             <td>@item.TotalPrice.ToString("N0") đ</td>
                             <td>
-                                <button type="button" class="btn btn-danger" onclick="removeItem(@item.Ticket.Id)">Xóa</button>
+                                <button type="button" class="btn btn-danger" onclick="removeItem(@item.Zone.Id)">Xóa</button>
                             </td>
                         </tr>
                     }
