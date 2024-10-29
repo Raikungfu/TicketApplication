@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ClothesStoreMobileApplication.Library;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -12,11 +13,13 @@ namespace TicketApplication.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public OrderController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public OrderController(ILogger<HomeController> logger, ApplicationDbContext context, IConfiguration configuration)
         {
             _logger = logger;
             _context = context;
+            _configuration = configuration;
         }
 
         [Authorize(Roles = "Customer")]
@@ -114,17 +117,58 @@ namespace TicketApplication.Controllers
             _context.Carts.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Success");
+            var paymentLink = createPaymentLink(order.TotalAmount, paymentMethod, order.Id);
+            return Redirect(paymentLink);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ConfirmPayment(string orderId, decimal amount, string paymentMethod)
+        public string createPaymentLink(decimal TotalPrice, string paymentMethod, string orderId)
+        {
+            string vnp_ReturnUrl = _configuration["VnPay:PaymentBackReturnUrl"];
+            string vnp_Url = _configuration["VnPay:BaseURL"];
+            string vnp_TmnCode = _configuration["VnPay:TmnCode"];
+            string vnp_HashSecret = _configuration["VnPay:HashSecret"];
+
+            VnPayLibrary vnpay = new VnPayLibrary();
+
+            vnpay.AddRequestData("vnp_Version", "2.1.0");
+            vnpay.AddRequestData("vnp_Command", "pay");
+            vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
+            vnpay.AddRequestData("vnp_Amount", (TotalPrice * 100).ToString());
+
+            if (paymentMethod == "DomesticCard")
+            {
+                vnpay.AddRequestData("vnp_BankCode", "VNBANK");
+            }
+            else if (paymentMethod == "InternationalCard")
+            {
+                vnpay.AddRequestData("vnp_BankCode", "INTCARD");
+            }
+
+            vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CurrCode", "VND");
+            vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(HttpContext));
+            vnpay.AddRequestData("vnp_Locale", "vn");
+            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + orderId);
+            vnpay.AddRequestData("vnp_OrderType", "other");
+            vnpay.AddRequestData("vnp_ReturnUrl", vnp_ReturnUrl);
+            vnpay.AddRequestData("vnp_TxnRef", orderId);
+
+            string paymentUrl = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
+            return paymentUrl;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmPayment()
         {
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (claimId == null)
             {
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
+
+            var queryParams = Request.Query;
+
+            Dictionary<string, string> queryDictionary = queryParams.ToDictionary(q => q.Key, q => q.Value.ToString());
 
             var order = await _context.Orders
                 .Include(o => o.Payments)
@@ -134,7 +178,7 @@ namespace TicketApplication.Controllers
             {
                 return NotFound("Đơn hàng không tồn tại.");
             }
-
+            /*
             var payment = order.Payments ?? new Payment
             {
                 OrderId = order.Id,
@@ -142,7 +186,6 @@ namespace TicketApplication.Controllers
                 PaymentMethod = paymentMethod,
                 Status = "Completed"
             };
-
             if (order.Payments == null)
             {
                 await _context.Payments.AddAsync(payment);
@@ -153,7 +196,8 @@ namespace TicketApplication.Controllers
                 payment.PaymentMethod = paymentMethod;
                 payment.Status = "Completed";
             }
-
+            
+            */
             order.Status = "Paid";
             _context.Orders.Update(order);
 
