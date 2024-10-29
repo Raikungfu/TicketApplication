@@ -1,4 +1,6 @@
-﻿namespace TicketApplication.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TicketApplication.Models
 {
     public class Cart
     {
@@ -11,6 +13,7 @@
         public virtual Ticket? Ticket { get; set; }
         public virtual User? User { get; set; }
 
-        public decimal TotalPrice => Ticket.Price * Quantity;
+        [NotMapped]
+        public decimal TotalPrice => Ticket.Zone.Price * Quantity;
     }
 }

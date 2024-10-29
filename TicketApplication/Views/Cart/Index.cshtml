@@ -20,10 +20,10 @@
                     {
                         <tr>
                             <td>
-                                <img src="@item.Ticket.Image" alt="Product Image" style="width: 50px; height: 50px;">
+                                <img src="@item.Ticket.Zone.Event.Image" alt="Product Image" style="width: 50px; height: 50px;">
                                 <span>@item.Ticket.Title</span>
                             </td>
-                            <td>@item.Ticket.Price.ToString("N0") đ</td>
+                            <td>@item.Ticket.Zone.Price.ToString("N0") đ</td>
                             <td>
                                 <input type="number"
                                        name="quantities[@item.Ticket.Id]"

@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 
 namespace TicketApplication.Models
@@ -22,9 +23,11 @@ namespace TicketApplication.Models
 
         public string? Image { get; set; }
 
-        public decimal MaxTicketPrice => Tickets?.Any() == true ? Tickets.Max(ticket => ticket.Price) : 0;
+        [NotMapped]
+        public decimal MaxTicketPrice => Tickets?.Any() == true ? Tickets.Max(ticket => ticket.Zone.Price) : 0;
 
-        public decimal MinTicketPrice => Tickets?.Any() == true ? Tickets.Min(ticket => ticket.Price) : 0;
+        [NotMapped]
+        public decimal MinTicketPrice => Tickets?.Any() == true ? Tickets.Min(ticket => ticket.Zone.Price) : 0;
 
         public virtual ICollection<Ticket>? Tickets { get; set; }
 
