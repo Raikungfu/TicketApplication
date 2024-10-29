@@ -186,8 +186,7 @@ namespace TicketApplication.Controllers
             decimal amount = (decimal)Convert.ToDouble(queryDictionary["vnp_Amount"]);
             string paymentMethod = queryDictionary["vnp_BankCode"];
 
-            var order = await _context.Orders
-                .Include(o => o.Payments)
+            var order = await _context.Orders.Include(o => o.Payments).Include(x => x.OrderDetails).ThenInclude(y => y.Ticket.Zone.Event)
                 .FirstOrDefaultAsync(o => o.Id == vnp_TxnRef && o.UserId == claimId);
 
             if (order == null)

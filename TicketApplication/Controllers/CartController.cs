@@ -53,13 +53,18 @@ namespace TicketApplication.Controllers
         [HttpPut]
         public IActionResult UpdateQuantity(string itemId, [FromBody] UpdateQuantityModel model)
         {
-            var cartItem = _context.Carts.FirstOrDefault(c => c.Zone.Id == itemId);
+            var cartItem = _context.Carts.Include(c => c.Zone).FirstOrDefault(c => c.Zone.Id == itemId);
 
             if (cartItem != null)
             {
                 cartItem.Quantity = model.Quantity;
                 _context.SaveChanges();
-                return Ok(new { success = true, message = "Update quantity success" });
+                var updatedTotalPrice = cartItem.Quantity * cartItem.Zone.Price;
+                var newGrandTotal = _context.Carts.Sum(c => c.Quantity * c.Zone.Price);
+                return Ok(new { success = true, message = "Update quantity success",
+                    updatedTotalPrice = updatedTotalPrice, 
+                    newGrandTotal = newGrandTotal
+                });
             }
 
             return NotFound();

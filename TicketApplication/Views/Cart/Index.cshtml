@@ -28,7 +28,7 @@
                         <tr id="item-row-@item.Zone.Id">
                             <td>
                                 <img src="@item.Zone.Event.Image" alt="Product Image" style="width: 50px; height: 50px;">
-                                
+
                             </td>
                             <td>@item.Zone.Name</td>
                             <td>@item.Zone.Price.ToString("N0") đ</td>
@@ -40,11 +40,11 @@
                                        class="form-control"
                                        style="width: 70px;"
                                        id="quantity-@item.Zone.Id"
-                                       onchange="updateQuantity(@item.Zone.Id)">
+                                       onchange="updateQuantity('@item.Zone.Id')">
                             </td>
                             <td id="item-total-@item.Zone.Id">@item.TotalPrice.ToString("N0") đ</td>
                             <td>
-                                <button type="button" class="btn btn-danger" onclick="removeItem(@item.Zone.Id)">Xóa</button>
+                                <button type="button" class="btn btn-danger" onclick="removeItem('@item.Zone.Id')">Xóa</button>
                             </td>
                         </tr>
                     }
@@ -89,7 +89,7 @@
 <script>
     function removeItem(itemId) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-            fetch(`/Cart/RemoveItem/${itemId}`, {
+            fetch(`/Cart/RemoveItem?itemId=${itemId}`, {
                 method: 'DELETE',
             })
                 .then(response => response.json())
@@ -115,21 +115,31 @@
     function updateQuantity(itemId) {
         const quantity = document.getElementById(`quantity-${itemId}`).value;
         if (quantity > 0) {
-            fetch(`/Cart/UpdateQuantity/${itemId}`, {
+            fetch(`/Cart/UpdateQuantity?itemId=${itemId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ quantity: quantity })
+                body: JSON.stringify({ Quantity: quantity })
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                    console.log(data);
+                    if (data.success === true) {
                         const itemTotal = data.updatedTotalPrice;
-                        document.querySelector(`#item-total-${itemId}`).textContent = itemTotal.toLocaleString('vi-VN') + ' đ';
+                        if (itemTotal !== undefined) {
+                            document.querySelector(`#item-total-${itemId}`).textContent = itemTotal.toLocaleString('vi-VN') + ' đ';
+                        } else {
+                            console.error('updatedTotalPrice is undefined', data);
+                        }
 
                         const newGrandTotal = data.newGrandTotal;
-                        document.querySelector('#grand-total').textContent = newGrandTotal.toLocaleString('vi-VN') + ' đ';
+                        if (newGrandTotal !== undefined) {
+                            document.querySelector('#grand-total').textContent = newGrandTotal.toLocaleString('vi-VN') + ' đ';
+                        } else {
+                            console.error('newGrandTotal is undefined', data);
+                        }
+                        showNotification('Cập nhật số lượng thành công!', 'success');
                     } else {
                         showNotification('Cập nhật số lượng không thành công!', 'danger');
                     }
