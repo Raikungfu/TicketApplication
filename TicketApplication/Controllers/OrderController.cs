@@ -154,7 +154,7 @@ namespace TicketApplication.Controllers
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");
             vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
-            vnpay.AddRequestData("vnp_Amount", ((int)Math.Floor(TotalPrice) * 100).ToString());
+            vnpay.AddRequestData("vnp_Amount", (((double)TotalPrice) * 100).ToString());
 
             if (paymentMethod == "DomesticCard")
             {
