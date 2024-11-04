@@ -8,7 +8,7 @@
             @TempData["ErrorMessage"]
         </div>
     }
-    <form method="post" action="/Order/Checkout">
+    <form method="post" action="/Order/Checkout" onsubmit="return checkAgreement()">
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
@@ -35,7 +35,6 @@
                                 {
                                     <span>No Image</span>
                                 }
-
                             </td>
                             <td>@item.Zone.Name</td>
                             <td>@item.Zone.Price.ToString("N0") đ</td>
@@ -56,7 +55,6 @@
                         </tr>
                     }
                 }
-
             </tbody>
         </table>
 
@@ -83,6 +81,18 @@
                         Thẻ thanh toán quốc tế
                     </label>
                 </div>
+
+                <div class="form-check mt-3 p-3 border rounded" style="background-color: #f9f9f9;">
+                    <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                    <label class="form-check-label d-inline-block ml-2" for="termsAgreement" style="max-height: 80px; overflow-y: auto; display: inline-block; padding-right: 10px;">
+                        <strong>Đồng ý với các điều khoản:</strong>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>Khi quý khách hoàn tất quá trình thanh toán vé, giao dịch sẽ được xem là hoàn tất và không thể hủy bỏ hoặc hoàn tiền.</li>
+                        </ul>
+                    </label>
+                </div>
+
+
                 <h4 class="d-flex justify-content-between mt-3">
                     <span>Tổng:</span>
                     <strong id="grand-total">@Model.Sum(i => i.TotalPrice).ToString("N0") đ</strong>
@@ -94,6 +104,14 @@
 </div>
 
 <script>
+    function checkAgreement() {
+        const isAgreed = document.getElementById('termsAgreement').checked;
+        if (!isAgreed) {
+            alert('Bạn phải đồng ý với các điều khoản để tiếp tục.');
+            return false;
+        }
+        return true;
+    }
     function removeItem(itemId) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
             fetch(`/Cart/RemoveItem?itemId=${itemId}`, {
@@ -159,5 +177,4 @@
             showNotification('Số lượng phải lớn hơn 0.', 'danger');
         }
     }
-
 </script>
