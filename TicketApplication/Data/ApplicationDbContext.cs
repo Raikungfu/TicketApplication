@@ -22,6 +22,9 @@ namespace TicketApplication.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Zone> Zones { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -79,8 +82,19 @@ namespace TicketApplication.Data
                 .WithMany(od => od.Tickets)
                 .HasForeignKey(t => t.OrderDetailId)
                 .OnDelete(DeleteBehavior.Restrict);
-        }
 
+            builder.Entity<Room>()
+             .HasOne(r => r.Admin)
+             .WithMany(u => u.Rooms)
+             .HasForeignKey(r => r.AdminId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Room>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
 
 
     }

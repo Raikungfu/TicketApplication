@@ -21,6 +21,8 @@ namespace TicketApplication.Models
 
         public virtual ICollection<Cart>? Carts { get; set; }
         public virtual ICollection<Order>? Orders { get; set; }
+        public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
+        public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 
     }
 }

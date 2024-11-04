@@ -1,0 +1,168 @@
+﻿@using System.Security.Claims
+@model TicketApplication.Models.Room
+
+@{
+    ViewBag.Title = "Chat Room";
+    var currentUserId = User?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+}
+
+<div class="chat-room-container">
+    <h2 class="chat-room-title">Chat with admin @Model.Admin.Name</h2>
+
+    <div id="chatMessages">
+        @foreach (var message in Model.Messages)
+        {
+            var alignmentClass = message.FromUserId == currentUserId ? "my-message" : "other-message";
+            var displayName = message.FromUserId == currentUserId ? "Bạn" : message.FromUser.Name;
+
+            <div class="message @alignmentClass">
+                <strong>@displayName:</strong> @message.Content <br />
+                <small>@message.Timestamp</small>
+            </div>
+        }
+    </div>
+
+    <form id="chatForm">
+        <input type="text" name="messageContent" placeholder="Nhập tin nhắn..." required />
+        <button type="submit">Gửi</button>
+    </form>
+</div>
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .chat-room-container {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 400px);
+    }
+
+    .chat-room-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    #chatMessages {
+        flex: 1;
+        max-height: calc(100vh - 150px);
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background-color: #f9f9f9;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message {
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 8px;
+        max-width: 75%;
+    }
+
+    .my-message {
+        background-color: #d1f5d3;
+        align-self: flex-end;
+        text-align: right;
+    }
+
+    .other-message {
+        background-color: #f1f1f1;
+        align-self: flex-start;
+        text-align: left;
+    }
+
+    form {
+        display: flex;
+        margin-top: 15px;
+    }
+
+    input[type="text"] {
+        flex: 1;
+        padding: 10px;
+    }
+
+    button {
+        padding: 10px 15px;
+        margin-left: 10px;
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.8/signalr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        connection.start().then(function () {
+            console.log('SignalR đã khởi động...');
+            connection.invoke("JoinRoom", '@Model.Name', '@Model.User.Email');
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+
+        $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+
+        connection.on("ReceiveMessage", function (messageView) {
+            var alignmentClass = (messageView.fromUserName === '@Model.User.Email') ? "my-message" : "other-message";
+            var message = $('<div class="message ' + alignmentClass + '"></div>')
+                .html('<strong>' + messageView.fromUserName + ':</strong> ' + messageView.content + '<br /><small>' + new Date(messageView.timestamp).toLocaleString() + '</small>');
+            $('#chatMessages').append(message);
+            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+        });
+
+        $('#chatForm').on('submit', function (event) {
+            event.preventDefault();
+            var messageContent = $('input[name="messageContent"]').val().trim();
+            var roomId = '@Model.Id';
+
+            if (!messageContent) {
+                alert('Nội dung tin nhắn không được để trống.');
+                return;
+            }
+
+            $('#sendButton').prop('disabled', true);
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SendMessage", "Chat")",
+                data: { roomId: roomId, messageContent: messageContent },
+                success: function (response) {
+                    if (response.success) {
+                        connection.invoke("NewMessage", roomId, {
+                            Id: response.id,
+                            Content: messageContent,
+                            Timestamp: new Date(),
+                            FromUserName: '@Model.User.Name',
+                            FromFullName: '@Model.User.Email',
+                            Room: '@Model.Name'
+                        }).then(function () {
+                            var newMessage = $('<div class="message"></div>')
+                                .html('<strong>Bạn:</strong> ' + messageContent + '<br /><small>' + new Date().toLocaleString() + '</small>');
+                            $('#chatMessages').append(newMessage);
+                            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+                            $('input[name="messageContent"]').val('');
+                        }).catch(function (err) {
+                            console.error(err.toString());
+                            alert('Có lỗi xảy ra khi gửi tin nhắn.');
+                        });
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert('Có lỗi xảy ra khi gửi tin nhắn.');
+                },
+                complete: function () {
+                    $('#sendButton').prop('disabled', false);
+                }
+            });
+        });
+
+    });
+</script>

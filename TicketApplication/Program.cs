@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using TicketApplication.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
+using TicketApplication.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<UploadFileService>();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -79,5 +81,12 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapRazorPages();
+    endpoints.MapControllers();
+    endpoints.MapHub<ChatHub>("/chatHub");
+});
 
 app.Run();
