@@ -141,7 +141,7 @@
                             FromFullName: '@Model.User.Email',
                             Room: '@Model.Name'
                         }).then(function () {
-                            var newMessage = $('<div class="message"></div>')
+                            var newMessage = $('<div class="message my-message"></div>')
                                 .html('<strong>Bạn:</strong> ' + messageContent + '<br /><small>' + new Date().toLocaleString() + '</small>');
                             $('#chatMessages').append(newMessage);
                             $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
