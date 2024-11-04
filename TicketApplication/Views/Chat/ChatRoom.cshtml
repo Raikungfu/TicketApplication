@@ -13,7 +13,7 @@
         @foreach (var message in Model.Messages)
         {
             var alignmentClass = message.FromUserId == currentUserId ? "my-message" : "other-message";
-            var displayName = message.FromUserId == currentUserId ? "Bạn" : message.FromUser.Name;
+            var displayName = message.FromUserId == currentUserId ? "Bạn" : message.FromUser.Email;
 
             <div class="message @alignmentClass">
                 <strong>@displayName:</strong> @message.Content <br />
