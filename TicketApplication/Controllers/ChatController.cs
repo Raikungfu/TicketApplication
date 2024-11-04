@@ -121,8 +121,8 @@ namespace TicketAdminChat.Controllers
                             Timestamp = message.Timestamp,
                             FromUserName = userName,
                             Room = roomName
-    }
-});
+                        }
+                    });
                 }
                 else
                 {

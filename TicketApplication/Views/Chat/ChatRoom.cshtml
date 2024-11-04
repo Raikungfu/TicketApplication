@@ -133,8 +133,8 @@
                 data: { roomId: roomId, messageContent: messageContent },
                 success: function (response) {
                     if (response.success) {
-                        connection.invoke("NewMessage", roomId, {
-                            Id: response.id,
+                        connection.invoke("NewMessage", '@Model.Name', {
+                            Id: response.messageRes.id,
                             Content: messageContent,
                             Timestamp: new Date(),
                             FromUserName: '@Model.User.Name',
