@@ -14,8 +14,6 @@ namespace TicketApplication.Models
 
         public string UserId { get; set; }
 
-        public string Description { get; set; }
-
         public virtual User Admin { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
