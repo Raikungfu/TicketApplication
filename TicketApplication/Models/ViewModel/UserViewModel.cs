@@ -12,6 +12,7 @@ namespace TicketApplication.Models.ViewModel
         public string? CurrentRoom { get; set; }
         public string? Device { get; set; }
         public bool? IsOnline { get; set; }
+        public string? ConnectionId { get; set; }
 
     }
 
