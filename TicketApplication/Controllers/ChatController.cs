@@ -63,18 +63,22 @@ namespace TicketAdminChat.Controllers
         // GET: Chat/ChatRoom/{roomId}
         public async Task<ActionResult> ChatRoom(string roomId)
         {
-            var room = await _context.Rooms.Include(roomId => roomId.User).Include(roomId => roomId.Admin)
-                .Include(r => r.Messages).ThenInclude(x => x.FromUser)
-                .FirstOrDefaultAsync(r => r.Id == roomId);
+            var room = await _context.Rooms.Include(r => r.User).Include(r => r.Admin).FirstOrDefaultAsync(r => r.Id == roomId);
 
-            if (room == null)
+            if (room != null)
             {
-                return NotFound();
+                room.Messages = await _context.Messages
+                    .Where(m => m.ToRoomId == roomId)
+                    .OrderByDescending(m => m.Timestamp)
+                    .Take(20)
+                    .Include(m => m.FromUser)
+                    .Reverse()
+                    .ToListAsync();
+
+                return View(room);
             }
 
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-
-            return View(room);
+            return NotFound();
         }
 
 

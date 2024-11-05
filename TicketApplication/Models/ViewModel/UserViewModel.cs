@@ -25,4 +25,11 @@ namespace TicketApplication.Models.ViewModel
         public string? FromFullName { get; set; }
         public string? Room { get; set; }
     }
+
+    public class NewMessageViewModel
+    {
+        public string? Content { get; set; }
+        public string? FromUserName { get; set; }
+        public string? Room { get; set; }
+    }
 }

@@ -110,7 +110,7 @@
         connection.on("ReceiveMessage", function (messageView) {
             var alignmentClass = (messageView.fromUserName === '@Model.User.Email') ? "my-message" : "other-message";
             var message = $('<div class="message ' + alignmentClass + '"></div>')
-                .html('<strong>' + messageView.fromUserName + ':</strong> ' + messageView.content + '<br /><small>' + new Date(messageView.timestamp).toLocaleString() + '</small>');
+                .html('<strong>' + ((messageView.fromUserName === '@Model.User.Email') ? "Bạn" : messageView.fromUserName) + ':</strong> ' + messageView.content + '<br /><small>' + new Date(messageView.timestamp).toLocaleString() + '</small>');
             $('#chatMessages').append(message);
             $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
         });
@@ -127,40 +127,16 @@
 
             $('#sendButton').prop('disabled', true);
 
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("SendMessage", "Chat")",
-                data: { roomId: roomId, messageContent: messageContent },
-                success: function (response) {
-                    if (response.success) {
-                        connection.invoke("NewMessage", '@Model.Name', {
-                            Id: response.messageRes.id,
-                            Content: messageContent,
-                            Timestamp: new Date(),
-                            FromUserName: '@Model.User.Name',
-                            FromFullName: '@Model.User.Email',
-                            Room: '@Model.Name'
-                        }).then(function () {
-                            var newMessage = $('<div class="message my-message"></div>')
-                                .html('<strong>Bạn:</strong> ' + messageContent + '<br /><small>' + new Date().toLocaleString() + '</small>');
-                            $('#chatMessages').append(newMessage);
-                            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-                            $('input[name="messageContent"]').val('');
-                        }).catch(function (err) {
-                            console.error(err.toString());
-                            alert('Có lỗi xảy ra khi gửi tin nhắn.');
-                        });
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                    alert('Có lỗi xảy ra khi gửi tin nhắn.');
-                },
-                complete: function () {
-                    $('#sendButton').prop('disabled', false);
-                }
+            connection.invoke("NewMessage", '@Model.Name', {
+                Content: messageContent,
+                FromUserName: '@Model.User.Email',
+                Room: '@Model.Name'
+            }).then(function () {
+                $('input[name="messageContent"]').val('');
+                $('#sendButton').prop('disabled', false);
+            }).catch(function (err) {
+                console.error(err.toString());
+                alert('Có lỗi xảy ra khi gửi tin nhắn.');
             });
         });
 

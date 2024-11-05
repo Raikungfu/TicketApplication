@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Messaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TicketApplication.Data;
+using TicketApplication.Models;
 using TicketApplication.Models.ViewModel;
 
 namespace TicketApplication.Hubs
@@ -83,9 +87,44 @@ namespace TicketApplication.Hubs
                  .ConfigureAwait(false);
         }
 
-        public async Task NewMessage(string roomName, MessageViewModel message)
+        public async Task NewMessage(string roomName, NewMessageViewModel message)
         {
-            await Clients.OthersInGroup(roomName).SendAsync("ReceiveMessage", message)
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == message.FromUserName);
+
+            if(user == null)
+            {
+                return;
+            }
+
+            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Name == roomName);
+
+            if (room == null)
+            {
+                return;
+            }
+
+            var msg = new Message()
+            {
+                Content = Regex.Replace(message.Content, @"<.*?>", string.Empty),
+                FromUserId = user.Id,
+                ToRoomId = room.Id,
+                Timestamp = DateTime.Now
+            };
+
+            _context.Messages.Add(msg);
+            await _context.SaveChangesAsync();
+
+            var createdMessage = new MessageViewModel
+            {
+                Id = msg.Id,
+                Content = msg.Content,
+                Timestamp = msg.Timestamp,
+                FromUserName = user.Email,
+                FromFullName = user.Name,
+                Room = room.Name,
+            };
+
+            await Clients.Group(roomName).SendAsync("ReceiveMessage", createdMessage)
                  .ConfigureAwait(false);
         }
 
