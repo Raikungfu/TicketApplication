@@ -149,6 +149,36 @@ namespace TicketApplication.Controllers
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
+                var orders = await _context.Orders
+                    .Where(o => o.UserId == id)
+                    .ToListAsync();
+
+                foreach (var order in orders)
+                {
+                    var orderDetails = await _context.OrderDetails
+                        .Where(od => od.OrderId == order.Id).Include(x => x.Tickets)
+                        .ToListAsync();
+                    foreach(var oD in orderDetails)
+                    {
+                        _context.Tickets.RemoveRange(oD.Tickets);
+                    }
+                    _context.OrderDetails.RemoveRange(orderDetails);
+                    _context.Orders.Remove(order);
+                }
+
+                var cart = await _context.Carts.Where(x => x.UserId == user.Id).ToListAsync();
+                _context.Carts.RemoveRange(cart);
+
+                var rooms = await _context.Rooms
+                    .Where(o => o.UserId == id).Include(x => x.Messages)
+                    .ToListAsync();
+
+                foreach (var r in rooms)
+                {
+                    _context.Messages.RemoveRange(r.Messages);
+                    _context.Rooms.Remove(r);
+                }
+
                 _context.Users.Remove(user);
             }
 

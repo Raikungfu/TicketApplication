@@ -48,7 +48,7 @@ namespace TicketAdminChat.Controllers
             {
                 room = new Room
                 {
-                    Name = $"Chat với admin {adminId}",
+                    Name = GenerateRoomName(userId, adminId),
                     UserId = userId,
                     AdminId = adminId
                 };
@@ -58,6 +58,13 @@ namespace TicketAdminChat.Controllers
             }
 
             return RedirectToAction("ChatRoom", new { roomId = room.Id });
+        }
+
+        private string GenerateRoomName(string adminName, string userName)
+        {
+            var sortedUsernames = new List<string> { adminName, userName };
+            sortedUsernames.Sort();
+            return $"private_{sortedUsernames[0]}_{sortedUsernames[1]}";
         }
 
         // GET: Chat/ChatRoom/{roomId}

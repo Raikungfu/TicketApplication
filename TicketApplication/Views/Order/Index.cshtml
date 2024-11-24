@@ -42,6 +42,7 @@
                                     data-bs-target="#orderDetailModal"
                                     data-order-id="@order.Id"
                                     data-user-email="@order.User.Email"
+                                    data-order-status="@order.Status"
                                     data-total-amount="@order.TotalAmount đ"
                                     data-order-details="@Html.Raw(string.Join(";",
             order.OrderDetails.SelectMany(d =>
@@ -58,7 +59,10 @@
 </div>
 
 <!-- Order Details Modal -->
+
+<form method="post" action="/Order/CheckoutOrder" onsubmit="return checkAgreement()">
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+        <input name="orderId" id="orderId" hidden/>
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,13 +76,50 @@
                 <h6>Order Details:</h6>
                 <ul id="modalOrderDetails"></ul>
             </div>
+                <div class="row" id="paymentSection" style="display: none;">
+                    <div class="col-md-4 offset-md-8">
+                    <h4 class="d-flex justify-content-between">
+                        <span>Chọn phương thức thanh toán:</span>
+                    </h4>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodQR" value="QR" required>
+                        <label class="form-check-label" for="paymentMethodQR">
+                            Thanh toán QR
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodDomestic" value="DomesticCard" required>
+                        <label class="form-check-label" for="paymentMethodDomestic">
+                            Thẻ nội địa và tài khoản ngân hàng
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodInternational" value="InternationalCard" required>
+                        <label class="form-check-label" for="paymentMethodInternational">
+                            Thẻ thanh toán quốc tế
+                        </label>
+                    </div>
+
+                    <div class="form-check mt-3" style="background-color: #f9f9f9;">
+                        <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                        <label class="form-check-label d-inline-block ml-2" for="termsAgreement" style="max-height: 80px; display: inline-block; padding-right: 10px;">
+                            <strong>Đồng ý với các điều khoản:</strong>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                <li>Khi quý khách hoàn tất quá trình thanh toán vé, giao dịch sẽ được xem là hoàn tất và không thể hủy bỏ hoặc hoàn tiền.</li>
+                            </ul>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
-
+</form>
 @section Scripts {
     <script>
         // Script to handle modal population for order details
@@ -90,8 +131,18 @@
             const userEmail = button.getAttribute('data-user-email');
             const totalAmount = button.getAttribute('data-total-amount');
             const orderDetails = button.getAttribute('data-order-details');
+            const orderStatus = button.getAttribute('data-order-status');
+
+            if (orderStatus === "Pending") {
+                // Hiển thị phần thanh toán
+                document.getElementById('paymentSection').style.display = 'block';
+            } else {
+                // Ẩn phần thanh toán
+                document.getElementById('paymentSection').style.display = 'none';
+            }
 
             // Update the modal's content.
+            document.getElementById('orderId').value = orderId;
             document.getElementById('modalOrderId').textContent = orderId;
             document.getElementById('modalUserEmail').textContent = userEmail;
             document.getElementById('modalTotalAmount').textContent = totalAmount;
@@ -109,6 +160,15 @@
                 }
             });
         });
+
+            function checkAgreement() {
+                const isAgreed = document.getElementById('termsAgreement').checked;
+                if (!isAgreed) {
+                    alert('Bạn phải đồng ý với các điều khoản để tiếp tục.');
+                    return false;
+                }
+                return true;
+            }
 
     </script>
 }

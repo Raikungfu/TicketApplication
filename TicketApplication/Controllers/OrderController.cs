@@ -142,7 +142,26 @@ namespace TicketApplication.Controllers
             return Redirect(paymentLink);
         }
 
-        public string createPaymentLink(decimal TotalPrice, string paymentMethod, string orderId)
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> CheckoutOrder(string orderId, string paymentMethod)
+        {
+            var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (claimId == null)
+            {
+                return Unauthorized("Người dùng chưa đăng nhập");
+            }
+
+            var order = await _context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var paymentLink = createPaymentLink(order.TotalAmount, paymentMethod, order.Id);
+            return Redirect(paymentLink);
+        }
+
+            public string createPaymentLink(decimal TotalPrice, string paymentMethod, string orderId)
         {
             string vnp_ReturnUrl = _configuration["VnPay:PaymentBackReturnUrl"];
             string vnp_Url = _configuration["VnPay:BaseURL"];
