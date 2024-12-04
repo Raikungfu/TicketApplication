@@ -56,6 +56,20 @@
                     </div>
                 </div>
 
+                @* Only show status field if the user is an Admin *@
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="form-group mb-3">
+                        <label asp-for="Status" class="control-label fw-bold"></label>
+                        <select asp-for="Status" class="form-control">
+                            <option value="Visible">Visible</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                }
+
                 <input type="hidden" asp-for="Id" />
 
                 <div class="d-flex justify-content-end">

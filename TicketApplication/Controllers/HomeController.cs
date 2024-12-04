@@ -21,11 +21,67 @@ namespace TicketApplication.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var events = await _context.Events.Include(e => e.Zones).AsNoTracking().ToListAsync();
-
+            var events = await _context.Events.Where(e => e.Date <= DateTime.Now && e.Status == "Visible").Include(e => e.Zones).AsNoTracking().ToListAsync();
 
             return View(events);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Filter([FromForm]SearchForm searchForm)
+        {
+            string categoryFilter;
+            switch(searchForm.Category)
+            {
+                case "music":
+                    categoryFilter = "âm nhạc";
+                    break;
+                case "sport":
+                    categoryFilter = "thể thao";
+                    break;
+                case "theater":
+                    categoryFilter = "hài kịch";
+                    break;
+                case "bartending":
+                    categoryFilter = "pha chế";
+                    break;
+                case "academic":
+                    categoryFilter = "học thuật";
+                    break;
+                case "all":
+                    categoryFilter = "all";
+                    break;
+                default:
+                    categoryFilter = "all";
+                    break;
+            }
+
+            var events = await _context.Events
+                .Where(e => e.Date <= DateTime.Now && e.Status == "Visible" &&
+                    (categoryFilter == "all" || e.Title.ToLower().Contains(categoryFilter)) &&
+                    e.Zones.Any(z => z.Price >= searchForm.PriceFrom && z.Price <= searchForm.PriceTo))
+                .Include(e => e.Zones)
+                .AsNoTracking()
+                .Select(e => new
+                {
+                    e.Image,
+                    e.Location,
+                    e.MaxTicketPrice,
+                    e.MinTicketPrice,
+                    e.Date,
+                    e.Status,
+                    e.Title,
+                    e.Id,
+                    e.ImageFile
+                })
+                .ToListAsync();
+
+            if (events.Count > 0)
+            {
+                return Ok(new { success = true, events });
+            }
+            return Ok(new { success = false, message = "No events found" });
+        }
+
         public async Task<IActionResult> EventDetail(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -33,7 +89,7 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var eventDetail = await _context.Events
+            var eventDetail = await _context.Events.Where(e => e.Date <= DateTime.Now && e.Status == "Visible")
                 .Include(e => e.Zones)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
@@ -41,14 +97,8 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
-            if (DateTime.TryParse(eventDetail.Date, out var parsedDate))
-            {
-                ViewBag.FormattedDate = parsedDate.ToString("dddd, HH:mm - dd/MM/yyyy");
-            }
-            else
-            {
-                ViewBag.FormattedDate = eventDetail.Date; 
-            }
+
+            ViewBag.FormattedDate = eventDetail.Date.ToString("dddd, HH:mm - dd/MM/yyyy");
 
             return View("EventDetail", eventDetail);
         }
@@ -62,5 +112,12 @@ namespace TicketApplication.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+    }
+
+    public class SearchForm()
+    {
+        public int PriceFrom { get; set; }
+        public int PriceTo { get; set; }
+        public string Category { get; set; }
     }
 }

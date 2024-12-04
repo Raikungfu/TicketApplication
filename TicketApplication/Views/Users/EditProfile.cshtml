@@ -1,0 +1,54 @@
+﻿@model TicketApplication.Models.User
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-light rounded">
+        <div class="card-header bg-success text-white rounded-top">
+            <h2 class="mb-0">Edit Profile</h2>
+        </div>
+        <div class="card-body">
+            <h5 class="text-secondary">Update Your Information</h5>
+            <hr />
+            <form asp-action="EditProfile">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Full Name</label>
+                    <input asp-for="Name" class="form-control shadow-sm" placeholder="Enter your full name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-bold">Email Address</label>
+                    <input asp-for="Email" class="form-control shadow-sm" readonly />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label fw-bold">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control shadow-sm" placeholder="Enter your phone number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label fw-bold">Address</label>
+                    <input asp-for="Address" class="form-control shadow-sm" placeholder="Enter your address" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Rank</label>
+                    <p class="form-control-static">@Model.Rank</p>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Profile" class="btn btn-secondary btn-lg">Back to Profile</a>
+                    <input type="submit" value="Save Changes" class="btn btn-primary btn-lg fw-bold" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

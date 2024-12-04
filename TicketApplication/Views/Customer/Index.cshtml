@@ -1,97 +1,29 @@
-﻿@{
-    TempData["Title"] = "My Account - VieShop Ticket";
-}
+﻿<h2>Dashboard Overview</h2>
+<div class="row">
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="https://s01.appfast.me/vieshop/2024/09/icon-100x100.png" sizes="32x32" />
-    <title>@TempData["Title"]</title>
-</head>
-<body>
-    <header class="bg-light p-3">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <a href="https://ticket.vieshop.vn/" class="navbar-brand">
-                    <img src="https://s01.appfast.me/vieshop/2024/09/logo-2.png" alt="VieShop Ticket" width="150" height="53">
-                </a>
-                <nav>
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/cart">Your Cart</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/my-account">My Account</a>
-                        </li>
-                    </ul>
-                </nav>
+    <!-- Event Management Section -->
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Event Management</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">View and edit your events here.</p>
+                <a href="@Url.Action("Index", "Events")" class="btn btn-primary">Manage Events</a>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="container mt-4">
-        <h1 class="mb-4">My Account</h1>
-        <div class="woocommerce">
-            <nav class="woocommerce-MyAccount-navigation" aria-label="Account Navigation">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/my-account">Account Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/my-account/orders">Orders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/my-account/downloads">Downloads</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/my-account/edit-address">Addresses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/my-account/edit-account">Account Details</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/my-account/customer-logout">Logout</a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="woocommerce-MyAccount-content mt-4">
-                <div class="woocommerce-notices-wrapper"></div>
-                <p>
-                    Hello <strong>@User .Identity.Name</strong>! (Not your account? <a href="/my-account/customer-logout">Logout</a> and log in with your account)
-                </p>
-                <p>
-                    From your account dashboard, you can view your <a href="/my-account/orders">recent orders</a>, manage your <a href="/my-account/edit-address">shipping and billing addresses</a>, and <a href="/my-account/edit-account">edit your password and account details</a>.
-                </p>
+    <!-- Zone Management Section -->
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Zone Management</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Configure zones for events.</p>
+                <a href="@Url.Action("Index", "Zones")" class="btn btn-primary">Manage Zones</a>
             </div>
         </div>
-    </main>
-
-    <footer class="bg-light text-center p-3 mt-4">
-        <div class="container">
-            <p>© 2024 - All rights reserved by <strong>VieSHOP</strong></p>
-            <p>Business registration certificate number 0316124114 issued by the Department of Planning and Investment of Ho Chi Minh City on January 20, 2020</p>
-        </div>
-    </footer>
-
-    <script>
-        function showContent(sectionId) {
-            const sections = document.querySelectorAll('.content-section');
-            const navLinks = document.querySelectorAll('.nav-panel a');
-
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-            });
-
-            document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
-        }
-    </script>
-</body>
-</html>
+    </div>
+</div>

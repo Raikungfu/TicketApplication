@@ -1,0 +1,91 @@
+﻿@model IEnumerable<TicketApplication.Models.Discount>
+
+@{
+    TempData["Title"] = "Discount Management";
+}
+
+<h1 class="mb-4">Discount Management</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Code)</th>
+                <th>@Html.DisplayNameFor(model => model.Description)</th>
+                <th>@Html.DisplayNameFor(model => model.DiscountPercentage)</th>
+                <th>@Html.DisplayNameFor(model => model.DiscountAmount)</th>
+                <th>@Html.DisplayNameFor(model => model.ValidFrom)</th>
+                <th>@Html.DisplayNameFor(model => model.ValidUntil)</th>
+                <th>@Html.DisplayNameFor(model => model.IsActive)</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-truncate">@Html.DisplayFor(modelItem => item.Code)</td>
+                    <td class="text-truncate">@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td class="text-truncate">@Html.DisplayFor(modelItem => item.DiscountPercentage)</td>
+                    <td class="text-truncate">@Html.DisplayFor(modelItem => item.DiscountAmount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ValidFrom)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ValidUntil)</td>
+                    <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" id="deleteForm-@item.Id">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal('@item.Id', '@item.Code')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Deletion Confirmation -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa giảm giá</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa giảm giá <span id="itemCode"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function openDeleteModal(itemId, itemCode) {
+        document.getElementById('itemCode').innerText = itemCode;
+        var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        myModal.show();
+
+        document.getElementById('confirmDeleteButton').onclick = function () {
+            document.getElementById('deleteForm-' + itemId).submit();
+            myModal.hide();
+        };
+    }
+</script>
+
+<style>
+    .text-truncate {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+</style>

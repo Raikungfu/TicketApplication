@@ -121,7 +121,7 @@
             var roomId = '@Model.Id';
 
             if (!messageContent) {
-                alert('Nội dung tin nhắn không được để trống.');
+                showNotification('Nội dung tin nhắn không được để trống.', 'warning');
                 return;
             }
 
@@ -136,7 +136,7 @@
                 $('#sendButton').prop('disabled', false);
             }).catch(function (err) {
                 console.error(err.toString());
-                alert('Có lỗi xảy ra khi gửi tin nhắn.');
+                showNotification('Có lỗi xảy ra khi gửi tin nhắn.', 'danger');
             });
         });
 

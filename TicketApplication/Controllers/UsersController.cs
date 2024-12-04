@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using TicketApplication.Models;
 
 namespace TicketApplication.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,12 +23,86 @@ namespace TicketApplication.Controllers
         }
 
         // GET: Users
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Users.ToListAsync());
         }
 
+        public IActionResult Profile()
+        {
+            var userId = User.Identity.Name;
+            var user = _context.Users.FirstOrDefault(u => u.Email == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var rankLogoUrl = GetRankLogoUrl(user.Rank);
+            ViewData["RankLogo"] = rankLogoUrl;
+
+            return View(user);
+        }
+
+        public IActionResult EditProfile()
+        {
+            var userId = User.Identity.Name;
+            var user = _context.Users.FirstOrDefault(u => u.Email == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var rankLogoUrl = GetRankLogoUrl(user.Rank);
+            ViewData["RankLogo"] = rankLogoUrl;
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditProfile(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = User.Identity.Name;
+                var existingUser = _context.Users.FirstOrDefault(u => u.Email == userId);
+                if (existingUser != null)
+                {
+                    existingUser.Name = user.Name;
+                    existingUser.Email = user.Email;
+                    existingUser.PhoneNumber = user.PhoneNumber;
+                    existingUser.Address = user.Address;
+                    existingUser.Role = user.Role;
+
+                    if (existingUser.Password != user.Password)
+                    {
+                        var passwordHasher = new PasswordHasher<User>();
+                        user.Password = passwordHasher.HashPassword(user, user.Password);
+                    }
+
+                    _context.SaveChanges();
+                    return RedirectToAction(nameof(Profile));
+                }
+            }
+            return View(user);
+        }
+
+        private string GetRankLogoUrl(string rank)
+        {
+            return rank switch
+            {
+                "Gold" => "/images/gold-logo.png",
+                "Silver" => "/images/silver-logo.png",
+                "Bronze" => "/images/bronze-logo.png",
+                _ => "/images/unknown-logo.png",
+            };
+        }
+
         // GET: Users/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -34,11 +111,29 @@ namespace TicketApplication.Controllers
             }
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(u => u.Orders.Where(o => o.Status == "Paid"))
+                    .ThenInclude(o => o.OrderDetails)
+                    .ThenInclude(oD => oD.Zone)
+                    .ThenInclude(z => z.Event)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
             if (user == null)
             {
                 return NotFound();
             }
+
+            var purchasedEvents = user.Orders
+     .SelectMany(o => o.OrderDetails)
+     .GroupBy(oD => new { oD.Zone.Event.Title, oD.Zone.EventId })
+     .Select(g => new
+     {
+         g.Key.Title,
+         g.Key.EventId,
+         TotalTickets = g.Sum(oD => oD.Quantity)
+     })
+     .ToList();
+
+            ViewBag.PurchasedEvents = purchasedEvents;
 
             return View(user);
         }
@@ -54,6 +149,7 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Name,Email,Password,PhoneNumber,Address,Role,Id,CreatedAt,CreatedBy,LastModified,LastModifiedBy")] User user)
         {
             if (ModelState.IsValid)
@@ -66,6 +162,7 @@ namespace TicketApplication.Controllers
         }
 
         // GET: Users/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -83,7 +180,8 @@ namespace TicketApplication.Controllers
                 new SelectListItem { Value = "Customer", Text = "Customer" },
                 new SelectListItem { Value = "Admin", Text = "Admin" }
             };
-            TempData["Roles"] = new SelectList(roles, "Value", "Text", user.Role);
+
+            ViewBag.Roles = new SelectList(roles, "Value", "Text", user.Role);
 
             return View(user);
         }
@@ -93,9 +191,11 @@ namespace TicketApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Email,Password,PhoneNumber,Address,Role,Id,CreatedAt,CreatedBy,LastModified,LastModifiedBy")] User user)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Email,Password,PhoneNumber,Address,Role,Id,CreatedAt,CreatedBy,LastModified,LastModifiedBy,Rank,IsBan")] User user)
         {
-            if (id != user.Id)
+            var existingUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == user.Id);
+            if (id != user.Id || existingUser == null)
             {
                 return NotFound();
             }
@@ -104,6 +204,12 @@ namespace TicketApplication.Controllers
             {
                 try
                 {
+                    if (existingUser.Password != user.Password)
+                    {
+                        var passwordHasher = new PasswordHasher<User>();
+                        user.Password = passwordHasher.HashPassword(user, user.Password);
+                    }
+
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -124,6 +230,7 @@ namespace TicketApplication.Controllers
         }
 
         // GET: Users/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -144,6 +251,7 @@ namespace TicketApplication.Controllers
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var user = await _context.Users.FindAsync(id);

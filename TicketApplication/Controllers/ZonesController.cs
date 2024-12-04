@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TicketApplication.Data;
 using TicketApplication.Models;
+using System.Security.Claims;
 
 namespace TicketApplication.Controllers
 {
@@ -22,7 +22,21 @@ namespace TicketApplication.Controllers
         // GET: Zones
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Zones.Include(z => z.Event).AsNoTracking().ToListAsync());
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (role == "Customer")
+            {
+                var userName = User.Identity.Name;
+                var userZones = await _context.Zones
+                    .Where(z => z.Event.CreatedBy == userName)
+                    .Include(z => z.Event)
+                    .AsNoTracking()
+                    .ToListAsync();
+                return View(userZones);
+            }
+            else
+            {
+                return View(await _context.Zones.Include(z => z.Event).AsNoTracking().ToListAsync());
+            }
         }
 
         // GET: Zones/Details/5
@@ -33,11 +47,18 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var zone = await _context.Zones.Include(z => z.Event)
+            var zone = await _context.Zones
+                .Include(z => z.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (zone == null)
             {
                 return NotFound();
+            }
+
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+            {
+                return Forbid();
             }
 
             return View(zone);
@@ -47,19 +68,26 @@ namespace TicketApplication.Controllers
         public IActionResult Create()
         {
             ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
-
             return View();
         }
 
         // POST: Zones/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Price,AvailableTickets,Description,EventId")] Zone zone)
         {
             if (ModelState.IsValid)
             {
+                var role = User.FindFirstValue(ClaimTypes.Role);
+                if (role == "Customer")
+                {
+                    var eventCreatedBy = _context.Events.Where(e => e.Id == zone.EventId).FirstOrDefault()?.CreatedBy;
+                    if (eventCreatedBy != User.Identity.Name)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 zone.CreatedAt = DateTime.Now;
                 _context.Add(zone);
                 await _context.SaveChangesAsync();
@@ -75,18 +103,24 @@ namespace TicketApplication.Controllers
             {
                 return NotFound();
             }
-            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
+
             var zone = await _context.Zones.FindAsync(id);
             if (zone == null)
             {
                 return NotFound();
             }
+
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+            {
+                return Forbid();
+            }
+
+            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
             return View(zone);
         }
 
         // POST: Zones/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Name,Price,AvailableTickets,Description,EventId,Id")] Zone zone)
@@ -101,6 +135,13 @@ namespace TicketApplication.Controllers
                 try
                 {
                     var zoneToEdit = _context.Zones.Find(id);
+
+                    var role = User.FindFirstValue(ClaimTypes.Role);
+                    if (role == "Customer" && zoneToEdit.Event.CreatedBy != User.Identity.Name)
+                    {
+                        return Forbid();
+                    }
+
                     zoneToEdit.Name = zone.Name;
                     zoneToEdit.Price = zone.Price;
                     zoneToEdit.AvailableTickets = zone.AvailableTickets;
@@ -135,10 +176,17 @@ namespace TicketApplication.Controllers
             }
 
             var zone = await _context.Zones
+                .Include(z => z.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (zone == null)
             {
                 return NotFound();
+            }
+
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+            {
+                return Forbid();
             }
 
             return View(zone);
@@ -152,10 +200,16 @@ namespace TicketApplication.Controllers
             var zone = await _context.Zones.FindAsync(id);
             if (zone != null)
             {
+                var role = User.FindFirstValue(ClaimTypes.Role);
+                if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+                {
+                    return Forbid();
+                }
+
                 _context.Zones.Remove(zone);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

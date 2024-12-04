@@ -19,6 +19,10 @@ namespace TicketApplication.Models
 
         public string Role { get; set; }
 
+        public string? Rank { get; set; } = "Unknown";
+
+        public bool IsBan { get; set; } = false;
+
         public virtual ICollection<Cart>? Carts { get; set; }
         public virtual ICollection<Order>? Orders { get; set; }
         public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();

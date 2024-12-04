@@ -14,9 +14,27 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
             <li class="nav-item">
+                @if (User.IsInRole("Customer"))
+                {
+                    <a class="nav-link text-dark btn btn-sm" asp-controller="Order" asp-action="Index" title="Order">
+                        <i class="bi bi-box-seam" style="font-size: 1rem;"></i>
+                    </a>
+                    <a class="nav-link text-dark btn btn-sm position-relative" asp-controller="Cart" asp-action="Index" title="Cart">
+                        <i class="bi bi-cart3" style="font-size: 1rem;"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger quantity-items d-none">
+                        </span>
+                    </a>
+                    <a class="nav-link text-dark btn btn-sm" asp-controller="Customer" asp-action="Index" title="Customer Manage">Customer Manage</a>
+
+                }
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                }
+
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello, @User.Identity?.Name!</a>
+                    <a class="dropdown-item" asp-controller="Users" asp-action="Profile" title="Profile">Hello, @User.Identity?.Name!</a>
                     <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                         <button type="submit" class="dropdown-item">Logout</button>
                     </form>
@@ -40,14 +58,22 @@
         @if (User.IsInRole("Customer"))
         {
             <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Order" asp-action="Index" title="Manage">Order</a>
+                <a class="nav-link text-dark btn btn-sm" asp-controller="Order" asp-action="Index" title="Order">
+                    <i class="bi bi-box-seam" style="font-size: 1rem;"></i>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Cart" asp-action="Index" title="Manage">Cart</a>
+                <a class="nav-link text-dark btn btn-sm position-relative" asp-controller="Cart" asp-action="Index" title="Cart">
+                    <i class="bi bi-cart3" style="font-size: 1rem;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger quantity-items d-none">
+                    </span>
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Chat" asp-action="Admins" title="Chat">Chat with Admin!</a>
+                <a class="nav-link text-dark btn btn-sm" asp-controller="Customer" asp-action="Index" title="Customer Manage">Customer Manage</a>
             </li>
+
         }
         @if (User.IsInRole("Admin"))
         {
@@ -58,11 +84,10 @@
         @if (User.Identity.IsAuthenticated)
         {
             <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello, @User.Identity?.Name!</a>
+                <a class="nav-link text-dark btn btn-sm" asp-controller="Users" asp-action="Profile" title="Profile">Hello, @User.Identity?.Name!</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Identity" asp-action="logout" title="Manage">Logout</a>
-
+                <a class="nav-link text-dark btn btn-sm" asp-controller="Identity" asp-action="logout" title="Logout">Logout</a>
             </li>
         }
 
@@ -102,6 +127,9 @@
                 <div class="form-group d-grid gap-2 mb-3">
                     <button type="submit" class="btn btn-primary" id="login-submit-button">Login</button>
                 </div>
+                <div class="text-center">
+                    <a href="javascript:void(0);" id="forgot-password-link">Forgot Password?</a>
+                </div>
             </form>
         </div>
     </div>
@@ -119,7 +147,8 @@
             <h3>Register on <b>worQshop</b></h3>
         </div>
         <div class="otp-auth-register-popup-body">
-            <form id="register-form" enctype="multipart/form-data">
+            <!-- Form Đăng Ký -->
+            <form id="register-step" class="d-block">
                 <div class="form-group mb-3">
                     <label for="name" class="form-label">Name *</label>
                     <input type="text" id="register-name" name="Name" autocomplete="name" class="form-control" placeholder="Enter your name" required>
@@ -137,24 +166,121 @@
                     <input type="password" id="register-password" autocomplete="current-password" name="Password" class="form-control" placeholder="Enter a password" required>
                 </div>
                 <div class="form-group d-grid gap-2 mb-3">
-                    <button type="submit" class="btn btn-primary" id="register-submit-button">Register</button>
+                    <button type="button" class="btn btn-primary" id="send-otp-register">Send OTP</button>
+                </div>
+            </form>
+
+            <!-- Form Xác Minh OTP -->
+            <form id="otp-verify-step" class="d-none">
+                <div class="form-group mb-3">
+                    <label for="otp-code" class="form-label">Enter OTP *</label>
+                    <input type="text" id="otp-code" name="OtpCode" class="form-control" placeholder="Enter the OTP" required>
+                </div>
+                <div class="form-group d-grid gap-2 mb-3">
+                    <button type="button" class="btn btn-primary" id="verify-otp-register">Verify OTP</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+
+<!-- Quên mật khẩu Popup Form -->
+<div id="forgot-password-popup" class="d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(0, 0, 0, 0.5); z-index: 9999;">
+    <div class="forgot-password-popup-content bg-white p-4 rounded shadow position-relative" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-3">
+            <h3>Quên mật khẩu</h3>
+        </div>
+
+        <!-- Bước 1: Nhập email -->
+        <form id="step-email" class="d-block">
+            <div class="form-group mb-3">
+                <label for="email">Nhập Email:</label>
+                <input type="email" id="email-resetpassword" name="email" class="form-control" placeholder="Nhập email của bạn" required>
+            </div>
+            <button type="button" id="send-otp" class="btn btn-primary w-100">Gửi OTP</button>
+        </form>
+
+        <!-- Bước 2: Nhập OTP -->
+        <form id="step-otp" class="d-none">
+            <div class="form-group mb-3">
+                <label for="otp">Nhập OTP:</label>
+                <input type="text" id="otp" name="otp" class="form-control" placeholder="Nhập mã OTP" required>
+            </div>
+            <button type="button" id="verify-otp" class="btn btn-primary w-100">Xác nhận OTP</button>
+        </form>
+
+        <!-- Bước 3: Đổi mật khẩu -->
+        <form id="step-password" class="d-none">
+            <div class="form-group mb-3">
+                <label for="new-password">Mật khẩu mới:</label>
+                <input type="password" id="new-password" name="newPassword" class="form-control" placeholder="Nhập mật khẩu mới" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="confirm-password">Xác nhận mật khẩu:</label>
+                <input type="password" id="confirm-password" name="confirmPassword" class="form-control" placeholder="Xác nhận mật khẩu mới" required>
+            </div>
+            <button type="button" id="reset-password" class="btn btn-primary w-100">Đổi mật khẩu</button>
+        </form>
+    </div>
+</div>
+
+
+
 <!-- JavaScript -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        fetch('/Cart/QuantityItems', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error('Error fetching quantity: ', response.statusText);
+            }
+        }).then(data => {
+            console.log('Fetched quantity data:', data);
+            if (data && data.quantity) {
+                var quantityItems = document.getElementsByClassName("quantity-items");
+                if(data.quantity > 0){
+                    for (let quan of quantityItems) {
+                        quan.classList.remove("d-none");
+                        quan.textContent = data.quantity;
+                    }
+                }
+            } else {
+                console.error('Quantity not found in response data');
+            }
+        }).catch(error => {
+            console.error('Fetch error: ', error);
+        });
+
         const loginPopup = document.getElementById("otp-auth-login-popup");
         const registerPopup = document.getElementById("otp-auth-register-popup");
+        const forgotPopup = document.getElementById("forgot-password-popup");
         const loginLink = document.getElementById("login-link");
         const registerLink = document.getElementById("register-link");
+        const forgotLink = document.getElementById("forgot-password-link");
         const loginLinkDropdown = document.getElementById("login-link-dropdown");
         const registerLinkDropdown = document.getElementById("register-link-dropdown");
         const loginForm = document.getElementById("login-form");
         const registerForm = document.getElementById("register-form");
+
+
+        const registerStep = document.getElementById("register-step");
+        const otpVerifyStep = document.getElementById("otp-verify-step");
+        const sendOtpRegisterButton = document.getElementById("send-otp-register");
+        const verifyOtpRegisterButton = document.getElementById("verify-otp-register");
+
+
+        const emailStep = document.getElementById("step-email");
+        const otpStep = document.getElementById("step-otp");
+        const passwordStep = document.getElementById("step-password");
+
+        const sendOtpButton = document.getElementById("send-otp");
+        const verifyOtpButton = document.getElementById("verify-otp");
+        const resetPasswordButton = document.getElementById("reset-password");
 
         // Hàm mở popup
         function openPopup(popup) {
@@ -183,12 +309,19 @@
             openPopup(registerPopup);
         });
 
+        forgotLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            openPopup(forgotPopup);
+        });
+
         // Đóng popup khi nhấn ra ngoài
         window.addEventListener("click", (e) => {
             if (e.target === loginPopup) {
                 loginPopup.classList.add("d-none");
             } else if (e.target === registerPopup) {
                 registerPopup.classList.add("d-none");
+            }else if(e.target === forgotPopup){
+                forgotPopup.classList.add("d-none");
             }
         });
 
@@ -213,6 +346,55 @@
             }
         });
 
+        sendOtpRegisterButton.addEventListener("click", async () => {
+            const email = document.getElementById("register-email").value;
+            if (!email) {
+                showNotification("Please enter your email.", 'warning');
+                return;
+            }
+
+            const response = await fetch('/Identity/RegisterRequestOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                showNotification("OTP sent to your email.", 'success');
+                registerStep.classList.add("d-none");
+                otpVerifyStep.classList.remove("d-none");
+            } else {
+                showNotification(result.message, 'danger');
+            }
+        });
+
+        // Xác minh OTP khi nhấn "Verify OTP"
+        verifyOtpRegisterButton.addEventListener("click", async () => {
+            const otpCode = document.getElementById("otp-code").value;
+            const email = document.getElementById("register-email").value;
+
+            if (!otpCode) {
+                showNotification("Please enter the OTP.", 'warning');
+                return;
+            }
+
+            const response = await fetch('/Identity/Register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otpCode })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                showNotification("OTP verified. Registration successful.", 'success');
+                openPopup(loginPopup);
+            } else {
+                showNotification(result.message, 'danger');
+            }
+        });
+
+        /*
         registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const formData = new FormData(registerForm);
@@ -228,6 +410,88 @@
                 showNotification(result.message, "success");
                 registerPopup.classList.add("d-none");
                 openPopup(loginPopup);
+            }
+        });
+        */
+
+        sendOtpButton.addEventListener("click", async () => {
+            const email = document.getElementById("email-resetpassword").value;
+            if (!email) {
+                showNotification("Vui lòng nhập email", 'warning');
+                return;
+            }
+
+            // Gửi yêu cầu gửi OTP
+            const response = await fetch('/Identity/ForgotPasswordRequestOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification("OTP đã được gửi đến email của bạn.", 'success');
+                emailStep.classList.add("d-none");
+                otpStep.classList.remove("d-none");
+            } else {
+                showNotification(result.message, 'danger');
+            }
+        });
+
+        // Xác nhận OTP
+        verifyOtpButton.addEventListener("click", async () => {
+            const otp = document.getElementById("otp").value;
+            const email = document.getElementById("email-resetpassword").value;
+            if (!otp) {
+                showNotification("Vui lòng nhập OTP", 'warning');
+                return;
+            }
+
+            // Gửi yêu cầu xác nhận OTP
+            const response = await fetch('/Identity/VerifyOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp, email })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification("OTP xác nhận thành công.", 'success');
+                otpStep.classList.add("d-none");
+                passwordStep.classList.remove("d-none");
+            } else {
+                showNotification(result.message, 'danger');
+            }
+        });
+
+        // Đổi mật khẩu
+        resetPasswordButton.addEventListener("click", async () => {
+            const newPassword = document.getElementById("new-password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+            const email = document.getElementById("email-resetpassword").value;
+
+            if (!newPassword || !confirmPassword) {
+                showNotification("Vui lòng nhập đầy đủ thông tin.", 'warning');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showNotification("Mật khẩu xác nhận không khớp.", 'warning');
+                return;
+            }
+
+            // Gửi yêu cầu đổi mật khẩu
+            const response = await fetch('/Identity/ResetPassword', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newPassword, email })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification("Mật khẩu đã được đổi thành công.", 'success');
+                window.location.href = '/Account/Login';
+            } else {
+                showNotification(result.message, 'danger');
             }
         });
     });

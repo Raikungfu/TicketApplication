@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Revenue Dashboard";
+}
+
+<div class="container">
+    <h1 class="text-primary">Revenue Dashboard</h1>
+    <p>Select a time frame to view revenue:</p>
+
+    <div class="btn-group mb-4" role="group">
+        <a asp-action="Revenue" asp-route-filter="day" class="btn @(ViewBag.Filter == "day" ? "btn-primary" : "btn-outline-primary")">Day</a>
+        <a asp-action="Revenue" asp-route-filter="month" class="btn @(ViewBag.Filter == "month" ? "btn-primary" : "btn-outline-primary")">Month</a>
+        <a asp-action="Revenue" asp-route-filter="year" class="btn @(ViewBag.Filter == "year" ? "btn-primary" : "btn-outline-primary")">Year</a>
+    </div>
+
+    <form id="dateRangeForm">
+        <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate" value="@ViewBag.StartDate" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate" value="@ViewBag.EndDate" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Apply Date Range</button>
+    </form>
+
+    <canvas id="revenueChart" width="400" height="200"></canvas>
+</div>
+
+<script>
+    let chartInstance = null;
+
+    function loadRevenueData(startDate = '@ViewBag.StartDate', endDate = '@ViewBag.EndDate', filter = '@ViewBag.Filter') {
+        fetch(`/Admin/RevenueJson?filter=${filter}&startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.period);
+                const values = data.map(item => item.totalAmount);
+
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'Time' } },
+                            y: {
+                                title: { display: true, text: 'Revenue ($)' },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching revenue data:', error));
+    }
+
+    loadRevenueData();
+
+    document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const filter = '@ViewBag.Filter';
+
+        loadRevenueData(startDate, endDate, filter);
+    });
+</script>

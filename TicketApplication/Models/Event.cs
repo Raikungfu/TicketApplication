@@ -17,7 +17,7 @@ namespace TicketApplication.Models
         public string Location { get; set; }
 
         [Required]
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
 
         public string? Status { get; set; } = "Visible";
 

@@ -50,7 +50,7 @@
                             </td>
                             <td id="item-total-@item.Zone.Id">@item.TotalPrice.ToString("N0") đ</td>
                             <td>
-                                <button type="button" class="btn btn-danger" onclick="removeItem('@item.Zone.Id')">Xóa</button>
+                                <button type="button" class="btn btn-danger" onclick="removeItem('@item.Zone.Id', '@item.Zone.Name')">Xóa</button>
                             </td>
                         </tr>
                     }
@@ -59,7 +59,32 @@
         </table>
 
         <div class="row">
+
             <div class="col-md-4 offset-md-8">
+
+                <form id="apply-discount-form">
+                    <div class="form-group">
+                        <label for="discountCode">Nhập mã giảm giá:</label>
+                        <input type="text" id="discountCode" name="Code" class="form-control" placeholder="Mã giảm giá (nếu có)">
+                    </div>
+
+                    <div class="form-check">
+                        <input type="radio" id="useRankDiscount" name="discountOption" value="rank" class="form-check-input" checked>
+                        <label class="form-check-label" for="useRankDiscount">
+                            Áp dụng giảm giá theo Rank
+                        </label>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="radio" id="useCodeDiscount" name="discountOption" value="code" class="form-check-input">
+                        <label class="form-check-label" for="useCodeDiscount">
+                            Áp dụng mã giảm giá
+                        </label>
+                    </div>
+
+                    <button type="button" class="btn btn-primary mt-3" onclick="applyDiscount()">Áp dụng</button>
+                </form>
+
                 <h4 class="d-flex justify-content-between">
                     <span>Chọn phương thức thanh toán:</span>
                 </h4>
@@ -103,17 +128,69 @@
     </form>
 </div>
 
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa sản phẩm <span id="itemName"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     function checkAgreement() {
         const isAgreed = document.getElementById('termsAgreement').checked;
         if (!isAgreed) {
-            alert('Bạn phải đồng ý với các điều khoản để tiếp tục.');
+            showNotification('Bạn phải đồng ý với các điều khoản để tiếp tục.', 'danger');
             return false;
         }
         return true;
     }
-    function removeItem(itemId) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+
+    function applyDiscount() {
+        const discountCode = document.getElementById("discountCode").value.trim();
+        const useRank = document.querySelector('input[name="discountOption"]:checked').value === "rank";
+
+        fetch('/Order/ApplyDiscount', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Code: useRank ? null : discountCode,
+                Rank: useRank ? "rank" : null
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("grand-total").textContent = data.newTotal + " đ";
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra.');
+            });
+    }
+
+    function removeItem(itemId, itemName) {
+        document.getElementById('itemName').innerText = itemName;
+
+        var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        myModal.show();
+
+        document.getElementById('confirmDeleteButton').onclick = function () {
             fetch(`/Cart/RemoveItem?itemId=${itemId}`, {
                 method: 'DELETE',
             })
@@ -125,6 +202,17 @@
                         const newGrandTotal = Number(total.textContent.replace(/[^\d]/g, '')) - Number(data.priceRemove);
                         total.textContent = newGrandTotal + ' đ';
 
+                        var quantityItems = document.getElementsByClassName("quantity-items");
+                        var totalQuantity = quantityItems[0].textContent - 1;
+                        if (totalQuantity > 0) {
+                            for (let quan of quantityItems) {
+                                quan.textContent = totalQuantity;
+                            }
+                        } else {
+                            for (let quan of quantityItems) {
+                                quan.classList.add("d-none");
+                            }
+                        }
                         showNotification('Xóa sản phẩm thành công!', 'success');
                     } else {
                         showNotification('Xóa sản phẩm không thành công!', 'danger');
@@ -134,8 +222,11 @@
                     console.error('Error:', error);
                     showNotification('Có lỗi xảy ra khi xóa sản phẩm.', 'danger');
                 });
-        }
+
+            myModal.hide();
+        };
     }
+
 
     function updateQuantity(itemId) {
         const quantity = document.getElementById(`quantity-${itemId}`).value;

@@ -1,0 +1,68 @@
+﻿@model TicketApplication.Models.Discount
+
+@{
+    TempData["Title"] = "Edit Discount";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Edit Discount</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="text-secondary">Discount Details</h4>
+            <hr />
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Code" class="form-label fw-bold"></label>
+                    <input asp-for="Code" class="form-control" placeholder="Enter discount code" />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5" placeholder="Provide a description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DiscountPercentage" class="form-label fw-bold"></label>
+                    <input asp-for="DiscountPercentage" class="form-control" type="number" placeholder="Discount Percentage" />
+                    <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DiscountAmount" class="form-label fw-bold"></label>
+                    <input asp-for="DiscountAmount" class="form-control" type="number" placeholder="Discount Amount" />
+                    <span asp-validation-for="DiscountAmount" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ValidFrom" class="form-label fw-bold"></label>
+                    <input asp-for="ValidFrom" class="form-control" type="date" />
+                    <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ValidUntil" class="form-label fw-bold"></label>
+                    <input asp-for="ValidUntil" class="form-control" type="date" />
+                    <span asp-validation-for="ValidUntil" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="IsActive" class="form-label fw-bold"></label>
+                    <input type="checkbox" name="IsActive" class="form-check-input"/>
+                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                </div>
+
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a asp-action="Index" class="btn btn-secondary me-2">Back to List</a>
+                    <input type="submit" value="Save Changes" class="btn btn-primary fw-bold" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

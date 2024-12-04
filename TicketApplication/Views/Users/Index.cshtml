@@ -17,17 +17,23 @@
                     <th>
                         @Html.DisplayNameFor(model => model.First().Email)
                     </th>
-                    <th>
+                    <th class="password-column">
                         @Html.DisplayNameFor(model => model.First().Password)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.First().PhoneNumber)
-                    </th>
+                    </th class="address-column">
                     <th>
                         @Html.DisplayNameFor(model => model.First().Address)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.First().Role)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().Rank)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().IsBan)
                     </th>
                     <th class="text-center">Actions</th>
                 </tr>
@@ -35,31 +41,34 @@
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
+                    <tr style="cursor: pointer;" onclick="window.location='@Url.Action("Details", "Users", new { id = item.Id })'">
                         <td>
                             @Html.DisplayFor(modelItem => item.Name)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Email)
                         </td>
-                        <td>
+                        <td class="password-column">
                             @Html.DisplayFor(modelItem => item.Password)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.PhoneNumber)
-                        </td>
+                        </td class="address-column">
                         <td>
                             @Html.DisplayFor(modelItem => item.Address)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Role)
                         </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Rank)
+                        </td>
+                        <td>
+                            @(item.IsBan ? "Banned" : "Active")
+                        </td>
                         <td class="text-center">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete User: @item.Name?');">Delete</button>
-                            </form>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" onclick="event.stopPropagation();">Edit</a>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="event.stopPropagation(); showDeleteModal('@item.Id', '@item.Name')">Delete</button>
                         </td>
                     </tr>
                 }
@@ -68,5 +77,52 @@
     </div>
 </div>
 
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the user <span id="userName"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" asp-action="Delete" method="post" style="display:inline;">
+                    <input type="hidden" name="id" id="deleteUserId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .password-column {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .address-column {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
 @section Scripts {
+    <script>
+        function showDeleteModal(userId, userName) {
+            document.getElementById("userName").innerText = userName;
+            document.getElementById("deleteUserId").value = userId;
+
+            var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            myModal.show();
+        }
+    </script>
 }

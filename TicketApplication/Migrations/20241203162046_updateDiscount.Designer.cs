@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketApplication.Data;
 
@@ -11,9 +12,11 @@ using TicketApplication.Data;
 namespace TicketApplication.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241203162046_updateDiscount")]
+    partial class updateDiscount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,7 +265,7 @@ namespace TicketApplication.Migrations
                     b.Property<decimal?>("DiscountPercentage")
                         .HasColumnType("decimal(5, 2)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
@@ -296,8 +299,9 @@ namespace TicketApplication.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -594,7 +598,7 @@ namespace TicketApplication.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsBan")
+                    b.Property<bool?>("IsBan")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")

@@ -49,8 +49,27 @@
                         <div class="mb-3">
                             <label asp-for="Role" class="form-label"></label>
                             <select asp-for="Role" class="form-control" asp-items="ViewBag.Roles" required>
-                            </select>                                
+                            </select>
                             <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+
+
+
+                        <div class="mb-3">
+                            <label asp-for="Rank" class="form-label fw-bold"></label>
+                            <select asp-for="Rank" class="form-control">
+                                <option value="unknown">Unknown</option>
+                                <option value="bronze">Bronze</option>
+                                <option value="silver">Silver</option>
+                                <option value="gold">Gold</option>
+                            </select>
+                            <span asp-validation-for="Rank" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="IsBan" class="control-label">Is Ban</label>
+                            <input asp-for="IsBan" type="checkbox" class="form-check-input" />
+                            <span asp-validation-for="IsBan" class="text-danger"></span>
                         </div>
 
                         <input type="hidden" asp-for="Id" />

@@ -7,6 +7,7 @@ using TicketApplication.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
 using TicketApplication.Hubs;
+using TicketApplication.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
@@ -38,6 +39,10 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.None;
+    options.LoginPath = new PathString("/Identity/Login");
+    options.AccessDeniedPath = new PathString("/Identity/AccessDenied");
+
+    options.ReturnUrlParameter = "ReturnUrl";
 });
 
 
@@ -77,6 +82,8 @@ app.UseSession();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<BanUserMiddleware>();
 
 app.MapControllerRoute(
     name: "default",

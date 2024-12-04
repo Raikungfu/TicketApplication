@@ -1,5 +1,16 @@
 ﻿<h2>Dashboard Overview</h2>
 <div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Revenue Dashboard</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Revenue Dashboard.</p>
+                <a href="@Url.Action("Revenue", "Admin")" class="btn btn-primary">Revenue Dashboard</a>
+            </div>
+        </div>
+    </div>
     <!-- Zone Management Section -->
     <div class="col-md-4">
         <div class="card mb-4 shadow-sm">
@@ -60,6 +71,18 @@
             <div class="card-body">
                 <p class="card-text">OrderDetails management.</p>
                 <a href="@Url.Action("Index", "OrderDetails")" class="btn btn-primary">OrderDetails Manager</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Discounts Management</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Discounts management.</p>
+                <a href="@Url.Action("Index", "Discount")" class="btn btn-primary">Discounts Manager</a>
             </div>
         </div>
     </div>

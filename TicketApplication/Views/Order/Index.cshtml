@@ -164,7 +164,7 @@
             function checkAgreement() {
                 const isAgreed = document.getElementById('termsAgreement').checked;
                 if (!isAgreed) {
-                    alert('Bạn phải đồng ý với các điều khoản để tiếp tục.');
+                    showNotification('Bạn phải đồng ý với các điều khoản để tiếp tục.', 'danger');
                     return false;
                 }
                 return true;
