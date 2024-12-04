@@ -10,6 +10,7 @@ using TicketApplication.Data;
 using TicketApplication.Models;
 using TicketApplication.Service;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TicketApplication.Controllers
 {
@@ -25,19 +26,36 @@ namespace TicketApplication.Controllers
         }
 
         // GET: Events
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? filter)
         {
             var role = User.FindFirstValue(ClaimTypes.Role);
 
             if (role == "Customer")
             {
-                var userName = User.Identity.Name;
-                var userEvents = await _context.Events.Where(e => e.CreatedBy == userName).Include(e => e.Zones).ToListAsync();
+                var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userEvents = await _context.Events.Where(e => e.CreatedBy.Equals(userName)).Include(e => e.Zones).ToListAsync();
                 return View(userEvents);
             }
             else
             {
-                return View(await _context.Events.Include(e => e.Zones).ToListAsync());
+                var events = _context.Events.Include(e => e.Zones).AsQueryable();
+
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    switch (filter)
+                    {
+                        case "Admin":
+                            events = events.Where(e => e.CreatedBy == "Admin");
+                            break;
+                        case "Customer":
+                            events = events.Where(e => e.CreatedBy != "Admin");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return View(await events.ToListAsync());
             }
         }
 
@@ -79,18 +97,29 @@ namespace TicketApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Set event status based on user role
+
+                var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userName.IsNullOrEmpty())
+                {
+                    return Forbid();
+                }
+
+                @event.CreatedBy = userName;
+
                 var role = User.FindFirstValue(ClaimTypes.Role);
                 if (role == "Customer")
                 {
                     @event.Status = "Pending";
                 }
+                else if(role == "Admin")
+                {
+                    @event.Status = "Visible";
+                    @event.CreatedBy = "Admin";
+                }
                 else
                 {
                     @event.Status = "Visible";
                 }
-
-                @event.CreatedBy = User.Identity.Name;
 
                 string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
 
@@ -132,7 +161,8 @@ namespace TicketApplication.Controllers
             }
 
             var role = User.FindFirstValue(ClaimTypes.Role);
-            if (role == "Customer" && @event.CreatedBy != User.Identity.Name)
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (role == "Customer" && !@event.CreatedBy.Equals(userName))
             {
                 return Forbid();
             }
@@ -159,7 +189,8 @@ namespace TicketApplication.Controllers
                     var eventToUpdate = await _context.Events.FindAsync(id);
 
                     var role = User.FindFirstValue(ClaimTypes.Role);
-                    if (role == "Customer" && eventToUpdate.CreatedBy != User.Identity.Name)
+                    var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (role == "Customer" && !eventToUpdate.CreatedBy.Equals(userName))
                     {
                         return Forbid();
                     }
@@ -215,7 +246,8 @@ namespace TicketApplication.Controllers
             }
 
             var role = User.FindFirstValue(ClaimTypes.Role);
-            if (role == "Customer" && @event.CreatedBy != User.Identity.Name)
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (role == "Customer" && !@event.CreatedBy.Equals(userName))
             {
                 return Forbid();
             }
@@ -232,7 +264,8 @@ namespace TicketApplication.Controllers
             if (@event != null)
             {
                 var role = User.FindFirstValue(ClaimTypes.Role);
-                if (role == "Customer" && @event.CreatedBy != User.Identity.Name)
+                var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (role == "Customer" && !@event.CreatedBy.Equals(userName))
                 {
                     return Forbid();
                 }

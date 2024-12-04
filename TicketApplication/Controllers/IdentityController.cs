@@ -9,6 +9,9 @@ using TicketApplication.Models;
 using TicketApplication.Service;
 using Microsoft.AspNetCore.Authorization;
 using static System.Net.WebRequestMethods;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace TicketApplication.Controllers
 {
@@ -81,9 +84,13 @@ namespace TicketApplication.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterRequestOtp([FromForm] string email)
+        public IActionResult RegisterRequestOtp([FromForm] UserRegistrationModel model)
         {
-            var existUser = _applicationDbContext.Users.Any(x => x.Email == email);
+            if (model.Email.IsNullOrEmpty())
+            {
+                return Json(new { success = false, message = "Email is required." });
+            }
+            var existUser = _applicationDbContext.Users.Any(x => x.Email == model.Email);
             if (existUser)
                 return Json(new { success = false, message = "Email already registered." });
 
@@ -92,11 +99,14 @@ namespace TicketApplication.Controllers
 
             HttpContext.Session.SetString("RegisterOtp", otp);
             HttpContext.Session.SetString("RegisterOtpExpiry", expiryTime.ToString());
-            HttpContext.Session.SetString("RegisterEmail", email);
+            HttpContext.Session.SetString("RegisterEmail", model.Email);
+            HttpContext.Session.SetString("RegisterPhone", model.Phone);
+            HttpContext.Session.SetString("RegisterPassword", model.Password);
+            HttpContext.Session.SetString("RegisterName", model.Name);
 
             _emailService.SendMail(
                 title: "OTP for Registration",
-                recip: email,
+                recip: model.Email,
                 body: $"Your OTP code is: <b>{otp}</b>. It expires in 5 minutes."
             );
 
@@ -105,42 +115,50 @@ namespace TicketApplication.Controllers
 
 
         [HttpPost]
-        public IActionResult Register([FromForm] RegisterDto model)
+        public IActionResult Register([FromBody] RegisterDto model)
         {
             var otp = HttpContext.Session.GetString("RegisterOtp");
             var expiryString = HttpContext.Session.GetString("RegisterOtpExpiry");
             var email = HttpContext.Session.GetString("RegisterEmail");
+            var phone = HttpContext.Session.GetString("RegisterPhone");
+            var pw = HttpContext.Session.GetString("RegisterPassword");
+            var name = HttpContext.Session.GetString("RegisterName");
 
             if (otp == null || expiryString == null || email == null)
                 return Json(new { success = false, message = "No OTP request found." });
 
-            if (email != model.Email)
+            if (email != model.email)
                 return Json(new { success = false, message = "Email mismatch." });
 
-            if (otp != model.Otp)
+            if (otp != model.otpCode)
                 return Json(new { success = false, message = "Invalid OTP." });
 
             if (DateTime.TryParse(expiryString, out var expiry) && expiry < DateTime.UtcNow)
                 return Json(new { success = false, message = "OTP expired." });
 
-            HttpContext.Session.Remove("RegisterOtp");
-            HttpContext.Session.Remove("RegisterOtpExpiry");
-            HttpContext.Session.Remove("RegisterEmail");
 
             var passwordHasher = new PasswordHasher<User>();
             var user = new User
             {
-                Email = model.Email,
-                Name = model.Name,
+                Email = email,
+                Name = name,
+                PhoneNumber = phone,
                 Role = "Customer"
             };
-            user.Password = passwordHasher.HashPassword(user, model.Password);
+            user.Password = passwordHasher.HashPassword(user, pw);
 
             _applicationDbContext.Users.Add(user);
 
             _applicationDbContext.SaveChanges();
 
-            _emailService.SendRegistrationConfirmationMail(model.Email, model.Name);
+            _emailService.SendRegistrationConfirmationMail(email, name);
+
+            HttpContext.Session.Remove("RegisterOtp");
+            HttpContext.Session.Remove("RegisterOtpExpiry");
+            HttpContext.Session.Remove("RegisterEmail");
+            HttpContext.Session.Remove("RegisterPhone");
+            HttpContext.Session.Remove("RegisterPassword");
+            HttpContext.Session.Remove("RegisterName");
 
             return Json(new { success = true, message = "Registration successful." });
         }
@@ -178,12 +196,12 @@ namespace TicketApplication.Controllers
         }*/
 
         [HttpPost]
-        public IActionResult ForgotPasswordRequestOtp([FromForm] string email)
+        public IActionResult ForgotPasswordRequestOtp([FromBody] VerifyOtpDto model)
         {
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(model.email))
                 return Json(new { success = false, message = "Email is required." });
 
-            var user = _applicationDbContext.Users.FirstOrDefault(x => x.Email == email);
+            var user = _applicationDbContext.Users.FirstOrDefault(x => x.Email == model.email);
             if (user == null)
                 return Json(new { success = false, message = "Email not found." });
 
@@ -192,11 +210,11 @@ namespace TicketApplication.Controllers
 
             HttpContext.Session.SetString("Otp", otp);
             HttpContext.Session.SetString("OtpExpiry", expiry.ToString());
-            HttpContext.Session.SetString("OtpEmail", email);
+            HttpContext.Session.SetString("OtpEmail", model.email);
 
             _emailService.SendMail(
                 title: "OTP for Password Reset",
-                recip: email,
+                recip: model.email,
                 body: $"Your OTP code is: <b>{otp}</b>. It expires in 5 minutes."
             );
 
@@ -204,7 +222,7 @@ namespace TicketApplication.Controllers
         }
 
         [HttpPost]
-        public IActionResult VerifyOtp([FromForm] VerifyOtpDto dto)
+        public IActionResult VerifyOtp([FromBody] VerifyOtpDto dto)
         {
             var otp = HttpContext.Session.GetString("Otp");
             var expiryString = HttpContext.Session.GetString("OtpExpiry");
@@ -213,10 +231,10 @@ namespace TicketApplication.Controllers
             if (otp == null || expiryString == null || storedEmail == null)
                 return Json(new { success = false, message = "No OTP request found." });
 
-            if (storedEmail != dto.Email)
+            if (storedEmail != dto.email)
                 return Json(new { success = false, message = "Email mismatch." });
 
-            if (otp != dto.Otp)
+            if (otp != dto.otp)
                 return Json(new { success = false, message = "Invalid OTP." });
 
             if (DateTime.TryParse(expiryString, out var expiry) && expiry < DateTime.UtcNow)
@@ -230,15 +248,15 @@ namespace TicketApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordDto model)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
         {
-            var user = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+            var user = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Email == model.email);
             if (user == null)
                 return Json(new { success = false, message = "Email not found." });
 
             var passwordHasher = new PasswordHasher<User>();
 
-            user.Password = passwordHasher.HashPassword(user, model.NewPassword);
+            user.Password = passwordHasher.HashPassword(user, model.newPassword);
             await _applicationDbContext.SaveChangesAsync();
 
             return Json(new { success = true, message = "Password reset successful." });
@@ -327,22 +345,20 @@ namespace TicketApplication.Controllers
 
     public class VerifyOtpDto
     {
-        public string Email { get; set; }
-        public string Otp { get; set; }
+        public string email { get; set; }
+        public string otp { get; set; }
     }
 
     public class ResetPasswordDto
     {
-        public string Email { get; set; }
-        public string NewPassword { get; set; }
+        public string email { get; set; }
+        public string newPassword { get; set; }
     }
 
     public class RegisterDto
     {
-        public string Email { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
-        public string Otp { get; set; }
+        public string email { get; set; }
+        public string otpCode { get; set; }
     }
 
     public class Otp

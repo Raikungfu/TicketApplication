@@ -8,7 +8,7 @@
         public decimal? DiscountAmount { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidUntil { get; set; }
-        public int? UsageLimit { get; set; }
+        public int? UsageLimit { get; set; } = 100;
         public bool IsActive { get; set; } = true;
     }
 }

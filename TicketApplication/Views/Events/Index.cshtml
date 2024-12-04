@@ -10,6 +10,12 @@
     <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
 
+<div class="btn-group mb-3">
+    <button type="button" class="btn btn-primary" onclick="filterEvents('All')">All</button>
+    <button type="button" class="btn btn-info" onclick="filterEvents('Admin')">Admin</button>
+    <button type="button" class="btn btn-warning" onclick="filterEvents('Customer')">Customer</button>
+</div>
+
 <div class="table-responsive">
     <table class="table table-striped table-bordered">
         <thead class="thead-dark">
@@ -121,6 +127,11 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+
+        function filterEvents(type) {
+            window.location.href = '@Url.Action("Index", "Events")?filter=' + type;
+        }
+
         function openDeleteModal(eventId, eventTitle) {
             document.getElementById('eventTitle').innerText = eventTitle;
             var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));

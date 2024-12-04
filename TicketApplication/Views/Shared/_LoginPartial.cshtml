@@ -148,7 +148,7 @@
         </div>
         <div class="otp-auth-register-popup-body">
             <!-- Form Đăng Ký -->
-            <form id="register-step" class="d-block">
+            <form id="register-form" class="d-block">
                 <div class="form-group mb-3">
                     <label for="name" class="form-label">Name *</label>
                     <input type="text" id="register-name" name="Name" autocomplete="name" class="form-control" placeholder="Enter your name" required>
@@ -267,8 +267,6 @@
         const loginForm = document.getElementById("login-form");
         const registerForm = document.getElementById("register-form");
 
-
-        const registerStep = document.getElementById("register-step");
         const otpVerifyStep = document.getElementById("otp-verify-step");
         const sendOtpRegisterButton = document.getElementById("send-otp-register");
         const verifyOtpRegisterButton = document.getElementById("verify-otp-register");
@@ -347,6 +345,7 @@
         });
 
         sendOtpRegisterButton.addEventListener("click", async () => {
+            const formData = new FormData(registerForm);
             const email = document.getElementById("register-email").value;
             if (!email) {
                 showNotification("Please enter your email.", 'warning');
@@ -355,21 +354,19 @@
 
             const response = await fetch('/Identity/RegisterRequestOtp', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
+                body: formData
             });
 
             const result = await response.json();
             if (result.success) {
                 showNotification("OTP sent to your email.", 'success');
-                registerStep.classList.add("d-none");
+                registerForm.classList.add("d-none");
                 otpVerifyStep.classList.remove("d-none");
             } else {
                 showNotification(result.message, 'danger');
             }
         });
 
-        // Xác minh OTP khi nhấn "Verify OTP"
         verifyOtpRegisterButton.addEventListener("click", async () => {
             const otpCode = document.getElementById("otp-code").value;
             const email = document.getElementById("register-email").value;
@@ -388,31 +385,12 @@
             const result = await response.json();
             if (result.success) {
                 showNotification("OTP verified. Registration successful.", 'success');
+                registerPopup.classList.add("d-none");
                 openPopup(loginPopup);
             } else {
                 showNotification(result.message, 'danger');
             }
         });
-
-        /*
-        registerForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const formData = new FormData(registerForm);
-            const response = await fetch('/Identity/Register', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-            if (!result.success) {
-                showNotification(result.message, "danger");
-            } else {
-                showNotification(result.message, "success");
-                registerPopup.classList.add("d-none");
-                openPopup(loginPopup);
-            }
-        });
-        */
 
         sendOtpButton.addEventListener("click", async () => {
             const email = document.getElementById("email-resetpassword").value;
@@ -421,7 +399,6 @@
                 return;
             }
 
-            // Gửi yêu cầu gửi OTP
             const response = await fetch('/Identity/ForgotPasswordRequestOtp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -438,7 +415,6 @@
             }
         });
 
-        // Xác nhận OTP
         verifyOtpButton.addEventListener("click", async () => {
             const otp = document.getElementById("otp").value;
             const email = document.getElementById("email-resetpassword").value;
@@ -447,7 +423,6 @@
                 return;
             }
 
-            // Gửi yêu cầu xác nhận OTP
             const response = await fetch('/Identity/VerifyOtp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -464,7 +439,6 @@
             }
         });
 
-        // Đổi mật khẩu
         resetPasswordButton.addEventListener("click", async () => {
             const newPassword = document.getElementById("new-password").value;
             const confirmPassword = document.getElementById("confirm-password").value;
@@ -479,7 +453,6 @@
                 return;
             }
 
-            // Gửi yêu cầu đổi mật khẩu
             const response = await fetch('/Identity/ResetPassword', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -489,7 +462,8 @@
 
             if (result.success) {
                 showNotification("Mật khẩu đã được đổi thành công.", 'success');
-                window.location.href = '/Account/Login';
+                forgotPopup.classList.add("d-none");
+                openPopup(loginPopup);
             } else {
                 showNotification(result.message, 'danger');
             }

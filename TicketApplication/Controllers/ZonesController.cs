@@ -25,9 +25,9 @@ namespace TicketApplication.Controllers
             var role = User.FindFirstValue(ClaimTypes.Role);
             if (role == "Customer")
             {
-                var userName = User.Identity.Name;
+                var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userZones = await _context.Zones
-                    .Where(z => z.Event.CreatedBy == userName)
+                    .Where(z => z.Event.CreatedBy.Equals(userName))
                     .Include(z => z.Event)
                     .AsNoTracking()
                     .ToListAsync();
@@ -56,7 +56,8 @@ namespace TicketApplication.Controllers
             }
 
             var role = User.FindFirstValue(ClaimTypes.Role);
-            if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (role == "Customer" && !zone.Event.CreatedBy.Equals(userName))
             {
                 return Forbid();
             }
@@ -67,7 +68,18 @@ namespace TicketApplication.Controllers
         // GET: Zones/Create
         public IActionResult Create()
         {
-            ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            if (role == "Customer")
+            {
+                var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userEvents = _context.Events.Where(e => e.CreatedBy == userName).ToList();
+                ViewBag.EventId = new SelectList(userEvents, "Id", "Title");
+            }
+            else
+            {
+                ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
+            }
+
             return View();
         }
 
@@ -81,8 +93,9 @@ namespace TicketApplication.Controllers
                 var role = User.FindFirstValue(ClaimTypes.Role);
                 if (role == "Customer")
                 {
+                    var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     var eventCreatedBy = _context.Events.Where(e => e.Id == zone.EventId).FirstOrDefault()?.CreatedBy;
-                    if (eventCreatedBy != User.Identity.Name)
+                    if (!eventCreatedBy.Equals(userName))
                     {
                         return Forbid();
                     }
@@ -111,7 +124,8 @@ namespace TicketApplication.Controllers
             }
 
             var role = User.FindFirstValue(ClaimTypes.Role);
-            if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (role == "Customer" && !zone.Event.CreatedBy.Equals(userName))
             {
                 return Forbid();
             }
@@ -137,7 +151,8 @@ namespace TicketApplication.Controllers
                     var zoneToEdit = _context.Zones.Find(id);
 
                     var role = User.FindFirstValue(ClaimTypes.Role);
-                    if (role == "Customer" && zoneToEdit.Event.CreatedBy != User.Identity.Name)
+                    var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (role == "Customer" && !zoneToEdit.Event.CreatedBy.Equals(userName))
                     {
                         return Forbid();
                     }
@@ -184,7 +199,8 @@ namespace TicketApplication.Controllers
             }
 
             var role = User.FindFirstValue(ClaimTypes.Role);
-            if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (role == "Customer" && !zone.Event.CreatedBy.Equals(userName))
             {
                 return Forbid();
             }
@@ -201,7 +217,8 @@ namespace TicketApplication.Controllers
             if (zone != null)
             {
                 var role = User.FindFirstValue(ClaimTypes.Role);
-                if (role == "Customer" && zone.Event.CreatedBy != User.Identity.Name)
+                var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (role == "Customer" && !zone.Event.CreatedBy.Equals(userName))
                 {
                     return Forbid();
                 }

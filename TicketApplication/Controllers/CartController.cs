@@ -176,7 +176,7 @@ namespace TicketApplication.Controllers
                 return Json(new { success = false, message = "Người dùng không tồn tại." });
             }
 
-            var cart = await _context.Carts.Where(x => x.UserId == claimId).ToListAsync();
+            var cart = await _context.Carts.Where(x => x.UserId == claimId).Include(c => c.Zone).ToListAsync();
             if (cart == null || !cart.Any())
             {
                 return Json(new { success = false, message = "Giỏ hàng của bạn đang trống." });

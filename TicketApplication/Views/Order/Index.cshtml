@@ -49,7 +49,10 @@
                 d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Quantity: {d.Quantity}"))))">
                                 View Details
                             </button>
-
+                            @if (order.Status == "Pending")
+                            {
+                               <button class="btn btn-danger" onclick="openDeleteModal('@order.Id', '@Html.Raw(string.Join(";", order.OrderDetails.SelectMany(d => d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Quantity: {d.Quantity}"))))')">Delete</button>
+                            }
                         </td>
                     </tr>
                 }
@@ -60,7 +63,7 @@
 
 <!-- Order Details Modal -->
 
-<form method="post" action="/Order/CheckoutOrder" onsubmit="return checkAgreement()">
+<form method="post" action="/Order/Checkout" onsubmit="return checkAgreement()">
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
         <input name="orderId" id="orderId" hidden/>
     <div class="modal-dialog modal-lg">
@@ -77,28 +80,31 @@
                 <ul id="modalOrderDetails"></ul>
             </div>
                 <div class="row" id="paymentSection" style="display: none;">
-                    <div class="col-md-4 offset-md-8">
-                    <h4 class="d-flex justify-content-between">
-                        <span>Chọn phương thức thanh toán:</span>
-                    </h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodQR" value="QR" required>
-                        <label class="form-check-label" for="paymentMethodQR">
-                            Thanh toán QR
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodDomestic" value="DomesticCard" required>
-                        <label class="form-check-label" for="paymentMethodDomestic">
-                            Thẻ nội địa và tài khoản ngân hàng
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodInternational" value="InternationalCard" required>
-                        <label class="form-check-label" for="paymentMethodInternational">
-                            Thẻ thanh toán quốc tế
-                        </label>
-                    </div>
+                    <div class="col-md-6 offset-md-6">
+                        
+<div id="discountSection" class="mb-4">
+    <h4>Áp dụng giảm giá:</h4>
+    <div class="form-group">
+        <label for="orderDiscountCode">Nhập mã giảm giá:</label>
+        <input type="text" id="orderDiscountCode" name="Code" class="form-control" placeholder="Mã giảm giá (nếu có)">
+    </div>
+
+                            <div class="form-check mt-3">
+        <input type="radio" id="useRankDiscountOrder" name="discountOptionOrder" value="rank" class="form-check-input" checked>
+        <label class="form-check-label" for="useRankDiscountOrder">
+            Áp dụng giảm giá theo Rank
+        </label>
+    </div>
+
+    <div class="form-check">
+        <input type="radio" id="useCodeDiscountOrder" name="discountOptionOrder" value="code" class="form-check-input">
+        <label class="form-check-label" for="useCodeDiscountOrder">
+            Áp dụng mã giảm giá
+        </label>
+    </div>
+
+    <button type="button" class="btn btn-primary mt-3" onclick="applyOrderDiscount()">Kiểm tra</button>
+</div>
 
                     <div class="form-check mt-3" style="background-color: #f9f9f9;">
                         <input class="form-check-input" type="checkbox" id="termsAgreement" required>
@@ -120,12 +126,44 @@
     </div>
 </div>
 </form>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the order? <br>
+            <span id="orderDetail"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Script to handle modal population for order details
+        function openDeleteModal(orderId, orderDetail) {
+            document.getElementById('orderId').textContent = orderId;
+            document.getElementById('orderDetail').textContent = orderDetail;
+            
+            var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            myModal.show();
+
+            document.getElementById('confirmDeleteButton').onclick = function () {
+                window.location.href = '/Order/Delete/' + orderId;
+                myModal.hide();
+            };
+        }
+
         const orderDetailModal = document.getElementById('orderDetailModal');
         orderDetailModal.addEventListener('show.bs.modal', event => {
-            const button = event.relatedTarget; // Button that triggered the modal
+            const button = event.relatedTarget;
 
             const orderId = button.getAttribute('data-order-id');
             const userEmail = button.getAttribute('data-user-email');
@@ -134,28 +172,24 @@
             const orderStatus = button.getAttribute('data-order-status');
 
             if (orderStatus === "Pending") {
-                // Hiển thị phần thanh toán
                 document.getElementById('paymentSection').style.display = 'block';
             } else {
-                // Ẩn phần thanh toán
                 document.getElementById('paymentSection').style.display = 'none';
             }
 
-            // Update the modal's content.
             document.getElementById('orderId').value = orderId;
             document.getElementById('modalOrderId').textContent = orderId;
             document.getElementById('modalUserEmail').textContent = userEmail;
             document.getElementById('modalTotalAmount').textContent = totalAmount;
 
-            // Split details by ';' and create list items
             const detailsArray = orderDetails.split(';');
             const modalOrderDetailsList = document.getElementById('modalOrderDetails');
-            modalOrderDetailsList.innerHTML = ""; // Clear previous details
+            modalOrderDetailsList.innerHTML = "";
 
             detailsArray.forEach(detail => {
                 if (detail.trim()) {
                     const listItem = document.createElement('li');
-                    listItem.textContent = detail.trim(); // Trim whitespace
+                    listItem.textContent = detail.trim();
                     modalOrderDetailsList.appendChild(listItem);
                 }
             });
@@ -169,6 +203,35 @@
                 }
                 return true;
             }
+
+        function applyOrderDiscount() {
+            const discountCode = document.getElementById("orderDiscountCode").value.trim();
+            const useRank = document.querySelector('input[name="discountOptionOrder"]:checked').value === "rank";
+            const orderId = document.getElementById("orderId").value;
+
+            fetch('/Order/ApplyDiscount', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    OrderId: orderId,
+                    Code: useRank ? null : discountCode,
+                    Rank: useRank ? "rank" : null
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("modalTotalAmount").textContent = data.newTotal + " đ";
+                        showNotification(data.message, 'success');
+                    } else {
+                        showNotification(data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Có lỗi xảy ra.', 'danger');
+                });
+        }
 
     </script>
 }

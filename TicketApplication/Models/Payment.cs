@@ -7,6 +7,8 @@
         public string PaymentMethod { get; set; }
         public string Status { get; set; }
 
+        public string? PaymentRef { get; set; }
+
         public virtual Order Order { get; set; }
 
     }
