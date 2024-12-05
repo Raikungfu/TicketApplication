@@ -5,7 +5,7 @@ namespace TicketApplication.Models
     public class Order : AuditableEntity
     {
         public string UserId { get; set; }
-        public long OrderCode { get; set; } = new Random().Next(100000000, 999999999);
+        public long OrderCode { get; set; }
         public string? Status { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal? DiscountAmount { get; set; }

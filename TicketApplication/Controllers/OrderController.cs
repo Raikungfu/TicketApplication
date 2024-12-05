@@ -60,6 +60,7 @@ namespace TicketApplication.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string orderId, string newStatus)
         {
             var order = await _context.Orders.FindAsync(orderId);
@@ -195,7 +196,7 @@ namespace TicketApplication.Controllers
 
                 order.DiscountId = discount.Id;
 
-                await _context.SaveChangesAsync();
+                _context.SaveChangesAsync();
             }
 
             if (!string.IsNullOrEmpty(discountOptionOrder) && discountOptionOrder.Equals("rank") && !string.IsNullOrEmpty(user.Rank) && !user.Rank.Equals("Unknown"))
@@ -207,8 +208,9 @@ namespace TicketApplication.Controllers
             discountAmount = Math.Max(rankDiscount, codeDiscount);
 
             order.DiscountAmount = discountAmount;
+            order.OrderCode = new Random().Next(100000000, 999999999);
             _context.Orders.Update(order);
-            await _context.SaveChangesAsync();
+            _context.SaveChangesAsync();
 
             var paymentLink = await createPaymentLink(Math.Max(totalPrice - discountAmount, 0), paymentMethod, order, user);
             return Redirect(paymentLink);
@@ -233,8 +235,8 @@ namespace TicketApplication.Controllers
                     quantity: od.Quantity,
                     price: (int)od.UnitPrice
                 )).ToList(),
-                returnUrl: $"{serverUrl}/Order/confirm-payment-payos",
-                cancelUrl: $"{serverUrl}/Order/confirm-payment-payos",
+                returnUrl: $"{serverUrl}/confirm-payment-payos",
+                cancelUrl: $"{serverUrl}/confirm-payment-payos",
                 buyerName: user.Name,
                 buyerEmail: user.Email,
                 buyerAddress: user.Address,
@@ -251,17 +253,26 @@ namespace TicketApplication.Controllers
         }
 
         [HttpGet("confirm-payment-payos")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmPaymentPayOS([FromQuery] string id, [FromQuery] bool cancel, [FromQuery] string status, [FromQuery] string orderCode, [FromQuery] string buyerName, [FromQuery] string buyerEmail)
+        public async Task<IActionResult> ConfirmPaymentPayOS([FromQuery] string code, [FromQuery] string id, [FromQuery] bool cancel, [FromQuery] string status, [FromQuery] long orderCode)
         {
             string serverUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
-
+            
             try
             {
+                if (code.Equals("01"))
+                {
+                    TempData["ErrorMessage"] = "Invalid Params!";
+                    return RedirectToAction("Index", "Order");
+                }
+
                 var order = await _context.Orders
                     .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Tickets)
-                    .FirstOrDefaultAsync(o => o.Id == orderCode);
+                    .ThenInclude(od => od.Zone)
+                    .ThenInclude(od => od.Event)
+                    .Include(o => o.Payments)
+                    .Include(o => o.User)
+                    .FirstOrDefaultAsync(o => o.OrderCode == orderCode);
 
                 if (order == null)
                 {
@@ -269,15 +280,19 @@ namespace TicketApplication.Controllers
                     return RedirectToAction("Index", "Order");
                 }
 
+
+                var amount = Math.Max(order.TotalAmount - order.DiscountAmount ?? 0, 0);
                 if (cancel || status == "CANCELLED")
                 {
-                    order.Status = "Cancelled";
-                    order.Payments.Status = "Failed";
+                    var payment = CreateOrUpdatePayment(order, amount, "Failed");
+
+                    TempData["ErrorMessage"] = "Payment failed!";
+                    return RedirectToAction("Index", "Order");
                 }
                 else if (status == "PAID")
                 {
                     order.Status = "Paid";
-                    order.Payments.Status = "Paid";
+                    var payment = CreateOrUpdatePayment(order, amount, "Paid");
 
                     foreach (var orderDetail in order.OrderDetails)
                     {
@@ -297,7 +312,6 @@ namespace TicketApplication.Controllers
                 }
                 else
                 {
-
                     TempData["ErrorMessage"] = "Payment failed!";
                     return RedirectToAction("Index", "Order");
                 }
@@ -308,7 +322,7 @@ namespace TicketApplication.Controllers
                 _context.Orders.Update(order);
                 await _context.SaveChangesAsync();
 
-                _emailService.SendTicketOrderConfirmationMail(buyerEmail, buyerName, order);
+                _emailService.SendTicketOrderConfirmationMail(order.User.Email, order.User.Name, order);
                 TempData["SuccessMessage"] = "Thanh toán thành công, Ticket đã được gửi đến email của bạn.";
                 return RedirectToAction("Index", "Order");
             }
@@ -318,6 +332,90 @@ namespace TicketApplication.Controllers
                 return RedirectToAction("Index", "Order");
             }
         }
+
+        private Payment CreateOrUpdatePayment(Order order, decimal amount, string status)
+        {
+            var payment = order.Payments ?? new Payment
+            {
+                OrderId = order.Id,
+                Amount = amount,
+                PaymentMethod = "PayOS",
+                Status = status
+            };
+
+            payment.Amount = amount;
+            payment.PaymentMethod = "PayOS";
+            payment.Status = status;
+
+            if (order.Payments == null)
+            {
+                _context.Payments.Add(payment);
+            }
+            else
+            {
+                _context.Payments.Update(payment);
+            }
+
+            return payment;
+        }
+
+
+        [HttpPost("confirm-webhook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmWebhook([FromBody] Dictionary<string, string> requestBody)
+        {
+            var response = new
+            {
+                error = 0,
+                message = "ok",
+                data = ""
+            };
+
+            var payOS = new PayOS(
+                _configuration["PAYOS_CLIENT_ID"],
+                _configuration["PAYOS_API_KEY"],
+                _configuration["PAYOS_CHECKSUM_KEY"]
+            );
+
+            try
+            {
+                if (requestBody.TryGetValue("webhookUrl", out var webhookUrl))
+                {
+
+                    var str = await payOS.confirmWebhook(webhookUrl);
+                    response = new
+                    {
+                        error = 0,
+                        message = "ok",
+                        data = str
+                    };
+                }
+                else
+                {
+                    response = new
+                    {
+                        error = -1,
+                        message = "Missing 'webhookUrl' parameter.",
+                        data = ""
+                    };
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+
+                response = new
+                {
+                    error = -1,
+                    message = ex.Message,
+                    data = ""
+                };
+                return StatusCode(500, response);
+            }
+        }
+
 
         public static string RemoveDiacritics(string text)
         {
