@@ -21,7 +21,7 @@ namespace TicketApplication.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var events = await _context.Events.Where(e => e.Date <= DateTime.Now && e.Status == "Visible").Include(e => e.Zones).AsNoTracking().ToListAsync();
+            var events = await _context.Events.Where(e => e.Date >= DateTime.Now && e.Status == "Visible").Include(e => e.Zones).AsNoTracking().ToListAsync();
 
             return View(events);
         }

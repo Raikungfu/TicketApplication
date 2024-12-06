@@ -11,6 +11,7 @@ using TicketApplication.Models;
 using TicketApplication.Service;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using static System.Net.WebRequestMethods;
 
 namespace TicketApplication.Controllers
 {
@@ -18,11 +19,13 @@ namespace TicketApplication.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UploadFileService _uploadFileService;
+        private readonly EmailService _emailService;
 
-        public EventsController(ApplicationDbContext context, UploadFileService uploadFileService)
+        public EventsController(ApplicationDbContext context, UploadFileService uploadFileService, EmailService emailService)
         {
             _context = context;
             _uploadFileService = uploadFileService;
+            _emailService = emailService;
         }
 
         // GET: Events
@@ -162,6 +165,7 @@ namespace TicketApplication.Controllers
 
             var role = User.FindFirstValue(ClaimTypes.Role);
             var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (role == "Customer" && !@event.CreatedBy.Equals(userName))
             {
                 return Forbid();
@@ -197,6 +201,16 @@ namespace TicketApplication.Controllers
 
                     if (role == "Admin")
                     {
+                        if(!@event.CreatedBy.Equals("Admin") && @event.Status.Equals("Rejected") && eventToUpdate.Status.Equals("Pending"))
+                        {
+                            var cusMail = _context.Users.FirstOrDefault(u => u.Email.Equals(@event.CreatedBy)).Email;
+                            _emailService.SendMail(
+                                title: $"WorQshop. Status Workshop {@event.Title}",
+                                recip: cusMail,
+                                body: $"Chúng tôi rất tiếc phải thông báo rằng workshop <b>{@event.Title}</b> của bạn chưa được duyệt. Bạn có thể xem xét chỉnh sửa và gửi lại yêu cầu."
+                            );
+                        }
+
                         eventToUpdate.Status = @event.Status;
                     }
 

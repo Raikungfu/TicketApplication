@@ -66,6 +66,48 @@
     </div>
 </div>
 
+@if (TempData["ShowModal"] != null && (bool)TempData["ShowModal"])
+{
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Zone Created Successfully</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        @if (TempData["ShowModal"] != null && (bool)TempData["ShowModal"])
+                        {
+                            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="successModalLabel">Zone Created Successfully</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Yêu cầu tạo workshop của bạn đang được xem xét. Để được hỗ trợ nhanh chóng, vui lòng liên hệ bên dưới với chúng tôi qua fanpage Facebook. Xin cảm ơn</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="#" class="btn btn-primary">Đến Fanpage</a>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a href="@Url.Action("Index", "Zones")" class="btn btn-primary">Manage Zones</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     <script>
         function openDeleteModal(zoneId, zoneName) {

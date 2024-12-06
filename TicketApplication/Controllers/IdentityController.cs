@@ -163,38 +163,6 @@ namespace TicketApplication.Controllers
             return Json(new { success = true, message = "Registration successful." });
         }
 
-
-        /*
-        [HttpPost]
-        public async Task<IActionResult> Register([FromForm] UserRegistrationModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var existUser = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
-                if (existUser != null)
-                {
-                    return Json(new { success = false, message = "User exist! Login now!" });
-                }
-                var user = new User
-                {
-                    Email = model.Email,
-                    Name = model.Name,
-                    PhoneNumber = model.Phone,
-                    Password = model.Password,
-                    Role = "Customer"
-                };
-
-                _applicationDbContext.Users.Add(user);
-                await _applicationDbContext.SaveChangesAsync();
-
-                _emailService.SendRegistrationConfirmationMail(user.Email, user.Name);
-
-                return Json(new { success = true, message = "Registration successful. Email sent!" });
-            }
-
-            return Json(new { success = false, message = "Registration failed. Please check your inputs." });
-        }*/
-
         [HttpPost]
         public IActionResult ForgotPasswordRequestOtp([FromBody] VerifyOtpDto model)
         {

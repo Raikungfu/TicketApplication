@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -65,27 +66,27 @@ namespace TicketApplication.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditProfile(User user)
         {
-            if (ModelState.IsValid)
+            var userId = User.Identity.Name;
+            var existingUser = _context.Users.FirstOrDefault(u => u.Email == userId);
+            if (existingUser != null)
             {
-                var userId = User.Identity.Name;
-                var existingUser = _context.Users.FirstOrDefault(u => u.Email == userId);
-                if (existingUser != null)
+                if (!string.IsNullOrWhiteSpace(user.Name))
                 {
                     existingUser.Name = user.Name;
-                    existingUser.Email = user.Email;
-                    existingUser.PhoneNumber = user.PhoneNumber;
-                    existingUser.Address = user.Address;
-                    existingUser.Role = user.Role;
-
-                    if (existingUser.Password != user.Password)
-                    {
-                        var passwordHasher = new PasswordHasher<User>();
-                        user.Password = passwordHasher.HashPassword(user, user.Password);
-                    }
-
-                    _context.SaveChanges();
-                    return RedirectToAction(nameof(Profile));
                 }
+
+                if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                {
+                    existingUser.PhoneNumber = user.PhoneNumber;
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.Address))
+                {
+                    existingUser.Address = user.Address;
+                }
+
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Profile));
             }
             return View(user);
         }

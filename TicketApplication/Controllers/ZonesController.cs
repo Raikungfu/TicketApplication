@@ -132,6 +132,11 @@ namespace TicketApplication.Controllers
                 return Forbid();
             }
 
+            if (role == "Customer")
+            {
+                TempData["ShowModal"] = true;
+            }
+
             ViewBag.EventId = new SelectList(_context.Events, "Id", "Title");
             return View(zone);
         }
