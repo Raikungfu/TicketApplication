@@ -240,6 +240,7 @@ namespace TicketApplication.Controllers
                 _context.Orders.Update(order);
                 await _context.SaveChangesAsync();
 
+                _emailService.SendTicketOrderConfirmationMail(order.User.Email, order.User.Name, order);
                 TempData["SuccessMessage"] = "Thanh toán thành công, Ticket đã được gửi đến email của bạn.";
                 return RedirectToAction("Index", "Order");
             }
