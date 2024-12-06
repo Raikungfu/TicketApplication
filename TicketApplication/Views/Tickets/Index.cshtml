@@ -35,7 +35,12 @@
                 <td class="text-center">
                     <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                     <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="openDeleteModal('@item.Id', '@item.Title')">Delete</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="openDeleteModal(', '@item.Title')">Delete</button>
+
+                    <form asp-action="Delete" asp-route-id="@@item.Id" method="post" style="display:inline;" id="deleteForm-@item.Id">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal('@item.Id', '@item.Title')">Delete</button>
+                    </form>
                 </td>
             </tr>
         }
@@ -69,7 +74,7 @@
             myModal.show();
 
             document.getElementById('confirmDeleteButton').onclick = function () {
-                window.location.href = '/Tickets/Delete/' + ticketId;
+                document.getElementById('deleteForm-' + ticketId).submit();
                 myModal.hide();
             };
         }

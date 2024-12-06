@@ -116,7 +116,7 @@
             myModal.show();
 
             document.getElementById('confirmDeleteButton').onclick = function () {
-                window.location.href = '/Zones/Delete/' + zoneId;
+                document.getElementById('deleteForm-' + zoneId).submit();
                 myModal.hide();
             };
         }

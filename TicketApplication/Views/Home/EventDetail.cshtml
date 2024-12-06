@@ -150,9 +150,10 @@
                         setTimeout(2000);
                         window.location.href = '/Cart';
                     } else {
-                        showNotification('Có lỗi xảy ra khi thêm vào giỏ hàng.', 'danger');
                         if (response.status == 401) {
                             document.getElementById("otp-auth-login-popup").classList.remove("d-none");
+                        } else {
+                            showNotification('Có lỗi xảy ra khi thêm vào giỏ hàng.', 'danger');
                         }
                     }
                 })

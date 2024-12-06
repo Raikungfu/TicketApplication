@@ -201,7 +201,7 @@ namespace TicketApplication.Controllers
 
                     if (role == "Admin")
                     {
-                        if(!@event.CreatedBy.Equals("Admin") && @event.Status.Equals("Rejected") && eventToUpdate.Status.Equals("Pending"))
+                        if(!eventToUpdate.CreatedBy.Equals("Admin") && @event.Status.Equals("Rejected") && eventToUpdate.Status.Equals("Pending"))
                         {
                             var cusMail = _context.Users.FirstOrDefault(u => u.Email.Equals(@event.CreatedBy)).Email;
                             _emailService.SendMail(

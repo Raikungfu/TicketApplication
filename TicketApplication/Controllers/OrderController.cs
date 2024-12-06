@@ -503,7 +503,9 @@ namespace TicketApplication.Controllers
             };
         }
 
-        [Authorize(Roles = "Customer")]
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string orderId)
         {
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -512,24 +514,48 @@ namespace TicketApplication.Controllers
                 return Unauthorized("Người dùng chưa đăng nhập");
             }
 
-            var order = await _context.Orders
+            var claimRole = User.FindFirstValue(ClaimTypes.Role);
+            if (claimRole.Equals("Customer"))
+            {
+                var order = await _context.Orders
                 .Include(o => o.OrderDetails)
                 .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
 
-            if (order == null)
-            {
-                TempData["ErrorMessage"] = "Đơn hàng không tồn tại hoặc không thuộc về bạn.";
-                return RedirectToAction(nameof(Index));
-            }
+                if (order == null)
+                {
+                    TempData["ErrorMessage"] = "Đơn hàng không tồn tại hoặc không thuộc về bạn.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            if (order.Status != "Pending")
-            {
-                TempData["ErrorMessage"] = "Đơn hàng không thể xoá vì trạng thái không phải là 'Pending'.";
-                return RedirectToAction(nameof(Index));
-            }
+                if (order.Status != "Pending")
+                {
+                    TempData["ErrorMessage"] = "Đơn hàng không thể xoá vì trạng thái không phải là 'Pending'.";
+                    return RedirectToAction(nameof(Index));
+                }
 
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }else if (claimRole.Equals("Admin"))
+            {
+                var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+                if (order == null)
+                {
+                    TempData["ErrorMessage"] = "Đơn hàng không tồn tại.";
+                    return RedirectToAction(nameof(IndexAdmin));
+                }
+
+                if (order.Status != "Pending")
+                {
+                    TempData["ErrorMessage"] = "Đơn hàng không thể xoá vì trạng thái không phải là 'Pending'.";
+                    return RedirectToAction(nameof(IndexAdmin));
+                }
+
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
 
             TempData["SuccessMessage"] = "Đơn hàng đã được xoá thành công.";
             return RedirectToAction(nameof(Index));
