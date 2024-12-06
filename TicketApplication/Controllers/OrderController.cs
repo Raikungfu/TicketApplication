@@ -12,6 +12,7 @@ using TicketApplication.Service;
 using Net.payOS.Types;
 using Net.payOS;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.Channels;
 
 namespace TicketApplication.Controllers
 {
@@ -93,6 +94,7 @@ namespace TicketApplication.Controllers
                     .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Zone)
                     .ThenInclude(z => z.Event)
+                    .Include(o => o.Payments)
                     .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
 
                 if (order == null)
@@ -209,6 +211,30 @@ namespace TicketApplication.Controllers
 
             order.DiscountAmount = discountAmount;
             order.OrderCode = new Random().Next(100000000, 999999999);
+
+            if(Math.Max(totalPrice - discountAmount, 0) == 0)
+            {
+                var amount = Math.Max(order.TotalAmount - order.DiscountAmount ?? 0, 0);
+                order.Status = "Paid";
+                var payment = CreateOrUpdatePayment(order, amount, "Paid");
+
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    var zone = await _context.Zones.FindAsync(orderDetail.ZoneId);
+                    if (zone != null)
+                    {
+                        zone.AvailableTickets -= orderDetail.Quantity;
+                        _context.Zones.Update(zone);
+
+                        foreach (var ticket in orderDetail.Tickets)
+                        {
+                            ticket.Status = "Sold";
+                            _context.Tickets.Update(ticket);
+                        }
+                    }
+                }
+            }
+
             _context.Orders.Update(order);
             _context.SaveChangesAsync();
 
@@ -228,7 +254,7 @@ namespace TicketApplication.Controllers
 
             var paymentData = new PaymentData(
                 orderCode: order.OrderCode,
-                amount: (int)Math.Round(order.TotalAmount),
+                amount: (int) Math.Round(amount),
                 description: $"TICKET ORDER {order.Id}",
                 items: order.OrderDetails.Select(od => new ItemData(
                     name: $"{od.Zone.Event.Title} - {od.Zone.Name}",
