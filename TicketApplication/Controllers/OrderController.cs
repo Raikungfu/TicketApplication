@@ -359,7 +359,6 @@ namespace TicketApplication.Controllers
             return payment;
         }
 
-
         [HttpPost("confirm-webhook")]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmWebhook([FromBody] Dictionary<string, string> requestBody)

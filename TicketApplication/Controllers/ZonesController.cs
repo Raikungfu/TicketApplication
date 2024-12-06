@@ -117,7 +117,9 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var zone = await _context.Zones.FindAsync(id);
+            var zone = await _context.Zones
+                .Include(z => z.Event)
+                .FirstOrDefaultAsync(z => z.Id == id);
             if (zone == null)
             {
                 return NotFound();
