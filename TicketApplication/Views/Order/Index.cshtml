@@ -63,62 +63,61 @@
 </div>
 
 <!-- Order Details Modal -->
-
 <form method="post" action="/Order/Checkout" onsubmit="return checkAgreement()">
-<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
-        <input name="orderId" id="orderId" hidden/>
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+        <input name="orderId" id="orderId" hidden />
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
                     <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <h6>Mã đơn hàng: <span id="modalOrderId"></span></h6>
-                <h6>Email: <span id="modalUserEmail"></span></h6>
+                    <h6>Email: <span id="modalUser Email"></span></h6>
                     <h6>Tổng tiền thanh toán: <span id="modalTotalAmount"></span></h6>
                     <h6>Chi tiết đơn hàng:</h6>
-                <ul id="modalOrderDetails"></ul>
-            </div>
-                <div class="row" id="paymentSection" style="display: none;">
-                    <div class="col-md-6 offset-md-6">
-                        
-<div id="discountSection" class="mb-4">
-    <h4>Áp dụng giảm giá:</h4>
-    <div class="form-group">
-        <label for="orderDiscountCode">Nhập mã giảm giá:</label>
-        <input type="text" id="orderDiscountCode" name="Code" class="form-control" placeholder="Mã giảm giá (nếu có)">
+                    <ul id="modalOrderDetails"></ul>
 
-    <div class="form-check">
-        <input type="radio" id="useCodeDiscountOrder" name="discountOptionOrder" value="code" class="form-check-input">
-        <label class="form-check-label" for="useCodeDiscountOrder">
-            Áp dụng mã giảm giá
-        </label>
-    </div>
+                    <div class="row" id="paymentSection" style="display: none;">
+                        <div class="col-md-8 offset-md-4">
+                            <div id="discountSection" class="mb-4">
+                                <h4>Áp dụng giảm giá:</h4>
+                                <div class="form-group">
+                                    <label for="orderDiscountCode">Nhập mã giảm giá:</label>
+                                    <input type="text" id="orderDiscountCode" name="Code" class="form-control" placeholder="Mã giảm giá (nếu có)">
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" id="useCodeDiscountOrder" name="discountOptionOrder" value="code" class="form-check-input">
+                                    <label class="form-check-label" for="useCodeDiscountOrder">
+                                        Áp dụng mã giảm giá
+                                    </label>
+                                </div>
+                                <button type="button" class="btn btn-primary mt-3" onclick="applyOrderDiscount()">Kiểm tra</button>
+                            </div>
 
-    <button type="button" class="btn btn-primary mt-3" onclick="applyOrderDiscount()">Kiểm tra</button>
-</div>
+                            <div class="form-check mt-3" style="background-color: #f9f9f9;">
+                                <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                                <label class="form-check-label d-inline-block ml-2" for="termsAgreement" style="max-height: 80px; display: inline-block; padding-right: 10px;">
+                                    <strong>Đồng ý với các điều khoản:</strong>
+                                    <ul style="margin: 0; padding-left: 20px;">
+                                        <li>Khi quý khách hoàn tất quá trình thanh toán vé, giao dịch sẽ được xem là hoàn tất và không thể hủy bỏ hoặc hoàn tiền.</li>
+                                    </ul>
+                                </label>
+                            </div>
 
-                    <div class="form-check mt-3" style="background-color: #f9f9f9;">
-                        <input class="form-check-input" type="checkbox" id="termsAgreement" required>
-                        <label class="form-check-label d-inline-block ml-2" for="termsAgreement" style="max-height: 80px; display: inline-block; padding-right: 10px;">
-                            <strong>Đồng ý với các điều khoản:</strong>
-                            <ul style="margin: 0; padding-left: 20px;">
-                                <li>Khi quý khách hoàn tất quá trình thanh toán vé, giao dịch sẽ được xem là hoàn tất và không thể hủy bỏ hoặc hoàn tiền.</li>
-                            </ul>
-                        </label>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
+                        </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </form>
+
 
 <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -129,7 +128,7 @@
             </div>
             <div class="modal-body">
                 Are you sure you want to delete the order? <br>
-            <span id="orderDetail"></span>
+                <span id="orderDetail"></span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -138,42 +137,48 @@
         </div>
     </div>
 </div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <text>
+        document.addEventListener('DOMContentLoaded', function () {
+        showNotification('@TempData["ErrorMessage"]', 'danger');
+        });
+    </text>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <text>
+        document.addEventListener('DOMContentLoaded', function () {
+        showNotification('@TempData["SuccessMessage"]', 'success');
+        });
+    </text>
+}
 
 @section Scripts {
     <script>
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <text>
-                document.addEventListener('DOMContentLoaded', function () {
-                    showNotification('@TempData["ErrorMessage"]', 'danger');
-                });
-            </text>
-        }
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <text>
-                document.addEventListener('DOMContentLoaded', function () {
-                    showNotification('@TempData["SuccessMessage"]', 'success');
-                });
-            </text>
-        }
-
         function openDeleteModal(orderId, orderDetail) {
-            document.getElementById('orderDetail').textContent = orderDetail;
-            
-            var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-            myModal.show();
+            try {
+                document.getElementById('orderDetail').textContent = orderDetail;
+
+                var myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                myModal.show();
 
                 document.getElementById('confirmDeleteButton').onclick = function () {
                     document.getElementById('deleteForm-' + orderId).submit();
-                myModal.hide();
-            };
+                    myModal.hide();
+                };
+            }catch(e){
+                console.log(e);
+            }
+            
         }
 
         const orderDetailModal = document.getElementById('orderDetailModal');
+
         orderDetailModal.addEventListener('show.bs.modal', event => {
             const button = event.relatedTarget;
+            if (!button) return;
 
             const orderId = button.getAttribute('data-order-id');
             const userEmail = button.getAttribute('data-user-email');

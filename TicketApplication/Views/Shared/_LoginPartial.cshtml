@@ -244,23 +244,27 @@
             popup.classList.remove("d-none");
         }
 
-        // Mở form login
-        loginLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            openPopup(loginPopup);
-        });
-
-        // Mở form đăng ký
-        registerLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            openPopup(registerPopup);
-        });
-
-        registerLink2.addEventListener("click", (e) => {
-            e.preventDefault();
-            loginPopup.classList.add("d-none");
-            openPopup(registerPopup);
-        });
+        if(loginLink){
+            loginLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                openPopup(loginPopup);
+            });
+        }
+        
+        if (registerLink){
+            registerLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                openPopup(registerPopup);
+            });
+        }
+        
+        if (registerLink2){
+            registerLink2.addEventListener("click", (e) => {
+                e.preventDefault();
+                loginPopup.classList.add("d-none");
+                openPopup(registerPopup);
+            });
+        }
 
         forgotLink.addEventListener("click", (e) => {
             e.preventDefault();
@@ -312,24 +316,24 @@
 
             if (!name) {
                 isValid = false;
-                errorMessage += "Name is required.\n";
+                errorMessage += "Họ và Tên là bắt buộc.\n";
             }
 
             const phonePattern = /^[0-9]{10,15}$/;
             if (!phone || !phonePattern.test(phone)) {
                 isValid = false;
-                errorMessage += "Phone number must be 10-15 digits.\n";
+                errorMessage += "Số điện thoại phải có 10-15 chữ số.\n";
             }
 
             const emailPattern = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
             if (!email || !emailPattern.test(email)) {
                 isValid = false;
-                errorMessage += "Invalid email format.\n";
+                errorMessage += "Định dạng email không hợp lệ.\n";
             }
 
             if (!password || password.length < 6) {
                 isValid = false;
-                errorMessage += "Password must be at least 6 characters long.\n";
+                errorMessage += "Mật khẩu phải dài ít nhất 6 ký tự.\n";
             }
 
             if (isValid) {
@@ -340,7 +344,7 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    showNotification("OTP sent to your email.", 'success');
+                    showNotification("OTP được gửi đến email của bạn.", 'success');
                     registerForm.classList.add("d-none");
                     otpVerifyStep.classList.remove("d-none");
                 } else {
@@ -359,7 +363,7 @@
 
             const result = await response.json();
             if (result.success) {
-                showNotification("OTP sent to your email.", 'success');
+                showNotification("OTP được gửi đến email của bạn.", 'success');
                 registerForm.classList.add("d-none");
                 otpVerifyStep.classList.remove("d-none");
             } else {
@@ -373,7 +377,7 @@
             const email = document.getElementById("register-email").value.trim();
 
             if (!otpCode) {
-                showNotification("Please enter the OTP.", 'warning');
+                showNotification("Vui lòng nhập OTP.", 'warning');
                 return;
             }
 
@@ -385,7 +389,7 @@
 
             const result = await response.json();
             if (result.success) {
-                showNotification("OTP verified. Registration successful.", 'success');
+                showNotification("Đã xác minh OTP. Đăng ký thành công.", 'success');
                 registerPopup.classList.add("d-none");
                 openPopup(loginPopup);
             } else {
@@ -398,7 +402,7 @@
 
             const emailPattern = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
             if (!email || !emailPattern.test(email)) {
-                showNotification("Invalid email format.", 'warning');
+                showNotification("Định dạng email không hợp lệ.", 'warning');
                 return;
             }
 
