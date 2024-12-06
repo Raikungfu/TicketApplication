@@ -205,7 +205,7 @@ namespace TicketApplication.Controllers
                         {
                             var cusMail = _context.Users.FirstOrDefault(u => u.Id.Equals(eventToUpdate.CreatedBy)).Email;
                             _emailService.SendMail(
-                                title: $"WorQshop. Status Workshop {@event.Title}",
+                                title: $"WorQshop. Status workshop {@event.Title}",
                                 recip: cusMail,
                                 body: $"Chúng tôi rất tiếc phải thông báo rằng workshop <b>{@event.Title}</b> của bạn chưa được duyệt. Bạn có thể xem xét chỉnh sửa và gửi lại yêu cầu."
                             );
