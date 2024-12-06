@@ -14,7 +14,8 @@ function showNotification(message, type = 'success') {
     notificationBox.textContent = message;
     notificationBox.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
     notificationBox.classList.remove("d-none");
-    
+    notificationBox.style.zIndex = '99999';
+
     setTimeout(() => {
         notificationBox.classList.add("d-none");
         notificationBox.remove();
