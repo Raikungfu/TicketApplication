@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Text;
 using TicketApplication.Data;
 using TicketApplication.Models;
 
@@ -48,15 +49,17 @@ namespace TicketApplication.Controllers
                     categoryFilter = "học thuật";
                     break;
                 case "all":
+                    categoryFilter = "all";
+                    break;
                 default:
                     categoryFilter = "all";
                     break;
             }
 
-            var events = await _context.Events
-                .Where(e => e.Title.ToLower().Contains(categoryFilter))
-                .Include(e => e.Zones)
-                .AsNoTracking()
+            var allEvents = await _context.Events.Where(e => e.Date >= DateTime.Now && e.Status == "Visible" && e.Zones.Any(z => z.Price >= searchForm.PriceFrom && z.Price <= searchForm.PriceTo)).Include(e => e.Zones).AsNoTracking().ToListAsync();
+
+            var events = allEvents
+                .Where(e =>categoryFilter == "all" || e.Title.ToLower().Trim().Normalize(NormalizationForm.FormD).Contains(categoryFilter.Normalize(NormalizationForm.FormD)))
                 .Select(e => new
                 {
                     e.Image,
@@ -69,7 +72,7 @@ namespace TicketApplication.Controllers
                     e.Id,
                     e.ImageFile
                 })
-                .ToListAsync();
+                .ToList();
 
             if (events.Count > 0)
             {
