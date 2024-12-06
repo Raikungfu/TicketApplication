@@ -56,7 +56,7 @@ namespace TicketApplication.Controllers
             }
 
             var events = await _context.Events
-                .Where(e => e.Date <= DateTime.Now && e.Status == "Visible" &&
+                .Where(e => e.Date >= DateTime.Now && e.Status == "Visible" &&
                     (categoryFilter == "all" || e.Title.ToLower().Contains(categoryFilter)) &&
                     e.Zones.Any(z => z.Price >= searchForm.PriceFrom && z.Price <= searchForm.PriceTo))
                 .Include(e => e.Zones)
