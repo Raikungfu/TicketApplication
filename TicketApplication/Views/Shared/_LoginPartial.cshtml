@@ -59,23 +59,24 @@
             </a>
         </div>
         <div class="otp-auth-login-popup-header text-center mb-4">
-            <h3>Login to <b>worQshop</b></h3>
+            <h3>Đăng nhập để khám phá <b>worQshop</b></h3>
         </div>
         <div class="otp-auth-login-popup-body">
             <form id="login-form" enctype="multipart/form-data">
                 <div class="form-group mb-3">
-                    <label for="username-email" class="form-label">Username/Email *</label>
-                    <input type="text" id="login-email" autocomplete="email" name="Email" class="form-control" placeholder="Enter your username or email" required>
+                    <label for="username-email" class="form-label">Email *</label>
+                    <input type="text" id="login-email" autocomplete="email" name="Email" class="form-control" placeholder="Nhập Email của bạn" required>
                 </div>
                 <div class="form-group mb-3">
-                    <label for="password" class="form-label">Password *</label>
-                    <input type="password" id="login-password" autocomplete="current-password" name="Password" class="form-control" placeholder="Enter your password" required>
+                    <label for="password" class="form-label">Mật khẩu *</label>
+                    <input type="password" id="login-password" autocomplete="current-password" name="Password" class="form-control" placeholder="Nhập mật Khẩu của bạn" required>
                 </div>
                 <div class="form-group d-grid gap-2 mb-3">
-                    <button type="submit" class="btn btn-primary" id="login-submit-button">Login</button>
+                    <button type="submit" class="btn btn-primary" id="login-submit-button">Đăng nhập ngay</button>
                 </div>
                 <div class="text-center">
-                    <a href="javascript:void(0);" id="forgot-password-link">Forgot Password?</a>
+                    <a href="javascript:void(0);" id="forgot-password-link">Quên mật khẩu?</a>
+                    <a href="javascript:void(0);" id="register-link2">Đăng ký ngay</a>
                 </div>
             </form>
         </div>
@@ -91,40 +92,49 @@
             </a>
         </div>
         <div class="otp-auth-register-popup-header text-center mb-4">
-            <h3>Register on <b>worQshop</b></h3>
+            <h3>
+                Đăng ký tài khoản <b>worQshop</b>
+            </h3>
         </div>
         <div class="otp-auth-register-popup-body">
             <!-- Form Đăng Ký -->
             <form id="register-form" class="d-block">
                 <div class="form-group mb-3">
-                    <label for="name" class="form-label">Name *</label>
-                    <input type="text" id="register-name" name="Name" autocomplete="name" class="form-control" placeholder="Enter your name" required>
+                    <label for="name" class="form-label">
+                        Họ và tên *
+                    </label>
+                    <input type="text" id="register-name" name="Name" autocomplete="name" class="form-control" placeholder="Nhập họ và tên của bạn" required>
                 </div>
                 <div class="form-group mb-3">
-                    <label for="phone" class="form-label">Phone *</label>
-                    <input type="tel" id="register-phone" name="Phone" autocomplete="phone" class="form-control" placeholder="Enter your phone number" required>
+                    <label for="phone" class="form-label">Số điện thoại *</label>
+                    <input type="tel" id="register-phone" name="Phone" autocomplete="phone" class="form-control" placeholder="Nhập số điện thoại của bạn" required>
                 </div>
                 <div class="form-group mb-3">
                     <label for="email" class="form-label">Email *</label>
-                    <input type="email" id="register-email" name="Email" autocomplete="email" class="form-control" placeholder="Enter your email" required>
+                    <input type="email" id="register-email" name="Email" autocomplete="email" class="form-control" placeholder="Nhập địa chỉ email của bạn" required>
                 </div>
                 <div class="form-group mb-3">
-                    <label for="register-password" class="form-label">Password *</label>
-                    <input type="password" id="register-password" autocomplete="current-password" name="Password" class="form-control" placeholder="Enter a password" required>
+                    <label for="register-password" class="form-label">Mật khẩu *</label>
+                    <input type="password" id="register-password" autocomplete="current-password" name="Password" class="form-control" placeholder="Nhập mật khẩu của bạn" required>
                 </div>
+                <span>Bằng việc đăng ký, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.</span>
                 <div class="form-group d-grid gap-2 mb-3">
-                    <button type="button" class="btn btn-primary" id="send-otp-register">Send OTP</button>
+                    <button type="button" class="btn btn-primary" id="send-otp-register">Đăng ký</button>
                 </div>
             </form>
 
             <!-- Form Xác Minh OTP -->
             <form id="otp-verify-step" class="d-none">
+                <span>
+                    Vui lòng kiểm tra email của bạn để nhận mã OTP và hoàn tất quá trình xác thực tài khoản
+                </span>
                 <div class="form-group mb-3">
-                    <label for="otp-code" class="form-label">Enter OTP *</label>
-                    <input type="text" id="otp-code" name="OtpCode" class="form-control" placeholder="Enter the OTP" required>
+                    <label for="otp-code" class="form-label">Nhập mã xác thực OTP *</label>
+                    <input type="text" id="otp-code" name="OtpCode" class="form-control" placeholder="Mã xác thực gồm 6 chữ số" required>
                 </div>
                 <div class="form-group d-grid gap-2 mb-3">
-                    <button type="button" class="btn btn-primary" id="verify-otp-register">Verify OTP</button>
+                    <button type="button" class="btn btn-primary" id="verify-otp-register">Xác nhận</button>
+                    <button type="button" class="btn btn-primary" id="send-otp-register-again">Gửi lại mã</button>
                 </div>
             </form>
         </div>
@@ -209,12 +219,14 @@
         const loginLink = document.getElementById("login-link");
         const registerLink = document.getElementById("register-link");
         const forgotLink = document.getElementById("forgot-password-link");
+        const registerLink2 = document.getElementById("register-link2");
         const loginForm = document.getElementById("login-form");
         const registerForm = document.getElementById("register-form");
 
         const otpVerifyStep = document.getElementById("otp-verify-step");
         const sendOtpRegisterButton = document.getElementById("send-otp-register");
         const verifyOtpRegisterButton = document.getElementById("verify-otp-register");
+        const sendOtpRegisterAgainButton = document.getElementById("send-otp-register-again");
 
 
         const emailStep = document.getElementById("step-email");
@@ -239,6 +251,12 @@
         // Mở form đăng ký
         registerLink.addEventListener("click", (e) => {
             e.preventDefault();
+            openPopup(registerPopup);
+        });
+
+        registerLink2.addEventListener("click", (e) => {
+            e.preventDefault();
+            loginPopup.classList.add("d-none");
             openPopup(registerPopup);
         });
 
@@ -281,15 +299,60 @@
 
         sendOtpRegisterButton.addEventListener("click", async () => {
             const formData = new FormData(registerForm);
-            const email = document.getElementById("register-email").value;
-            if (!email) {
+
+            const name = document.getElementById("register-name").value.trim();
+            const phone = document.getElementById("register-phone").value.trim();
+            const email = document.getElementById("register-email").value.trim();
+            const password = document.getElementById("register-password").value.trim();
+
+            let isValid = true;
+            let errorMessage = "";
+
+            if (!name) {
+                isValid = false;
+                errorMessage += "Name is required.\n";
+            }
+
+            const phonePattern = /^[0-9]{10,15}$/;
+            if (!phone || !phonePattern.test(phone)) {
+                isValid = false;
+                errorMessage += "Phone number must be 10-15 digits.\n";
+            }
+
+            const emailPattern = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
+            if (!email || !emailPattern.test(email)) {
+                isValid = false;
+                errorMessage += "Invalid email format.\n";
+            }
+
+            if (!password || password.length < 6) {
+                isValid = false;
+                errorMessage += "Password must be at least 6 characters long.\n";
+            }
+
+            if (isValid) {
+                const response = await fetch('/Identity/RegisterRequestOtp', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showNotification("OTP sent to your email.", 'success');
+                    registerForm.classList.add("d-none");
+                    otpVerifyStep.classList.remove("d-none");
+                } else {
+                    showNotification(result.message, 'danger');
+                }
+            } else {
                 showNotification("Please enter your email.", 'warning');
                 return;
             }
+        });
 
-            const response = await fetch('/Identity/RegisterRequestOtp', {
-                method: 'POST',
-                body: formData
+        sendOtpRegisterAgainButton.addEventListener("click", async () => {
+            const response = await fetch('/Identity/SendOtpRegisterAgain', {
+                method: 'GET'
             });
 
             const result = await response.json();
@@ -301,6 +364,7 @@
                 showNotification(result.message, 'danger');
             }
         });
+
 
         verifyOtpRegisterButton.addEventListener("click", async () => {
             const otpCode = document.getElementById("otp-code").value;

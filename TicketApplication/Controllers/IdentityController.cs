@@ -163,6 +163,33 @@ namespace TicketApplication.Controllers
             return Json(new { success = true, message = "Registration successful." });
         }
 
+        public IActionResult SendOtpRegisterAgain()
+        {
+            var email = HttpContext.Session.GetString("RegisterEmail"); 
+            
+            if (email.IsNullOrEmpty())
+            {
+                return Json(new { success = false, message = "Not found." });
+            }
+
+            var existUser = _applicationDbContext.Users.Any(x => x.Email == email);
+            if (existUser)
+                return Json(new { success = false, message = "Email already registered." });
+
+            var otp = GenerateOtp();
+            var expiryTime = DateTime.UtcNow.AddMinutes(5);
+
+            HttpContext.Session.SetString("RegisterOtp", otp);
+
+            _emailService.SendMail(
+                title: "OTP for Registration",
+                recip: email,
+                body: $"Your OTP code is: <b>{otp}</b>. It expires in 5 minutes."
+            );
+
+            return Json(new { success = true, message = "OTP sent to your email." });
+        }
+
         [HttpPost]
         public IActionResult ForgotPasswordRequestOtp([FromBody] VerifyOtpDto model)
         {
