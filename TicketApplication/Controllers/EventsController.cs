@@ -203,7 +203,7 @@ namespace TicketApplication.Controllers
                     {
                         if(!eventToUpdate.CreatedBy.Equals("Admin") && @event.Status.Equals("Rejected") && eventToUpdate.Status.Equals("Pending"))
                         {
-                            var cusMail = _context.Users.FirstOrDefault(u => u.Email.Equals(@event.CreatedBy)).Email;
+                            var cusMail = _context.Users.FirstOrDefault(u => u.Id.Equals(eventToUpdate.CreatedBy)).Email;
                             _emailService.SendMail(
                                 title: $"WorQshop. Status Workshop {@event.Title}",
                                 recip: cusMail,
