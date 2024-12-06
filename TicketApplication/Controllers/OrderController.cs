@@ -76,7 +76,6 @@ namespace TicketApplication.Controllers
 
             return RedirectToAction(nameof(IndexAdmin));
         }
-
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Checkout(string paymentMethod, string? orderId = null, string? code = null, string? discountOptionOrder = "rank")
         {
@@ -88,12 +87,13 @@ namespace TicketApplication.Controllers
 
             Order order;
 
-            if (!orderId.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(orderId))
             {
                 order = await _context.Orders
                     .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Zone)
                     .ThenInclude(z => z.Event)
+                    .ThenInclude(z => z.Tickets)
                     .Include(o => o.Payments)
                     .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
 
@@ -131,6 +131,8 @@ namespace TicketApplication.Controllers
                     OrderDetails = new List<OrderDetail>()
                 };
 
+                var ticketTasks = new List<Task>();
+
                 foreach (var item in cartItems)
                 {
                     var orderDetail = new OrderDetail
@@ -156,18 +158,15 @@ namespace TicketApplication.Controllers
                             Status = "Available",
                             OrderDetailId = orderDetail.Id
                         };
-                        await _context.Tickets.AddAsync(ticket);
+                        ticketTasks.Add(_context.Tickets.AddAsync(ticket).AsTask()); // Chuyển đổi ValueTask thành Task
                     }
                 }
 
+                await Task.WhenAll(ticketTasks); // Chờ tất cả các tác vụ thêm ticket hoàn thành
                 await _context.Orders.AddAsync(order);
                 _context.Carts.RemoveRange(cartItems);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Lưu tất cả thay đổi
             }
-
-            decimal discountAmount = 0;
-            decimal rankDiscount = 0;
-            decimal codeDiscount = 0;
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == claimId);
             if (user == null)
@@ -175,6 +174,10 @@ namespace TicketApplication.Controllers
                 TempData["ErrorMessage"] = "Người dùng không tồn tại.";
                 return RedirectToAction("Index", "Cart");
             }
+
+            decimal discountAmount = 0;
+            decimal rankDiscount = 0;
+            decimal codeDiscount = 0;
 
             decimal totalPrice = order.TotalAmount;
 
@@ -186,7 +189,7 @@ namespace TicketApplication.Controllers
                 if (discount == null)
                 {
                     TempData["ErrorMessage"] = "Mã giảm giá không hợp lệ hoặc đã hết hạn.";
-                    return RedirectToAction("Index", "Cart");
+                    return RedirectToAction("Index");
                 }
 
                 codeDiscount = discount.DiscountPercentage.HasValue
@@ -195,10 +198,9 @@ namespace TicketApplication.Controllers
 
                 discount.UsageLimit--;
                 _context.Discounts.Update(discount);
+                await _context.SaveChangesAsync(); // Lưu thay đổi sau khi cập nhật giảm giá
 
                 order.DiscountId = discount.Id;
-
-                _context.SaveChangesAsync();
             }
 
             if (!string.IsNullOrEmpty(discountOptionOrder) && discountOptionOrder.Equals("rank") && !string.IsNullOrEmpty(user.Rank) && !user.Rank.Equals("Unknown"))
@@ -208,13 +210,13 @@ namespace TicketApplication.Controllers
             }
 
             discountAmount = Math.Max(rankDiscount, codeDiscount);
-
             order.DiscountAmount = discountAmount;
             order.OrderCode = new Random().Next(100000000, 999999999);
 
-            if(Math.Max(totalPrice - discountAmount, 0) == 0)
+            if (Math.Max(totalPrice - discountAmount, 0) == 0)
             {
                 var amount = Math.Max(order.TotalAmount - order.DiscountAmount ?? 0, 0);
+                order.TotalAmount = amount;
                 order.Status = "Paid";
                 var payment = CreateOrUpdatePayment(order, amount, "Paid");
 
@@ -226,17 +228,24 @@ namespace TicketApplication.Controllers
                         zone.AvailableTickets -= orderDetail.Quantity;
                         _context.Zones.Update(zone);
 
-                        foreach (var ticket in orderDetail.Tickets)
+                        var tickets = await _context.Tickets.Where(t => t.OrderDetailId == orderDetail.Id).ToListAsync();
+
+                        foreach (var ticket in tickets)
                         {
                             ticket.Status = "Sold";
                             _context.Tickets.Update(ticket);
                         }
                     }
                 }
+                _context.Orders.Update(order);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Thanh toán thành công, Ticket đã được gửi đến email của bạn.";
+                return RedirectToAction("Index", "Order");
             }
 
             _context.Orders.Update(order);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             var paymentLink = await createPaymentLink(Math.Max(totalPrice - discountAmount, 0), paymentMethod, order, user);
             return Redirect(paymentLink);
