@@ -48,17 +48,13 @@ namespace TicketApplication.Controllers
                     categoryFilter = "học thuật";
                     break;
                 case "all":
-                    categoryFilter = "all";
-                    break;
                 default:
                     categoryFilter = "all";
                     break;
             }
 
             var events = await _context.Events
-                .Where(e => e.Date >= DateTime.Now && e.Status == "Visible" &&
-                    (categoryFilter == "all" || e.Title.ToLower().Contains(categoryFilter)) &&
-                    e.Zones.Any(z => z.Price >= searchForm.PriceFrom && z.Price <= searchForm.PriceTo))
+                .Where(e => e.Title.ToLower().Contains(categoryFilter))
                 .Include(e => e.Zones)
                 .AsNoTracking()
                 .Select(e => new
