@@ -1,107 +1,54 @@
 ﻿@using Microsoft.AspNetCore.Identity
 
-<div class="d-flex justify-content-end">
-    <div class="btn-group d-block d-md-none">
-        <!-- Toggle Button -->
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="visually-hidden">Main Menu</span>
-            <span class="d-inline-flex">
-                <!-- Menu Icon -->
-                <svg class="bi bi-list" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M3 12h18c0.552 0 1-0.448 1-1s-0.448-1-1-1H3c-0.552 0-1 0.448-1 1s0.448 1 1 1zM3 6h18c0.552 0 1-0.448 1-1s-0.448-1-1-1H3c-0.552 0-1 0.448-1 1s0.448 1 1 1zM3 18h18c0.552 0 1-0.448 1-1s-0.448-1-1-1H3c-0.552 0-1 0.448-1 1s0.448 1 1 1z"></path>
-                </svg>
-            </span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li class="nav-item">
-                @if (User.IsInRole("Customer"))
-                {
-                    <a class="nav-link text-dark btn btn-sm" asp-controller="Order" asp-action="Index" title="Order">
-                        <i class="bi bi-box-seam" style="font-size: 1rem;"></i>
-                    </a>
-                    <a class="nav-link text-dark btn btn-sm position-relative" asp-controller="Cart" asp-action="Index" title="Cart">
-                        <i class="bi bi-cart3" style="font-size: 1rem;"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger quantity-items d-none">
-                        </span>
-                    </a>
-                    <a class="nav-link text-dark btn btn-sm" asp-controller="Customer" asp-action="Index" title="Customer Manage">Customer Manage</a>
+<ul class="navbar-nav">
+    @if (User.IsInRole("Customer"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Order" asp-action="Index" title="Order">
+                <i class="bi bi-box-seam" style="font-size: 1rem;"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark position-relative" asp-controller="Cart" asp-action="Index" title="Cart">
+                <i class="bi bi-cart3" style="font-size: 1rem;"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger quantity-items d-none">
+                </span>
+            </a>
+        </li>
 
-                }
-                @if (User.IsInRole("Admin"))
-                {
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-                }
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Customer" asp-action="Index" title="Customer Manage">
+                Tạo workshop
+            </a>
+        </li>
 
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a class="dropdown-item" asp-controller="Users" asp-action="Profile" title="Profile">Hello, @User.Identity?.Name!</a>
-                    <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="dropdown-item">Logout</button>
-                    </form>
-                }
-                else
-                {
-                <li class="nav-item">
-                    <a class="nav-link text-dark cursor-pointer text-xl" id="register-link-dropdown">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark cursor-pointer text-xl" id="login-link-dropdown">Login</a>
-                </li>
-                }
-            </li>
-        </ul>
-    </div>
-</div>
+    }
+    @if (User.IsInRole("Admin"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+        </li>
+    }
+    @if (User.Identity.IsAuthenticated)
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Users" asp-action="Profile" title="Profile">Hello, @User.Identity?.Name!</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Identity" asp-action="logout" title="Logout">Đăng xuất</a>
+        </li>
+    }
 
-<div class="d-none d-md-block">
-    <ul class="navbar-nav">
-        @if (User.IsInRole("Customer"))
-        {
-            <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Order" asp-action="Index" title="Order">
-                    <i class="bi bi-box-seam" style="font-size: 1rem;"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm position-relative" asp-controller="Cart" asp-action="Index" title="Cart">
-                    <i class="bi bi-cart3" style="font-size: 1rem;"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger quantity-items d-none">
-                    </span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Customer" asp-action="Index" title="Customer Manage">Customer Manage</a>
-            </li>
-
-        }
-        @if (User.IsInRole("Admin"))
-        {
-            <li class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-            </li>
-        }
-        @if (User.Identity.IsAuthenticated)
-        {
-            <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Users" asp-action="Profile" title="Profile">Hello, @User.Identity?.Name!</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-dark btn btn-sm" asp-controller="Identity" asp-action="logout" title="Logout">Logout</a>
-            </li>
-        }
-
-        else
-        {
-            <li class="nav-item">
-                <a class="nav-link text-dark" id="register-link">Register</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-dark" id="login-link">Login</a>
-            </li>
-        }
-    </ul>
-</div>
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" id="register-link">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" id="login-link">Login</a>
+        </li>
+    }
+</ul>
 
 <!-- Đăng nhập Popup Form -->
 <div id="otp-auth-login-popup" class="d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(0, 0, 0, 0.5); z-index: 9999;">
@@ -262,8 +209,6 @@
         const loginLink = document.getElementById("login-link");
         const registerLink = document.getElementById("register-link");
         const forgotLink = document.getElementById("forgot-password-link");
-        const loginLinkDropdown = document.getElementById("login-link-dropdown");
-        const registerLinkDropdown = document.getElementById("register-link-dropdown");
         const loginForm = document.getElementById("login-form");
         const registerForm = document.getElementById("register-form");
 
@@ -291,18 +236,8 @@
             openPopup(loginPopup);
         });
 
-        loginLinkDropdown.addEventListener("click", (e) => {
-            e.preventDefault();
-            openPopup(loginPopup);
-        });
-
         // Mở form đăng ký
         registerLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            openPopup(registerPopup);
-        });
-
-        registerLinkDropdown.addEventListener("click", (e) => {
             e.preventDefault();
             openPopup(registerPopup);
         });
