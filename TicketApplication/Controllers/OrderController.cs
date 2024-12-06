@@ -328,6 +328,7 @@ namespace TicketApplication.Controllers
                 else if (status == "PAID")
                 {
                     order.Status = "Paid";
+                    order.TotalAmount = amount;
                     var payment = CreateOrUpdatePayment(order, amount, "Paid");
 
                     foreach (var orderDetail in order.OrderDetails)
