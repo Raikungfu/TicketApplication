@@ -89,7 +89,7 @@ namespace TicketApplication.Controllers
                 return NotFound();
             }
 
-            var eventDetail = await _context.Events.Where(e => e.Date <= DateTime.Now && e.Status == "Visible")
+            var eventDetail = await _context.Events.Where(e => e.Date >= DateTime.Now && e.Status == "Visible")
                 .Include(e => e.Zones)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
@@ -102,6 +102,7 @@ namespace TicketApplication.Controllers
 
             return View("EventDetail", eventDetail);
         }
+
         public IActionResult Privacy()
         {
             return View();
