@@ -7,35 +7,35 @@
 <div class="container mt-5">
     <div class="card shadow-lg border-light rounded">
         <div class="card-header bg-success text-white rounded-top">
-            <h2 class="mb-0">Edit Profile</h2>
+            <h2 class="mb-0">Hồ sơ người dùng</h2>
         </div>
         <div class="card-body">
-            <h5 class="text-secondary">Update Your Information</h5>
+            <h5 class="text-secondary">Cập nhật Hồ sơ người dùng</h5>
             <hr />
             <form asp-action="EditProfile">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="mb-3">
-                    <label asp-for="Name" class="form-label fw-bold">Full Name</label>
-                    <input asp-for="Name" class="form-control shadow-sm" placeholder="Enter your full name" />
+                    <label asp-for="Name" class="form-label fw-bold">Họ và tên</label>
+                    <input asp-for="Name" class="form-control shadow-sm" placeholder="Nhập Họ và tên" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Email" class="form-label fw-bold">Email Address</label>
+                    <label asp-for="Email" class="form-label fw-bold">Email</label>
                     <input asp-for="Email" class="form-control shadow-sm" readonly />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="PhoneNumber" class="form-label fw-bold">Phone Number</label>
-                    <input asp-for="PhoneNumber" class="form-control shadow-sm" placeholder="Enter your phone number" />
+                    <label asp-for="PhoneNumber" class="form-label fw-bold">Số điện thoại</label>
+                    <input asp-for="PhoneNumber" class="form-control shadow-sm" placeholder="Nhập Số điện thoại" />
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Address" class="form-label fw-bold">Address</label>
-                    <input asp-for="Address" class="form-control shadow-sm" placeholder="Enter your address" />
+                    <label asp-for="Address" class="form-label fw-bold">Địa chỉ</label>
+                    <input asp-for="Address" class="form-control shadow-sm" placeholder="Nhập Địa chỉ" />
                     <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
 
@@ -45,8 +45,8 @@
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <a asp-action="Profile" class="btn btn-secondary btn-lg">Back to Profile</a>
-                    <input type="submit" value="Save Changes" class="btn btn-primary btn-lg fw-bold" />
+                    <a asp-action="Profile" class="btn btn-secondary btn-lg">Quay lại</a>
+                    <input type="submit" value="Lưu" class="btn btn-primary btn-lg fw-bold" />
                 </div>
             </form>
         </div>

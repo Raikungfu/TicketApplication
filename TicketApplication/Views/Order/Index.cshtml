@@ -5,12 +5,12 @@
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4">Orders History</h2>
+    <h2 class="mb-4">Lịch sử đơn hàng</h2>
 
     @if (!Model.Any())
     {
         <div class="alert alert-warning" role="alert">
-            No orders available.
+            Không có order có sẵn
         </div>
     }
     else
@@ -18,12 +18,11 @@
         <table class="table  table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th>Order ID</th>
-                    <th>User ID</th>
-                    <th>User Email</th>
-                    <th>Status</th>
-                    <th>Total Amount</th>
-                    <th>Actions</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Email</th>
+                    <th>Trạng thái thanh toán </th>
+                    <th>Tổng tiền</th>
+                    <th>Tùy chỉnh</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +30,6 @@
                 {
                     <tr>
                         <td>@order.Id</td>
-                        <td>@order.UserId</td>
                         <td>@order.User.Email</td>
                         <td>@order.Status</td>
                         <td>@order.TotalAmount đ</td>
@@ -46,14 +44,14 @@
                                     data-total-amount="@order.TotalAmount đ"
                                     data-order-details="@Html.Raw(string.Join(";",
             order.OrderDetails.SelectMany(d =>
-                d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Quantity: {d.Quantity}"))))">
-                                View Details
+                d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Số lượng: {d.Quantity}"))))">
+                                Xem đơn hàng
                             </button>
                             @if (order.Status == "Pending")
                             {
                                 <form asp-action="Delete" asp-route-id="@order.Id" method="post" style="display:inline;" id="deleteForm-@order.Id">
                                     <input type="hidden" name="orderId" value="@order.Id" />
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal('@order.Id', '@Html.Raw(string.Join(";", order.OrderDetails.SelectMany(d => d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Quantity: {d.Quantity}"))))')">Delete</button>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal('@order.Id', '@Html.Raw(string.Join(";", order.OrderDetails.SelectMany(d => d.Tickets.Select(t => $"Ticket: {t.Id}, Zone: {t.Zone?.Name}, Quantity: {d.Quantity}"))))')">Xóa</button>
                                 </form>
                             }
                         </td>
@@ -72,14 +70,14 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="orderDetailModalLabel">Order Details</h5>
+                    <h5 class="modal-title" id="orderDetailModalLabel">Chi tiết đơn hàng</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6>Order ID: <span id="modalOrderId"></span></h6>
-                <h6>User Email: <span id="modalUserEmail"></span></h6>
-                <h6>Total Amount: <span id="modalTotalAmount"></span></h6>
-                <h6>Order Details:</h6>
+                    <h6>Mã đơn hàng: <span id="modalOrderId"></span></h6>
+                <h6>Email: <span id="modalUserEmail"></span></h6>
+                    <h6>Tổng tiền thanh toán: <span id="modalTotalAmount"></span></h6>
+                    <h6>Chi tiết đơn hàng:</h6>
                 <ul id="modalOrderDetails"></ul>
             </div>
                 <div class="row" id="paymentSection" style="display: none;">
@@ -90,14 +88,6 @@
     <div class="form-group">
         <label for="orderDiscountCode">Nhập mã giảm giá:</label>
         <input type="text" id="orderDiscountCode" name="Code" class="form-control" placeholder="Mã giảm giá (nếu có)">
-    </div>
-
-                            <div class="form-check mt-3">
-        <input type="radio" id="useRankDiscountOrder" name="discountOptionOrder" value="rank" class="form-check-input" checked>
-        <label class="form-check-label" for="useRankDiscountOrder">
-            Áp dụng giảm giá theo Rank
-        </label>
-    </div>
 
     <div class="form-check">
         <input type="radio" id="useCodeDiscountOrder" name="discountOptionOrder" value="code" class="form-check-input">
@@ -123,7 +113,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
