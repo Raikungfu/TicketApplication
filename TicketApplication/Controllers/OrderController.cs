@@ -431,7 +431,7 @@ namespace TicketApplication.Controllers
         {
             if (string.IsNullOrEmpty(request.Code) && string.IsNullOrEmpty(request.Rank))
             {
-                return Json(new { success = false, message = "Bạn phải chọn một mã giảm giá hoặc giảm giá theo Rank." });
+                return Json(new { success = false, message = "Bạn phải chọn một mã giảm giá." });
             }
 
             var claimId = User.FindFirstValue(ClaimTypes.NameIdentifier);
