@@ -49,5 +49,24 @@
             }
             return listImageString;
         }
+
+        public bool deleteFile(string fileName, string path)
+        {
+            try
+            {
+                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, path, fileName);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

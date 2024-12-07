@@ -221,6 +221,10 @@ namespace TicketApplication.Controllers
 
                     if (@event.ImageFile != null)
                     {
+                        if (!eventToUpdate.Image.IsNullOrEmpty())
+                        {
+                            _uploadFileService.deleteFile(eventToUpdate.Image, "Images");
+                        }
                         eventToUpdate.Image = _uploadFileService.uploadImage(@event.ImageFile, "Images");
                     }
 
