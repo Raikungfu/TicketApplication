@@ -144,7 +144,23 @@
 
 @section Scripts {
     <script>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+                    showNotification('@Html.Raw(TempData["ErrorMessage"])', 'danger');
+                });
+            </text>
+        }
 
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+                    showNotification('@Html.Raw(TempData["SuccessMessage"])', 'success');
+                });
+            </text>
+        }
 
         function openDeleteModal(orderId, orderDetail) {
             document.getElementById('orderDetail').textContent = orderDetail;

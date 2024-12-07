@@ -555,7 +555,7 @@ namespace TicketApplication.Controllers
             if (claimRole.Equals("Customer"))
             {
                 var order = await _context.Orders
-                .Include(o => o.OrderDetails)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Tickets)
                 .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == claimId);
 
                 if (order == null)
@@ -564,12 +564,19 @@ namespace TicketApplication.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    _context.Tickets.RemoveRange(orderDetail.Tickets);
+                }
+
+                _context.OrderDetails.RemoveRange(order.OrderDetails);
+
                 _context.Orders.Remove(order);
                 await _context.SaveChangesAsync();
             }else if (claimRole.Equals("Admin"))
             {
                 var order = await _context.Orders
-                .Include(o => o.OrderDetails)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Tickets)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
                 if (order == null)
@@ -577,6 +584,13 @@ namespace TicketApplication.Controllers
                     TempData["ErrorMessage"] = "Đơn hàng không tồn tại.";
                     return RedirectToAction(nameof(IndexAdmin));
                 }
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    _context.Tickets.RemoveRange(orderDetail.Tickets);
+                }
+
+                _context.OrderDetails.RemoveRange(order.OrderDetails);
+
 
                 _context.Orders.Remove(order);
                 await _context.SaveChangesAsync();

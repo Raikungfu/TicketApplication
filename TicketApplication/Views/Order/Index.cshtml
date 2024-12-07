@@ -136,26 +136,27 @@
         </div>
     </div>
 </div>
-@if (TempData["ErrorMessage"] != null)
-{
-    <text>
-        document.addEventListener('DOMContentLoaded', function () {
-        showNotification('@TempData["ErrorMessage"]', 'danger');
-        });
-    </text>
-}
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <text>
-        document.addEventListener('DOMContentLoaded', function () {
-        showNotification('@TempData["SuccessMessage"]', 'success');
-        });
-    </text>
-}
 
 @section Scripts {
     <script>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+                    showNotification('@Html.Raw(TempData["ErrorMessage"])', 'danger');
+                });
+            </text>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                document.addEventListener('DOMContentLoaded', function () {
+                    showNotification('@Html.Raw(TempData["SuccessMessage"])', 'success');
+                });
+            </text>
+        }
+
         function openDeleteModal(orderId, orderDetail) {
             try {
                 document.getElementById('orderDetail').textContent = orderDetail;
