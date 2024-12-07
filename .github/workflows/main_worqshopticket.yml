@@ -1,4 +1,7 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - Ticket-Workshop
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy ASP.Net Core app to Azure Web App - worqshopticket
 
 on:
   push:
@@ -22,13 +25,13 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/publish
+        run: dotnet publish -c Release -o ${{ github.workspace }}/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/publish
+          path: ${{ github.workspace }}/publish
 
   deploy:
     runs-on: windows-latest
@@ -56,6 +59,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "Ticket-Workshop"
+          app-name: "worqshopticket"
           slot-name: "Production"
           package: .
