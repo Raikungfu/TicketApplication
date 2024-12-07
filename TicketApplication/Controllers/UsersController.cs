@@ -95,10 +95,10 @@ namespace TicketApplication.Controllers
         {
             return rank switch
             {
-                "Gold" => "/images/gold-logo.png",
-                "Silver" => "/images/silver-logo.png",
-                "Bronze" => "/images/bronze-logo.png",
-                _ => "/images/unknown-logo.png",
+                "Gold" => "/Images/gold-logo.png",
+                "Silver" => "/Images/silver-logo.png",
+                "Bronze" => "/Images/bronze-logo.png",
+                _ => "/Images/unknown-logo.png",
             };
         }
 

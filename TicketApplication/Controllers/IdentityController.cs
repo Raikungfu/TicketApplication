@@ -257,54 +257,6 @@ namespace TicketApplication.Controllers
             return Json(new { success = true, message = "Password reset successful." });
         }
 
-        /*
-        [HttpGet]
-        public async Task UpdateAllPasswords()
-        {
-            // Lấy tất cả các user chưa có mật khẩu đã được băm.
-            var passwordHasher = new PasswordHasher<User>();
-            var users = await _applicationDbContext.Users.ToListAsync();
-
-            foreach (var user in users)
-            {
-                user.Password = passwordHasher.HashPassword(user, user.Password);
-                user.Rank = "Unknow";
-                user.IsBan = false;
-            }
-
-            // Lưu lại các thay đổi trong DB.
-            await _applicationDbContext.SaveChangesAsync();
-        }
-
-        private bool IsPasswordHashed(string password)
-        {
-            // Kiểm tra kiểu mật khẩu theo cơ chế của Identity
-            return password.Contains('$'); // Dấu `$` thường có trong mật khẩu đã băm.
-        }
-        [HttpPost]
-        public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordDto model)
-        {
-            if (string.IsNullOrEmpty(model.Email))
-            {
-                return Json(new { success = false, message = "Email is required." });
-            }
-
-            var user = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
-            if (user == null)
-            {
-                return Json(new { success = false, message = "Email not found." });
-            }
-
-            var token = Guid.NewGuid().ToString();
-            var resetLink = Url.Action("ResetPassword", "Identity", new { token, email = user.Email }, Request.Scheme);
-            var subject = "Yêu cầu khôi phục mật khẩu";
-            var body = $"Xin chào {user.Name},<br><br>Vui lòng nhấp vào liên kết dưới đây để khôi phục mật khẩu của bạn:<br><a href='{resetLink}'>Khôi phục mật khẩu</a>";
-
-            _emailService.SendMail(subject, user.Email, body);
-
-            return Ok("Liên kết khôi phục mật khẩu đã được gửi đến email của bạn.");
-        }*/
-
         private string GenerateOtp()
         {
             var random = new Random();
