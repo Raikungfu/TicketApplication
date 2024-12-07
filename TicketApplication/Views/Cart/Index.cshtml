@@ -65,7 +65,7 @@
                 <form id="apply-discount-form">
                     <div class="form-group">
                         <label for="discountCode">Nhập mã giảm giá:</label>
-                        <input type="text" id="discountCode" name="Code" class="form-control" placeholder="Mã giảm giá (nếu có)">
+                        <input type="text" id="discountCode" name="code" class="form-control" placeholder="Mã giảm giá (nếu có)">
                     </div>
 
                     <div class="form-check">
@@ -130,7 +130,7 @@
 
     function applyDiscount() {
         const discountCode = document.getElementById("discountCode").value.trim();
-        const useRank = document.querySelector('input[name="discountOption"]:checked').value === "rank";
+        const useRank = document.querySelector('input[name="discountOptionOrder"]:checked').value === "rank";
 
         fetch('/Cart/ApplyDiscount', {
             method: 'POST',
