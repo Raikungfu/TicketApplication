@@ -39,8 +39,10 @@
                 <td>@Html.DisplayFor(modelItem => item.AvailableTickets)</td>
                 <td>@Html.DisplayFor(modelItem => item.CreatedAt, "{0:yyyy-MM-dd HH:mm:ss}")</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm" title="Edit">Edit</a>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal('@item.Id', '@item.Name')">Delete</button>
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" id="deleteForm-@item.Id">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm" title="Edit">Edit</a>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal('@item.Id', '@item.Name')">Delete</button>
+                    </form>
                 </td>
             </tr>
         }

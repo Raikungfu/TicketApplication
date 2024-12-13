@@ -158,14 +158,14 @@ namespace TicketApplication.Controllers
                             Status = "Available",
                             OrderDetailId = orderDetail.Id
                         };
-                        ticketTasks.Add(_context.Tickets.AddAsync(ticket).AsTask()); // Chuyển đổi ValueTask thành Task
+                        ticketTasks.Add(_context.Tickets.AddAsync(ticket).AsTask());
                     }
                 }
 
-                await Task.WhenAll(ticketTasks); // Chờ tất cả các tác vụ thêm ticket hoàn thành
+                await Task.WhenAll(ticketTasks);
                 await _context.Orders.AddAsync(order);
                 _context.Carts.RemoveRange(cartItems);
-                await _context.SaveChangesAsync(); // Lưu tất cả thay đổi
+                await _context.SaveChangesAsync();
             }
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == claimId);
