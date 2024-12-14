@@ -220,7 +220,7 @@ namespace TicketApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var zone = await _context.Zones.FindAsync(id);
+            var zone = await _context.Zones.Include(z => z.Tickets).FirstOrDefaultAsync(z => z.Id == id);
             if (zone != null)
             {
                 var role = User.FindFirstValue(ClaimTypes.Role);
@@ -229,6 +229,8 @@ namespace TicketApplication.Controllers
                 {
                     return Forbid();
                 }
+
+                _context.Tickets.RemoveRange(zone.Tickets);
 
                 _context.Zones.Remove(zone);
                 await _context.SaveChangesAsync();
